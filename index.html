@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (오버 시에만 X표시 노출)</title>
+    <title>제주소방서 전술 배치도 (완벽 수정본)</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -163,7 +163,7 @@
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
             <div class="guide-item"><span>🔄</span> <span><strong>회전:</strong> <strong>Shift + 휠</strong> (크기: 마우스 휠)</span></div>
             <div class="guide-item"><span>↕️</span> <span><strong>화살표 변형:</strong> <strong style="color: #0284C7;">Ctrl</strong> 또는 <strong style="color: #0284C7;">Alt + 휠</strong></span></div>
-            <div class="guide-item"><span>✏️</span> <span><strong>선/도형:</strong> 마우스 호버 시 <strong>수정/삭제 표시</strong></span></div>
+            <div class="guide-item"><span>✏️</span> <span><strong>선/도형:</strong> 마우스 호버 시 <strong>거리/면적 확인</strong></span></div>
         </div>
     </div>
 </div>
@@ -259,17 +259,12 @@
 
         var hoverTooltip = new kakao.maps.CustomOverlay({ map: null, content: '', xAnchor: 0, yAnchor: 1, zIndex: 10 });
         
+        // 💡 드로잉 완료 시 기본 이벤트 (거리/면적 측정 툴팁 정상 작동 및 안정성 확보)
         manager.addListener('drawend', function(data) {
             var overlay = data.target; 
             var type = data.overlayType;
-            
-            // 💡 핵심: 그려진 직후에는 수정 핸들/삭제(X) 버튼을 숨겨서 깔끔하게 유지합니다.
-            overlay.setEditable(false);
 
-            // 💡 마우스 오버(Hover) 시에만 수정 및 삭제 핸들이 나타나도록 설정
             kakao.maps.event.addListener(overlay, 'mouseover', function(mouseEvent) {
-                overlay.setEditable(true); // 마우스 올리면 X표시 및 수정점 노출
-                
                 var text = ''; 
                 if(type === kakao.maps.drawing.OverlayType.POLYLINE) text = '총 ' + Math.round(overlay.getLength()) + 'm'; 
                 else if(type === kakao.maps.drawing.OverlayType.POLYGON) text = '면적 ' + Math.round(overlay.getArea()) + '㎡'; 
@@ -284,9 +279,7 @@
                 hoverTooltip.setPosition(mouseEvent.latLng); 
             });
 
-            // 💡 마우스가 벗어나면 다시 X표시와 수정 핸들을 숨겨서 화면을 깨끗하게 만듦
             kakao.maps.event.addListener(overlay, 'mouseout', function() {
-                overlay.setEditable(false); 
                 hoverTooltip.setMap(null); 
             });
         });
