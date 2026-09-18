@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (검색 리스트 UI)</title>
+    <title>제주소방서 전술 배치도 (검색 리스트 자동 숨김)</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
         /* 폰트 및 기본 리셋 */
@@ -41,17 +41,17 @@
         .kakaomap-btn { width: 100%; background: #FDE047; color: #854D0E; margin-top: 4px; }
         .kakaomap-btn:hover { background: #FACC15; box-shadow: 0 4px 12px rgba(250,204,21,0.3); }
 
-        /* 💡 검색 결과 리스트 스타일 */
-        #placesList { list-style: none; padding: 0; margin: 10px 0 0 0; max-height: 250px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; display: none; }
-        #placesList li { padding: 12px; border-bottom: 1px solid #F1F5F9; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; gap: 4px; }
+        /* 검색 결과 리스트 스타일 */
+        #placesList { list-style: none; padding: 0; margin: 8px 0 0 0; max-height: 220px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; display: none; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        #placesList li { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; cursor: pointer; transition: background 0.2s; display: flex; flex-direction: column; gap: 3px; }
         #placesList li:last-child { border-bottom: none; }
         #placesList li:hover { background: #F8FAFC; }
-        .place-name { font-weight: 700; font-size: 14px; color: #0F172A; }
-        .place-address { font-size: 12px; color: #64748B; }
+        .place-name { font-weight: 700; font-size: 13px; color: #0F172A; }
+        .place-address { font-size: 11px; color: #64748B; }
         
-        /* 페이지네이션 (검색 결과 페이징) */
-        #pagination { display: flex; justify-content: center; gap: 8px; margin-top: 10px; font-size: 13px; display: none; }
-        #pagination a { color: #64748B; text-decoration: none; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        /* 페이지네이션 */
+        #pagination { display: flex; justify-content: center; gap: 6px; margin-top: 8px; font-size: 12px; display: none; }
+        #pagination a { color: #64748B; text-decoration: none; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
         #pagination a.on { color: white; background: #DC2626; font-weight: bold; }
 
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -115,7 +115,7 @@
                     <button class="btn-primary" onclick="searchPlaces()">검색</button>
                 </div>
                 
-                <!-- 💡 검색 결과 리스트 및 페이징 -->
+                <!-- 검색 결과 리스트 및 페이징 (선택 시 자동 숨김) -->
                 <ul id="placesList"></ul>
                 <div id="pagination"></div>
 
@@ -141,7 +141,6 @@
             <div>
                 <div class="section-title">차량 현황</div>
                 <div class="center-grid-wrapper">
-                    <!-- 아코디언 내용 생략 없이 모두 유지 -->
                     <details class="center-group" open><summary>현장대응단</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">지휘차</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">조사차</div></div></details>
                     <details class="center-group"><summary>이도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">조연</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">소형사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">고가사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">특별구급</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">음압구급</div></div></details>
                     <details class="center-group"><summary>삼도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">구급</div></div></details>
@@ -178,41 +177,33 @@
         var mapContainer = document.getElementById('map'); 
         var mapOption = { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 };
         var map = new kakao.maps.Map(mapContainer, mapOption);
-        var searchAreaCircle = null;
         
         var ps = new kakao.maps.services.Places(); 
         var geocoder = new kakao.maps.services.Geocoder();
 
-        // 💡 1. 키워드 검색 함수 (리스트 표출)
         function searchPlaces() {
             var keyword = document.getElementById('keyword').value;
             if (!keyword.trim()) return alert('검색어를 입력해주세요!');
             
-            // 제주도 우선 검색
             var searchKeyword = keyword.includes('제주') ? keyword : '제주 ' + keyword;
-
-            // 장소 검색 객체를 통해 키워드로 장소검색을 요청합니다
             ps.keywordSearch(searchKeyword, placesSearchCB); 
         }
 
-        // 💡 2. 장소검색이 완료됐을 때 호출되는 콜백함수
         function placesSearchCB(data, status, pagination) {
             if (status === kakao.maps.services.Status.OK) {
-                // 정상적으로 검색이 완료됐으면 리스트와 마커를 표출합니다
                 displayPlaces(data);
                 displayPagination(pagination);
             } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                // 장소 검색이 안 되면 주소 검색으로 전환 시도
                 var keyword = document.getElementById('keyword').value;
                 var searchKeyword = keyword.includes('제주') ? keyword : '제주 ' + keyword;
                 
                 geocoder.addressSearch(searchKeyword, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
-                        // 주소 검색 성공 시 해당 좌표로 바로 이동 (리스트 없이)
                         var targetPosition = new kakao.maps.LatLng(result[0].y, result[0].x);
                         map.setCenter(targetPosition);
                         map.setLevel(3);
-                        drawSearchArea(targetPosition);
+                        
+                        // 💡 주소 검색 성공 시 리스트 숨김
                         document.getElementById('placesList').style.display = 'none';
                         document.getElementById('pagination').style.display = 'none';
                     } else {
@@ -224,12 +215,9 @@
             }
         }
 
-        // 💡 3. 검색 결과 목록을 생성하는 함수
         function displayPlaces(places) {
             var listEl = document.getElementById('placesList');
             var fragment = document.createDocumentFragment();
-            
-            // 검색 결과 목록 비우기
             listEl.innerHTML = '';
             
             for (var i = 0; i < places.length; i++) {
@@ -237,13 +225,16 @@
                 el.innerHTML = '<div class="place-name">' + places[i].place_name + '</div>' +
                                '<div class="place-address">' + (places[i].road_address_name ? places[i].road_address_name : places[i].address_name) + '</div>';
                 
-                // 리스트 아이템 클릭 시 해당 위치로 지도 이동
+                // 💡 리스트 아이템 클릭 시 지도 이동 + 리스트/페이징 자동 숨김 (스크롤 복구)
                 (function(y, x) {
                     el.onclick = function() {
                         var targetPosition = new kakao.maps.LatLng(y, x);
                         map.setCenter(targetPosition);
-                        map.setLevel(3); // 강제 줌인
-                        drawSearchArea(targetPosition); // 타겟팅 원 그리기
+                        map.setLevel(3); 
+
+                        // 선택 후 리스트 닫기
+                        document.getElementById('placesList').style.display = 'none';
+                        document.getElementById('pagination').style.display = 'none';
                     };
                 })(places[i].y, places[i].x);
 
@@ -253,12 +244,10 @@
             listEl.style.display = 'block';
         }
 
-        // 💡 4. 검색결과 목록 하단에 페이지 번호를 표출하는 함수
         function displayPagination(pagination) {
             var paginationEl = document.getElementById('pagination');
             var fragment = document.createDocumentFragment();
-            
-            paginationEl.innerHTML = ''; // 기존 페이지 번호 삭제
+            paginationEl.innerHTML = ''; 
             
             for (var i = 1; i <= pagination.last; i++) {
                 var el = document.createElement('a');
@@ -280,13 +269,7 @@
             paginationEl.style.display = 'flex';
         }
 
-        function drawSearchArea(position) {
-            if (searchAreaCircle) searchAreaCircle.setMap(null);
-            searchAreaCircle = new kakao.maps.Circle({ center: position, radius: 200, strokeWeight: 3, strokeColor: '#DC2626', strokeOpacity: 0.8, strokeStyle: 'dashed', fillColor: '#EF4444', fillOpacity: 0.1 });
-            searchAreaCircle.setMap(map);
-        }
-
-        // 드로잉 매니저 및 드래그 앤 드롭 기능 (동일)
+        // 드로잉 및 드래그 앤 드롭 기능 (동일)
         var options = { map: map, drawingMode: [kakao.maps.drawing.OverlayType.POLYLINE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE], guideTooltip: ['draw', 'edit', 'mac'], polylineOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 5, strokeOpacity: 0.9 }, polygonOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 }, circleOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 } };
         var manager = new kakao.maps.drawing.DrawingManager(options);
         function startDrawing(type) { var color = document.getElementById('toolColor').value; manager.setStyle(kakao.maps.drawing.OverlayType[type], 'strokeColor', color); if(type === 'POLYGON' || type === 'CIRCLE') manager.setStyle(kakao.maps.drawing.OverlayType[type], 'fillColor', color); manager.cancel(); manager.select(kakao.maps.drawing.OverlayType[type]); }
@@ -320,7 +303,7 @@
             element.addEventListener('wheel', function(e) { e.preventDefault(); e.stopPropagation(); if (e.shiftKey) currentRotation += (e.deltaY < 0) ? 15 : -15; else if (e.ctrlKey) { scaleX += (e.deltaY < 0) ? 0.1 : -0.1; if(scaleX < 0.3) scaleX = 0.3; } else if (e.altKey) { scaleY += (e.deltaY < 0) ? 0.1 : -0.1; if(scaleY < 0.3) scaleY = 0.3; } else { let change = (e.deltaY < 0) ? 0.1 : -0.1; scaleX += change; scaleY += change; if(scaleX < 0.3) scaleX = 0.3; if(scaleY < 0.3) scaleY = 0.3; } if(element.classList.contains('deployed-vehicle')) { element.style.transform = `rotate(${currentRotation}deg) scale(${scaleX})`; } else { element.style.transform = `rotate(${currentRotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`; } });
             element.addEventListener('dblclick', function() { if(confirm((name.includes('화살표') ? '화살표를' : name) + ' 삭제하시겠습니까?')) { overlay.setMap(null); if(outrigger) outrigger.setMap(null); deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger); } });
         }
-        function resetAll() { if(!confirm("전체 초기화하시겠습니까?")) return; deployedObjects.forEach(ov => ov.setMap(null)); deployedObjects = []; manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); if(searchAreaCircle) searchAreaCircle.setMap(null); document.getElementById('placesList').style.display = 'none'; document.getElementById('pagination').style.display = 'none'; }
+        function resetAll() { if(!confirm("전체 초기화하시겠습니까?")) return; deployedObjects.forEach(ov => ov.setMap(null)); deployedObjects = []; manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); document.getElementById('placesList').style.display = 'none'; document.getElementById('pagination').style.display = 'none'; }
         function clearMeasure() { manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); }
     </script>
 </body>
