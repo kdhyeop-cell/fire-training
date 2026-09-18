@@ -58,6 +58,7 @@
         <h1>🚒 제주소방서 도상 훈련 전술 배치도</h1>
     </div>
 
+    <!-- 수정된 상단 툴바 영역 -->
     <div class="toolbar">
         <div class="tool-group">
             <span class="tool-group-title">차량 부서</span>
@@ -71,15 +72,10 @@
         <div class="divider"></div>
         
         <div class="tool-group">
-            <span class="tool-group-title">진입 방향</span>
-            <div class="vehicle arrow" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 화살표</div>
-        </div>
-        
-        <div class="divider"></div>
-
-        <div class="tool-group">
             <span class="tool-group-title">전술 도구</span>
+            <!-- 수관 연장과 진입 화살표를 한 그룹으로 묶음 -->
             <button onclick="startDrawingLine()" class="tool-btn">〰️ 수관 연장 (그리기/수정 모드)</button>
+            <div class="vehicle arrow" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 화살표</div>
         </div>
     </div>
 
@@ -170,10 +166,8 @@
             var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(x, y));
             var content = document.createElement('div');
             
-            // 🔥 진입 화살표를 '배경 없는 순수 빨간색 선' SVG로 교체
             if(itemType === 'arrow') {
                 content.className = 'deployed-arrow';
-                // 빨간색 선으로 직접 그린 화살표 이미지(SVG)
                 content.innerHTML = '<svg width="50" height="80" viewBox="0 0 50 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="#d32f2f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             } else {
                 content.className = 'deployed-vehicle';
@@ -234,7 +228,6 @@
             });
 
             element.addEventListener('dblclick', function() {
-                // 화살표일 경우 삭제 안내 멘트 변경
                 let msgName = name.includes('진입 화살표') ? '화살표를' : name;
                 if(confirm(msgName + ' 삭제하시겠습니까?')) { overlay.setMap(null); if(outrigger) outrigger.setMap(null); }
             });
