@@ -3,34 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 훈련 관리 대시보드</title>
+    <title>제주소방서 전술 배치도 프로토타입</title>
+    
+    <!-- 회원님의 카카오맵 API 키가 적용된 부분입니다 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067"></script>
+    
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
         .header { background-color: #d32f2f; color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn { display: inline-block; padding: 10px 20px; background-color: #1976d2; color: white; text-decoration: none; border-radius: 5px; text-align: center; }
+        .container { display: flex; gap: 20px; height: 600px; }
+        
+        /* 왼쪽: 소방차량 팔레트 (드래그 할 아이콘들) */
+        .palette { width: 200px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .vehicle { background: #ffebee; border: 1px solid #d32f2f; padding: 10px; margin-bottom: 10px; text-align: center; cursor: grab; border-radius: 5px; font-weight: bold; }
+        .vehicle:active { cursor: grabbing; }
+        
+        /* 오른쪽: 카카오 지도 영역 */
+        .map-container { flex-grow: 1; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #map { width: 100%; height: 100%; }
+        
+        /* 지도 위에 배치된 차량 아이콘 스타일 */
+        .deployed-vehicle { position: absolute; background: #d32f2f; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; transform: translate(-50%, -50%); cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>🚒 제주소방서 현장대응단 훈련 관리 시스템 (Prototype)</h1>
+        <h1>🚒 도상 훈련 전술 배치도 (차량을 지도 위로 드래그하세요)</h1>
     </div>
 
-    <div class="grid-container">
-        <div class="card">
-            <h2>📊 금일 훈련 현황</h2>
-            <p>오늘 예정된 훈련: <strong>노형119센터 (다중이용업소)</strong></p>
-            <p>훈련 진행 상태: <span style="color: red;">평가 대기중</span></p>
+    <div class="container">
+        <!-- 차량 팔레트 영역 -->
+        <div class="palette">
+            <h3>소방 차량</h3>
+            <!-- draggable="true" 속성으로 드래그 가능하게 설정 -->
+            <div class="vehicle" draggable="true" ondragstart="drag(event)" id="v1">🚒 펌프차</div>
+            <div class="vehicle" draggable="true" ondragstart="drag(event)" id="v2">💧 물탱크차</div>
+            <div class="vehicle" draggable="true" ondragstart="drag(event)" id="v3">🪜 고가사다리차</div>
+            <div class="vehicle" draggable="true" ondragstart="drag(event)" id="v4">🚑 구급차</div>
+            <div class="vehicle" draggable="true" ondragstart="drag(event)" id="v5">👨‍🚒 지휘차</div>
+            <p style="font-size: 12px; color: gray; margin-top: 20px;">* 차량을 클릭한 채로 지도 위 원하는 위치에 놓으세요.<br>* 배치된 차량을 누르면 삭제됩니다.</p>
         </div>
-        <div class="card">
-            <h2>📱 평가 메뉴</h2>
-            <p>현장에서 모바일로 즉시 평가를 진행하세요.</p>
-            <a href="#" class="btn">현장지휘팀장 평가하기</a>
-            <a href="#" class="btn">안전점검관 평가하기</a>
+
+        <!-- 카카오 지도 영역 (여기로 드래그 앤 드롭) -->
+        <div class="map-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div id="map"></div>
         </div>
     </div>
 
+    <script>
+        // 1. 카카오 지도 생성 (제주소방서 인근 중심)
+        var mapContainer = document.getElementById('map'); 
+        var mapOption = { 
+            center: new kakao.maps.LatLng(33.4893, 126.5209), // 제주 좌표
+            level: 3 // 확대 레벨
+        };
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 2. 드래그 앤 드롭 로직
+        function allowDrop(ev) {
+            ev.preventDefault(); 
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.innerText); 
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var vehicleName = ev.dataTransfer.getData("text");
+            
+            // 드롭한 위치 계산
+            var mapContainerRect = document.querySelector('.map-container').getBoundingClientRect();
+            var x = ev.clientX - mapContainerRect.left;
+            var y = ev.clientY - mapContainerRect.top;
+
+            // 지도 위에 차량 요소 생성 및 배치
+            var el = document.createElement('div');
+            el.className = 'deployed-vehicle';
+            el.innerText = vehicleName;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            
+            // 클릭 시 삭제 기능 추가
+            el.onclick = function() {
+                if(confirm(vehicleName + ' 배치를 취소하시겠습니까?')) {
+                    this.remove();
+                }
+            };
+
+            document.querySelector('.map-container').appendChild(el);
+        }
+    </script>
 </body>
 </html>
