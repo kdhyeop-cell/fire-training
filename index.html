@@ -26,12 +26,18 @@
         input[type="text"] { flex-grow: 1; padding: 10px 12px; font-size: 13px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; color: #1E293B; outline: none; }
         input[type="text"]:focus { border-color: #EF4444; background: #FFF; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
         
-        button { padding: 10px 16px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        button { padding: 10px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 4px; }
         button:active { transform: scale(0.98); }
-        .btn-primary { background: #1E293B; color: white; }
+        .btn-primary { background: #1E293B; color: white; font-size: 13px; }
         .btn-primary:hover { background: #0F172A; }
-        .kakaomap-btn { width: 100%; background: #FDE047; color: #854D0E; margin-top: 4px; }
+
+        /* 지도 링크 버튼 한줄 반반 구성 */
+        .map-btns-wrapper { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
+        .map-link-btn { flex: 1; }
+        .kakaomap-btn { background: #FDE047; color: #854D0E; }
         .kakaomap-btn:hover { background: #FACC15; }
+        .navermap-btn { background: #03C75A; color: white; }
+        .navermap-btn:hover { background: #02b350; }
 
         #placesList { list-style: none; padding: 0; margin: 8px 0 0 0; max-height: 220px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; display: none; background: white; }
         #placesList li { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
@@ -40,7 +46,7 @@
         .place-address { font-size: 11px; color: #64748B; }
 
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; }
+        .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 13px; }
         .tool-btn:hover { background: #E0F2FE; }
         .clear-btn { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; grid-column: span 2; }
         .clear-btn:hover { background: #FEE2E2; }
@@ -49,7 +55,7 @@
         .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 10px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: grab; margin-top: 10px; }
         .arrow-dragger:hover { background: #DCFCE7; }
 
-        .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; }
+        .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; font-size: 13px; }
         .reset-btn:hover { background: #DC2626; color: white; }
 
         .center-grid-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -91,7 +97,12 @@
                     <button class="btn-primary" onclick="searchPlaces()">검색</button>
                 </div>
                 <ul id="placesList"></ul>
-                <button class="kakaomap-btn" onclick="window.open('https://map.kakao.com/', '_blank')">🗺️ 카카오맵 열기</button>
+                
+                <!-- 카카오맵 & 네이버지도 버튼 반반 한줄 구성 -->
+                <div class="map-btns-wrapper">
+                    <button class="map-link-btn kakaomap-btn" onclick="window.open('https://map.kakao.com/', '_blank')">🗺️ 카카오맵</button>
+                    <button class="map-link-btn navermap-btn" onclick="window.open('https://map.naver.com/', '_blank')">🧭 네이버지도</button>
+                </div>
             </div>
 
             <div>
