@@ -1,31 +1,55 @@
-// 💡 [최종 수정됨] 장소 검색 시 최상단 결과로 "강제 줌인(Zoom-in)" 하는 로직
+// 검색된 구역을 표시할 원(Circle) 객체를 저장할 변수
+        var searchAreaCircle = null;
+
         function searchPlaces() {
             var rawKeyword = document.getElementById('keyword').value;
             if (!rawKeyword.trim()) return alert('검색어를 입력해주세요!');
             
-            // 제주도 우선 검색어 조합
             var searchKeyword = rawKeyword.includes('제주') ? rawKeyword : '제주 ' + rawKeyword;
             document.getElementById('road-info-card').classList.add('hidden');
 
             ps.keywordSearch(searchKeyword, function(data, status) {
                 if (status === kakao.maps.services.Status.OK) {
-                    // 💡 [변경] Bounds(영역 넓히기) 기능을 삭제하고, 무조건 첫 번째 결과로 중심 이동 후 레벨 3으로 강제 줌인!
-                    var firstResultPosition = new kakao.maps.LatLng(data[0].y, data[0].x);
-                    map.setCenter(firstResultPosition);
-                    map.setLevel(3); // 1~14 중 3(확대) 레벨 고정
+                    var targetPosition = new kakao.maps.LatLng(data[0].y, data[0].x);
+                    map.setCenter(targetPosition);
+                    map.setLevel(3);
                     
                     checkRoadWidth(rawKeyword, data[0].address_name);
+                    drawSearchArea(targetPosition); // 💡 구역 표시 함수 호출
                 } else {
                     geocoder.addressSearch(searchKeyword, function(result, status) {
                         if (status === kakao.maps.services.Status.OK) {
-                            var addressPosition = new kakao.maps.LatLng(result[0].y, result[0].x);
-                            map.setCenter(addressPosition); 
-                            map.setLevel(3); // 주소 검색 시에도 3 레벨 고정
+                            var targetPosition = new kakao.maps.LatLng(result[0].y, result[0].x);
+                            map.setCenter(targetPosition); 
+                            map.setLevel(3); 
                             checkRoadWidth(rawKeyword, result[0].address_name);
+                            drawSearchArea(targetPosition); // 💡 구역 표시 함수 호출
                         } else {
                             alert('제주도 내에서 "' + rawKeyword + '" 검색 결과를 찾을 수 없습니다.');
                         }
                     });
                 }
             });
+        }
+
+        // 💡 검색한 지점 주변에 반경 200m 구역(원)을 시각적으로 표시하는 함수
+        function drawSearchArea(position) {
+            // 기존에 그려진 검색 구역이 있다면 지우기
+            if (searchAreaCircle) {
+                searchAreaCircle.setMap(null);
+            }
+            
+            // 새로운 타겟 구역(점선 붉은 원) 생성
+            searchAreaCircle = new kakao.maps.Circle({
+                center: position,
+                radius: 200, // 200m 반경 (훈련 집중 대상 구역)
+                strokeWeight: 3,
+                strokeColor: '#DC2626', // 붉은색
+                strokeOpacity: 0.8,
+                strokeStyle: 'dashed', // 점선
+                fillColor: '#EF4444',
+                fillOpacity: 0.1 // 옅은 붉은색 채우기
+            });
+            
+            searchAreaCircle.setMap(map);
         }
