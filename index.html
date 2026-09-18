@@ -16,14 +16,14 @@
 
         .sidebar { width: 380px; background: #FFFFFF; display: flex; flex-direction: column; z-index: 10; border-right: 1px solid #E2E8F0; flex-shrink: 0; }
         
-        /* 제목 박스 스타일 (Flexbox 적용으로 우측에 버튼 배치) */
+        /* 브랜드 타이틀 박스 */
         .brand { background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); color: white; padding: 15px; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-        .guide-toggle-btn { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .guide-toggle-btn { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .guide-toggle-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-        /* 접이식 가이드 패널 */
-        .sidebar-guide-box { background: #FFFBEB; border-bottom: 1px solid #FDE68A; padding: 10px 15px; font-size: 11px; color: #78350F; line-height: 1.5; display: none; }
-        .sidebar-guide-box div { margin-bottom: 4px; }
+        /* 가독성을 높인 조작 가이드 패널 (글자 크기 확대) */
+        .sidebar-guide-box { background: #FFFBEB; border-bottom: 1px solid #FDE68A; padding: 14px 16px; font-size: 13px; color: #78350F; line-height: 1.6; display: none; }
+        .sidebar-guide-box div { margin-bottom: 6px; }
         .sidebar-guide-box div:last-child { margin-bottom: 0; }
         .sidebar-guide-box strong { color: #DC2626; }
 
@@ -117,7 +117,7 @@
             <span>제주소방서 전술 배치도</span>
             <button class="guide-toggle-btn" onclick="toggleGuide()">📖 조작 가이드</button>
         </div>
-        <!-- 접이식 가이드 박스 -->
+        <!-- 접이식 가이드 박스 (글자 크기 확대) -->
         <div id="sidebarGuide" class="sidebar-guide-box">
             <div>📍 <strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</div>
             <div>🔄 <strong>회전(Shift+휠):</strong> 5도 단위 정밀 조절</div>
@@ -148,7 +148,7 @@
 
             <div>
                 <div class="section-title">
-                    <span>전술 / 측정 도구</span>
+                    <span>전술 도구</span>
                     <div class="title-right"><input type="color" id="toolColor" class="color-picker" value="#0284C7" title="도구 색상"></div>
                 </div>
                 <div class="tool-grid">
