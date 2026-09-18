@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (차량 배치 완벽 수정본)</title>
+    <title>제주소방서 전술 배치도 (최종 완성본)</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -132,7 +132,7 @@
                 <div class="arrow-dragger" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향 화살표 (드래그)</div>
             </div>
 
-            <!-- 3. 차량 현황 (모든 센터 open 기본 적용) -->
+            <!-- 3. 차량 현황 -->
             <div>
                 <div class="section-title">차량 현황</div>
                 <div class="center-grid-wrapper">
@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- 우측 지도 영역 (이벤트 전파 완벽 보장) -->
+    <!-- 우측 지도 영역 -->
     <div class="map-area" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="map" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
         
@@ -302,8 +302,6 @@
             if(!itemName) return;
             
             var fullName = itemCenter ? "[" + itemCenter + "] " + itemName : itemName;
-            
-            // 지도 영역 기준 좌표 계산 보정
             var mapRect = mapContainer.getBoundingClientRect();
             var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - mapRect.left, ev.clientY - mapRect.top));
             
@@ -358,6 +356,7 @@
                 } 
             });
 
+            // 💡 [핵심 수정] { passive: false } 옵션을 추가하여 회전 및 크기 조절 휠 이벤트가 정상 작동하도록 보장
             element.addEventListener('wheel', function(e) { 
                 e.preventDefault(); 
                 e.stopPropagation(); 
@@ -383,7 +382,7 @@
                 } else { 
                     element.style.transform = `rotate(${currentRotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`; 
                 } 
-            });
+            }, { passive: false });
 
             element.addEventListener('dblclick', function(e) { 
                 e.stopPropagation();
