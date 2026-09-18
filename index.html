@@ -72,6 +72,12 @@
         .map-area { flex-grow: 1; position: relative; display: flex; }
         #map { width: 100%; height: 100%; }
         
+        /* 우측 분할 로드뷰 패널 */
+        .roadview-panel { position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: #000; z-index: 20; display: none; border-left: 2px solid #E2E8F0; box-shadow: -4px 0 24px rgba(0,0,0,0.15); }
+        #roadview { width: 100%; height: 100%; }
+        .close-roadview-btn { position: absolute; top: 16px; right: 16px; z-index: 25; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; }
+        .close-roadview-btn:hover { background: #DC2626; }
+
         /* 지도 왼쪽 아래 지도 타입 및 로드뷰 컨트롤 버튼 영역 */
         .map-type-control { position: absolute; bottom: 24px; left: 24px; display: flex; gap: 6px; z-index: 10; }
         .map-type-btn { background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
@@ -147,6 +153,12 @@
     <div class="map-area" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="map"></div>
         
+        <!-- 우측 분할 로드뷰 패널 -->
+        <div id="roadviewPanel" class="roadview-panel">
+            <div id="roadview"></div>
+            <button class="close-roadview-btn" onclick="closeRoadview()">✕ 로드뷰 닫기</button>
+        </div>
+
         <!-- 지도 왼쪽 아래 일반지도, 스카이뷰, 로드뷰 전환 버튼 -->
         <div class="map-type-control">
             <button id="btnNormal" class="map-type-btn active" onclick="setMapType('normal')">일반지도</button>
@@ -166,6 +178,12 @@
 <script>
     var map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 });
     var ps = new kakao.maps.services.Places();
+
+    // 로드뷰 객체 및 클라이언트 초기화
+    var roadviewContainer = document.getElementById('roadview');
+    var roadview = new kakao.maps.Roadview(roadviewContainer);
+    var roadviewClient = new kakao.maps.RoadviewClient();
+    var isRoadviewActive = false;
 
     function searchPlaces() {
         var keyword = document.getElementById('keyword').value;
@@ -196,7 +214,6 @@
     }
 
     // 지도 타입 및 로드뷰 오버레이 토글 함수
-    var roadviewOverlayOn = false;
     function setMapType(type) {
         var btnNormal = document.getElementById('btnNormal');
         var btnSkyview = document.getElementById('btnSkyview');
@@ -211,15 +228,38 @@
             btnSkyview.classList.add('active');
             btnNormal.classList.remove('active');
         } else if (type === 'roadview') {
-            roadviewOverlayOn = !roadviewOverlayOn;
-            if (roadviewOverlayOn) {
+            isRoadviewActive = !isRoadviewActive;
+            if (isRoadviewActive) {
                 map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
                 btnRoadview.classList.add('active');
             } else {
                 map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
                 btnRoadview.classList.remove('active');
+                closeRoadview();
             }
         }
+    }
+
+    // 지도 클릭 시 로드뷰 연동 이벤트
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+        if (!isRoadviewActive) return;
+        var latlng = mouseEvent.latLng;
+
+        roadviewClient.getNearestPanoId(latlng, 50, function(panoId) {
+            if (panoId) {
+                document.getElementById('roadviewPanel').style.display = 'block';
+                map.relayout(); // 지도 크기 변경에 따른 레이아웃 재배치
+                roadview.setPanoId(panoId, latlng);
+                roadview.relayout();
+            } else {
+                alert('해당 위치 근처에 로드뷰가 없습니다. 파란색 도로 위를 클릭해 주세요.');
+            }
+        });
+    });
+
+    function closeRoadview() {
+        document.getElementById('roadviewPanel').style.display = 'none';
+        map.relayout();
     }
 
     var manager = new kakao.maps.drawing.DrawingManager({
