@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (최종 완결판)</title>
+    <title>제주소방서 전술 배치도 (색상 선택 기능 추가)</title>
     <!-- 검색(services) 및 그리기(drawing) 라이브러리 동시 추가 -->
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
@@ -31,11 +31,14 @@
         .tool-btn:hover { background: #bbdefb; }
         .tool-btn.active { background: #1976d2; color: white; }
 
+        /* 색상 선택기 스타일 */
+        .color-picker { width: 30px; height: 30px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; background: white; }
+
         .search-box { display: flex; gap: 10px; margin-bottom: 10px; flex-shrink: 0; }
         .search-box input { flex-grow: 1; padding: 8px 12px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
         .search-box button { padding: 8px 20px; font-size: 14px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
-        /* 3. 지도 영역 (남은 세로 공간을 모두 차지하도록 자동 확장) */
+        /* 3. 지도 영역 (남은 세로 공간 자동 확장) */
         .map-container { flex-grow: 1; min-height: 0; width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #map { width: 100%; height: 100%; }
         
@@ -47,9 +50,8 @@
         /* 지도 위 아이콘 디자인 */
         .deployed-vehicle { background: #d32f2f; color: white; padding: 5px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5); cursor: move; transform-origin: center; user-select: none; }
         
-        /* 새로 만든 빨간색 선 화살표 (배경 없음) */
         .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; }
-        .deployed-arrow svg { pointer-events: none; } /* 마우스 이벤트 충돌 방지 */
+        .deployed-arrow svg { pointer-events: none; } 
     </style>
 </head>
 <body>
@@ -58,7 +60,7 @@
         <h1>🚒 제주소방서 도상 훈련 전술 배치도</h1>
     </div>
 
-    <!-- 수정된 상단 툴바 영역 -->
+    <!-- 수정된 상단 툴바 영역 (색상 선택기 추가) -->
     <div class="toolbar">
         <div class="tool-group">
             <span class="tool-group-title">차량 부서</span>
@@ -73,8 +75,10 @@
         
         <div class="tool-group">
             <span class="tool-group-title">전술 도구</span>
-            <!-- 수관 연장과 진입 화살표를 한 그룹으로 묶음 -->
-            <button onclick="startDrawingLine()" class="tool-btn">〰️ 수관 연장 (그리기/수정 모드)</button>
+            <!-- 🎨 색상 선택기 추가 -->
+            <input type="color" id="toolColor" class="color-picker" value="#d32f2f" title="도구 색상 선택">
+            
+            <button onclick="startDrawingLine()" class="tool-btn">〰️ 수관 연장 (그리기/수정)</button>
             <div class="vehicle arrow" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 화살표</div>
         </div>
     </div>
@@ -95,12 +99,12 @@
             🔍 <strong>비율 확대/축소:</strong> 아이콘 위에서 <strong>마우스 휠</strong>
         </div>
         <div class="guide-item">
-            ↔️ <strong>좌우 폭 조절:</strong> 아이콘 위에서 <strong style="color: #1976d2;">Ctrl + 휠</strong><br>
-            ↕️ <strong>상하 길이 조절:</strong> 아이콘 위에서 <strong style="color: #1976d2;">Alt + 휠</strong>
+            ↔️ <strong>좌우 폭 조절:</strong> 화살표 위에서 <strong style="color: #1976d2;">Ctrl + 휠</strong><br>
+            ↕️ <strong>상하 길이 조절:</strong> 화살표 위에서 <strong style="color: #1976d2;">Alt + 휠</strong>
         </div>
         <div class="guide-item">
-            〰️ <strong>수관 조작:</strong> 선을 다 그린 후(더블클릭) <strong>마우스로 선을 클릭</strong>하세요.<br>
-            각도를 수정할 수 있는 <strong style="color: #2e7d32;">조절점</strong>이 생깁니다. (삭제: 선택 후 Delete키)
+            🎨 <strong>색상 선택:</strong> 도구 옆 색상표를 눌러 화살표/수관 색상을 바꿀 수 있습니다.<br>
+            〰️ <strong>수관 조작:</strong> 선을 다 그린 후(더블클릭) 클릭하면 <strong>조절점</strong>이 생깁니다.
         </div>
     </div>
 </div>
@@ -141,7 +145,11 @@
         };
         var manager = new kakao.maps.drawing.DrawingManager(options);
 
+        // 💡 수관 그리기 시작 시, 현재 선택된 색상을 반영
         function startDrawingLine() {
+            var selectedColor = document.getElementById('toolColor').value;
+            manager.setStyle(kakao.maps.drawing.OverlayType.POLYLINE, 'strokeColor', selectedColor);
+            
             manager.cancel();
             manager.select(kakao.maps.drawing.OverlayType.POLYLINE);
             alert("지도에 클릭하여 수관을 그리고, 다 그렸으면 '더블클릭' 하세요.\n수정하려면 그려진 선을 마우스로 클릭하면 조절점이 나옵니다.");
@@ -166,9 +174,11 @@
             var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(x, y));
             var content = document.createElement('div');
             
+            // 💡 화살표 드롭 시, 현재 선택된 색상을 SVG에 반영
             if(itemType === 'arrow') {
+                var selectedColor = document.getElementById('toolColor').value;
                 content.className = 'deployed-arrow';
-                content.innerHTML = '<svg width="50" height="80" viewBox="0 0 50 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="#d32f2f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                content.innerHTML = '<svg width="50" height="80" viewBox="0 0 50 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="' + selectedColor + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
             } else {
                 content.className = 'deployed-vehicle';
                 content.innerText = itemName;
