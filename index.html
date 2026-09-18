@@ -31,12 +31,19 @@
         .btn-primary { background: #1E293B; color: white; font-size: 13px; }
         .btn-primary:hover { background: #0F172A; }
 
+        /* 지도 링크 버튼 한줄 반반 구성 */
         .map-btns-wrapper { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
         .map-link-btn { flex: 1; }
         .kakaomap-btn { background: #FDE047; color: #854D0E; }
         .kakaomap-btn:hover { background: #FACC15; }
         .navermap-btn { background: #03C75A; color: white; }
         .navermap-btn:hover { background: #02b350; }
+
+        /* 지도 타입 및 로드뷰 버튼 한줄 3등분 구성 */
+        .map-type-btns-wrapper { display: flex; gap: 6px; margin-top: 6px; width: 100%; }
+        .map-type-btn { flex: 1; background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .map-type-btn:hover { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
+        .map-type-btn.active { background: #1E293B; border-color: #1E293B; color: #FFFFFF; }
 
         #placesList { list-style: none; padding: 0; margin: 8px 0 0 0; max-height: 220px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; display: none; background: white; }
         #placesList li { padding: 10px 12px; border-bottom: 1px solid #F1F5F9; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
@@ -78,12 +85,6 @@
         .close-roadview-btn { position: absolute; top: 16px; right: 16px; z-index: 25; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; }
         .close-roadview-btn:hover { background: #DC2626; }
 
-        /* 지도 왼쪽 아래 지도 타입 및 로드뷰 컨트롤 버튼 영역 */
-        .map-type-control { position: absolute; bottom: 24px; left: 24px; display: flex; gap: 6px; z-index: 10; }
-        .map-type-btn { background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
-        .map-type-btn:hover { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
-        .map-type-btn.active { background: #1E293B; border-color: #1E293B; color: #FFFFFF; box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
-
         .guide-overlay { position: absolute; bottom: 24px; right: 24px; background: rgba(255, 255, 255, 0.9); padding: 16px 20px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.4); z-index: 10; pointer-events: none; }
         .guide-item { font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .guide-item:last-child { margin-bottom: 0; }
@@ -109,9 +110,17 @@
                 </div>
                 <ul id="placesList"></ul>
                 
+                <!-- 카카오맵 & 네이버지도 버튼 -->
                 <div class="map-btns-wrapper">
                     <button class="map-link-btn kakaomap-btn" onclick="window.open('https://map.kakao.com/', '_blank')">🗺️ 카카오맵</button>
                     <button class="map-link-btn navermap-btn" onclick="window.open('https://map.naver.com/', '_blank')">🧭 네이버지도</button>
+                </div>
+
+                <!-- 일반지도, 스카이뷰, 로드뷰 버튼 (카카오맵/네이버 바로 아래 한 줄 3등분) -->
+                <div class="map-type-btns-wrapper">
+                    <button id="btnNormal" class="map-type-btn active" onclick="setMapType('normal')">일반지도</button>
+                    <button id="btnSkyview" class="map-type-btn" onclick="setMapType('skyview')">스카이뷰</button>
+                    <button id="btnRoadview" class="map-type-btn" onclick="setMapType('roadview')">로드뷰</button>
                 </div>
             </div>
 
@@ -157,13 +166,6 @@
         <div id="roadviewPanel" class="roadview-panel">
             <div id="roadview"></div>
             <button class="close-roadview-btn" onclick="closeRoadview()">✕ 로드뷰 닫기</button>
-        </div>
-
-        <!-- 지도 왼쪽 아래 일반지도, 스카이뷰, 로드뷰 전환 버튼 -->
-        <div class="map-type-control">
-            <button id="btnNormal" class="map-type-btn active" onclick="setMapType('normal')">일반지도</button>
-            <button id="btnSkyview" class="map-type-btn" onclick="setMapType('skyview')">스카이뷰</button>
-            <button id="btnRoadview" class="map-type-btn" onclick="setMapType('roadview')">로드뷰</button>
         </div>
 
         <div class="guide-overlay">
@@ -223,10 +225,18 @@
             map.setMapTypeId(kakao.maps.MapTypeId.NORMAL);
             btnNormal.classList.add('active');
             btnSkyview.classList.remove('active');
+            btnRoadview.classList.remove('active');
+            isRoadviewActive = false;
+            map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+            closeRoadview();
         } else if (type === 'skyview') {
             map.setMapTypeId(kakao.maps.MapTypeId.SKYVIEW);
             btnSkyview.classList.add('active');
             btnNormal.classList.remove('active');
+            btnRoadview.classList.remove('active');
+            isRoadviewActive = false;
+            map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+            closeRoadview();
         } else if (type === 'roadview') {
             isRoadviewActive = !isRoadviewActive;
             if (isRoadviewActive) {
@@ -235,6 +245,7 @@
             } else {
                 map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
                 btnRoadview.classList.remove('active');
+                closeRoadview();
             }
         }
     }
@@ -361,7 +372,6 @@
         element.addEventListener('wheel', function(e) {
             e.preventDefault(); e.stopPropagation();
             if (e.shiftKey) {
-                // 회전 단위를 15도에서 5도로 촘촘하게 수정
                 rotation += (e.deltaY < 0 ? 5 : -5);
             } else if (e.ctrlKey) {
                 scaleX = Math.max(0.3, scaleX + (e.deltaY < 0 ? 0.1 : -0.1));
