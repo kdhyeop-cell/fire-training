@@ -93,8 +93,8 @@
         .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
         .deployed-arrow svg { pointer-events: none; } 
         
-        .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
-        .deployed-hydrant svg { pointer-events: none; }
+        .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); background: white; border-radius: 50%; padding: 4px; border: 2px solid #DC2626; }
+        .deployed-hydrant img { pointer-events: none; display: block; }
 
         .distanceInfo { background: rgba(15, 23, 42, 0.9); color: #F8FAFC; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
@@ -330,7 +330,8 @@
             fullName = '진입 방향 화살표';
         } else if (itemType === 'hydrant') {
             content.className = 'deployed-hydrant';
-            content.innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2V5" stroke="#991B1B" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="4" r="2" fill="#FBBF24"/><rect x="8" y="7" width="8" height="11" rx="2.5" fill="#EF4444" stroke="#991B1B" stroke-width="1.5"/><path d="M5 11H8" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round"/><circle cx="4.5" cy="11" r="1.5" fill="#FBBF24"/><path d="M16 11H19" stroke="#991B1B" stroke-width="1.5" stroke-linecap="round"/><circle cx="19.5" cy="11" r="1.5" fill="#FBBF24"/><rect x="9.5" y="14" width="5" height="4" fill="#334155"/></svg>`;
+            // 깃허브에 업로드한 이미지 파일명 (hydrant.png) 연동
+            content.innerHTML = `<img src="hydrant.png" width="40" height="40" alt="소화전" />`;
             fullName = '소화전';
         } else {
             content.className = 'deployed-vehicle';
