@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>제주소방서 전술 배치도</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
+    <!-- 화면 캡처용 html2canvas 라이브러리 연동 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
         * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; }
@@ -56,10 +58,18 @@
         .clear-btn:hover { background: #FEE2E2; }
         
         .color-picker { width: 36px; height: 28px; padding: 0; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; background: white; }
-        .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: grab; }
+        .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 8px; text-align: center; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: grab; }
         .arrow-dragger:hover { background: #DCFCE7; }
-        .hydrant-dragger { background: #FEF2F2; border: 1px dashed #FECACA; color: #DC2626; padding: 10px; text-align: center; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: grab; }
+        .hydrant-dragger { background: #FEF2F2; border: 1px dashed #FECACA; color: #DC2626; padding: 8px; text-align: center; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: grab; }
         .hydrant-dragger:hover { background: #FEE2E2; }
+        .memo-btn-tool { background: #FFFBEB; border: 1px dashed #FDE68A; color: #D97706; padding: 8px; text-align: center; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; grid-column: span 2; }
+        .memo-btn-tool:hover { background: #FEF3C7; }
+
+        .system-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+        .sys-btn { background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; padding: 8px; font-size: 11px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+        .sys-btn:hover { background: #F1F5F9; border-color: #94A3B8; }
+        .capture-btn { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; grid-column: span 2; }
+        .capture-btn:hover { background: #DBEAFE; }
 
         .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; font-size: 13px; }
         .reset-btn:hover { background: #DC2626; color: white; }
@@ -89,12 +99,14 @@
         .guide-item:last-child { margin-bottom: 0; }
         .guide-item strong { color: #DC2626; }
         
-        .deployed-vehicle { background: #DC2626; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: move; transform-origin: center; user-select: none; }
-        .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        .deployed-vehicle { background: #DC2626; color: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: move; transform-origin: center; user-select: none; touch-action: none; }
+        .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); touch-action: none; }
         .deployed-arrow svg { pointer-events: none; } 
         
-        .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); background: white; border-radius: 50%; padding: 4px; border: 2px solid #DC2626; }
+        .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); background: white; border-radius: 50%; padding: 4px; border: 2px solid #DC2626; touch-action: none; }
         .deployed-hydrant img { pointer-events: none; display: block; }
+
+        .deployed-memo { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: move; transform-origin: center; user-select: none; touch-action: none; }
 
         .distanceInfo { background: rgba(15, 23, 42, 0.9); color: #F8FAFC; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
@@ -136,8 +148,16 @@
                     <button onclick="clearMeasure()" class="tool-btn clear-btn">🗑️ 선/도형 지우기</button>
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
-                    <div class="arrow-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향(드래그)</div>
-                    <div class="hydrant-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="hydrant">🧯 소화전(드래그)</div>
+                    <div class="arrow-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입방향</div>
+                    <div class="hydrant-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="hydrant">🧯 소화전</div>
+                </div>
+                <div style="margin-top: 8px;">
+                    <button onclick="addTextMemoButton()" class="memo-btn-tool">📝 자유 텍스트 메모 추가</button>
+                </div>
+                <div class="system-action-grid">
+                    <button onclick="saveDeployment()" class="sys-btn">💾 배치 저장</button>
+                    <button onclick="loadDeployment()" class="sys-btn">📂 배치 불러오기</button>
+                    <button onclick="captureScreen()" class="sys-btn capture-btn">📸 화면 캡처(다운로드)</button>
                 </div>
             </div>
 
@@ -173,8 +193,8 @@
         <div class="guide-overlay">
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
             <div class="guide-item"><span>🔄</span> <span><strong>회전(Shift+휠):</strong> <strong>5도 단위 정밀 조절</strong></span></div>
-            <div class="guide-item"><span>↕️</span> <span><strong>화살표/소화전/차량 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
-            <div class="guide-item"><span>✏️</span> <span><strong>선/도형:</strong> 마우스 호버 시 <strong>거리/면적 확인</strong></span></div>
+            <div class="guide-item"><span>↕️</span> <span><strong>항목 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
+            <div class="guide-item"><span>📱</span> <span><strong>태블릿:</strong> 터치 드래그 지원</span></div>
         </div>
     </div>
 </div>
@@ -322,24 +342,38 @@
         var mapRect = map.getNode().getBoundingClientRect();
         var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - mapRect.left, ev.clientY - mapRect.top));
 
+        createCustomOverlay(latlng, itemType, fullName, 0, 1, 1);
+    }
+
+    function createCustomOverlay(latlng, itemType, fullName, rotation, scaleX, scaleY) {
         var content = document.createElement('div');
         if (itemType === 'arrow') {
             var color = document.getElementById('toolColor').value;
             content.className = 'deployed-arrow';
             content.innerHTML = `<svg width="50" height="80" viewBox="0 0 50 80" fill="none"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
             fullName = '진입 방향 화살표';
+            content.dataset.type = 'arrow';
         } else if (itemType === 'hydrant') {
             content.className = 'deployed-hydrant';
-            // 깃허브에 업로드한 이미지 파일명 (hydrant.png) 연동
             content.innerHTML = `<img src="hydrant.png" width="40" height="40" alt="소화전" />`;
             fullName = '소화전';
+            content.dataset.type = 'hydrant';
+        } else if (itemType === 'memo') {
+            content.className = 'deployed-memo';
+            content.innerText = fullName;
+            content.dataset.type = 'memo';
         } else {
             content.className = 'deployed-vehicle';
             content.innerText = fullName;
+            content.dataset.type = 'vehicle';
         }
+
+        content.style.transform = `rotate(${rotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`;
 
         var overlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
         overlay.setMap(map);
+        overlay.customType = itemType;
+        overlay.customName = fullName;
         deployedObjects.push(overlay);
 
         var outrigger = null;
@@ -351,28 +385,65 @@
         addInteractiveFeatures(content, overlay, fullName, outrigger);
     }
 
+    function addTextMemoButton() {
+        var text = prompt('지도에 추가할 메모 내용을 입력하세요:', '통제선 / 진입로');
+        if (!text) return;
+        var center = map.getCenter();
+        createCustomOverlay(center, 'memo', text, 0, 1, 1);
+    }
+
     function addInteractiveFeatures(element, overlay, name, outrigger) {
         let isDragging = false, startX, startY, startPoint;
         let scaleX = 1, scaleY = 1, rotation = 0;
 
-        element.addEventListener('mousedown', function(e) {
+        // Extract initial transform if loaded
+        let transformMatch = element.style.transform;
+        if (transformMatch) {
+            let rMatch = transformMatch.match(/rotate\(([-\d.]+)deg\)/);
+            let sxMatch = transformMatch.match(/scaleX\(([-\d.]+)\)/);
+            let syMatch = transformMatch.match(/scaleY\(([-\d.]+)\)/);
+            if (rMatch) rotation = parseFloat(rMatch[1]);
+            if (sxMatch) scaleX = parseFloat(sxMatch[1]);
+            if (syMatch) scaleY = parseFloat(syMatch[1]);
+        }
+
+        function startDragAction(clientX, clientY) {
             isDragging = true;
             map.setDraggable(false);
-            startX = e.clientX; startY = e.clientY;
+            startX = clientX; startY = clientY;
             startPoint = map.getProjection().containerPointFromCoords(overlay.getPosition());
-            e.stopPropagation();
-        });
+        }
 
-        document.addEventListener('mousemove', function(e) {
+        function moveDragAction(clientX, clientY) {
             if (!isDragging) return;
-            var newPos = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(startPoint.x + (e.clientX - startX), startPoint.y + (e.clientY - startY)));
+            var newPos = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(startPoint.x + (clientX - startX), startPoint.y + (clientY - startY)));
             overlay.setPosition(newPos);
             if (outrigger) outrigger.setPosition(newPos);
-        });
+        }
 
-        document.addEventListener('mouseup', function() {
+        function endDragAction() {
             if (isDragging) { isDragging = false; map.setDraggable(true); }
+        }
+
+        // Mouse events
+        element.addEventListener('mousedown', function(e) {
+            startDragAction(e.clientX, e.clientY);
+            e.stopPropagation();
         });
+        document.addEventListener('mousemove', function(e) { moveDragAction(e.clientX, e.clientY); });
+        document.addEventListener('mouseup', function() { endDragAction(); });
+
+        // Touch events for tablets/mobile
+        element.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                startDragAction(e.touches[0].clientX, e.touches[0].clientY);
+                e.stopPropagation();
+            }
+        });
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 1) { moveDragAction(e.touches[0].clientX, e.touches[0].clientY); }
+        });
+        document.addEventListener('touchend', function() { endDragAction(); });
 
         element.addEventListener('wheel', function(e) {
             e.preventDefault(); e.stopPropagation();
@@ -392,11 +463,59 @@
 
         element.addEventListener('dblclick', function(e) {
             e.stopPropagation();
-            if (confirm(`${name.includes('화살표') || name.includes('소화전') ? name + '를' : name} 삭제하시겠습니까?`)) {
+            if (confirm(`'${name}' 항목을 삭제하시겠습니까?`)) {
                 overlay.setMap(null);
                 if (outrigger) outrigger.setMap(null);
                 deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger);
             }
+        });
+    }
+
+    function saveDeployment() {
+        var data = deployedObjects.map(obj => {
+            var el = obj.getContent();
+            var transform = el ? el.style.transform : '';
+            return {
+                type: obj.customType || 'vehicle',
+                name: obj.customName || '',
+                position: { lat: obj.getPosition().getLat(), lng: obj.getPosition().getLng() },
+                transform: transform
+            };
+        });
+        localStorage.setItem('fireMapDeployment', JSON.stringify(data));
+        alert('전술 배치 상태가 브라우저에 안전하게 저장되었습니다!');
+    }
+
+    function loadDeployment() {
+        var saved = localStorage.getItem('fireMapDeployment');
+        if (!saved) return alert('저장된 배치 데이터가 없습니다.');
+        if (!confirm('저장된 배치를 불러오시겠습니까? 현재 화면의 배치는 초기화됩니다.')) return;
+        
+        deployedObjects.forEach(ov => ov.setMap(null));
+        deployedObjects = [];
+        
+        var data = JSON.parse(saved);
+        data.forEach(item => {
+            var latlng = new kakao.maps.LatLng(item.position.lat, item.position.lng);
+            createCustomOverlay(latlng, item.type, item.name, 0, 1, 1);
+            // restore transform if any
+            if (item.transform && deployedObjects.length > 0) {
+                var lastObj = deployedObjects[deployedObjects.length - 1];
+                if (lastObj.getContent()) {
+                    lastObj.getContent().style.transform = item.transform;
+                }
+            }
+        });
+        alert('배치 데이터를 성공적으로 불러왔습니다!');
+    }
+
+    function captureScreen() {
+        alert('전술 배치도 화면을 캡처 중입니다. 잠시만 기다려주세요.');
+        html2canvas(document.querySelector('.app-container'), { useCORS: true }).then(canvas => {
+            var link = document.createElement('a');
+            link.download = '제주소방서_전술배치도.png';
+            link.href = canvas.toDataURL();
+            link.click();
         });
     }
 
