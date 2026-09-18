@@ -246,7 +246,7 @@
             paginationEl.style.display = 'flex';
         }
 
-        var options = { map: map, drawingMode: [kakao.maps.drawing.OverlayType.POLYLINE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE], guideTooltip: ['draw', 'edit', 'mac'], polylineOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 5, strokeOpacity: 0.9 }, polygonOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 }, circleOptions: { draggable: true, removable: true, editable: true, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 } };
+        var options = { map: map, drawingMode: [kakao.maps.drawing.OverlayType.POLYLINE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE], guideTooltip: ['draw', 'edit', 'mac'], polylineOptions: { draggable: true, removable: true, editable: false, strokeColor: '#0284C7', strokeWeight: 5, strokeOpacity: 0.9 }, polygonOptions: { draggable: true, removable: true, editable: false, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 }, circleOptions: { draggable: true, removable: true, editable: false, strokeColor: '#0284C7', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#0284C7', fillOpacity: 0.4 } };
         var manager = new kakao.maps.drawing.DrawingManager(options);
         
         function startDrawing(type) { 
@@ -259,17 +259,14 @@
 
         var hoverTooltip = new kakao.maps.CustomOverlay({ map: null, content: '', xAnchor: 0, yAnchor: 1, zIndex: 10 });
         
-        // 💡 드로잉 완료 시 X표시(편집마커)를 확실히 숨기는 가장 깔끔한 로직
+        // 💡 드로잉 완료 시 manager.cancel()을 호출하여 X표시(편집마커) 원천 차단
         manager.addListener('drawend', function(data) {
             var overlay = data.target; 
             var type = data.overlayType;
 
-            // 그려진 즉시 편집 상태를 false로 주어 X표시와 꼭지점 제거
-            if(overlay.setEditable) {
-                overlay.setEditable(false);
-            }
+            // 그리기가 끝나자마자 매니저 취소를 불러서 편집 상태를 해제 (X표시 제거)
+            manager.cancel();
 
-            // 마우스 오버 시 거리/면적 툴팁 표시
             kakao.maps.event.addListener(overlay, 'mouseover', function(mouseEvent) {
                 var text = ''; 
                 if(type === kakao.maps.drawing.OverlayType.POLYLINE) text = '총 ' + Math.round(overlay.getLength()) + 'm'; 
@@ -304,7 +301,7 @@
             addInteractiveFeatures(content, customOverlay, fullName, outrigger); 
         }
 
-        // 💡 차량 회전 및 크기 조절 이벤트 강화 (이벤트 전파 차단)
+        // 💡 차량 회전 및 크기 조절 이벤트 (휠 이벤트 확실히 캐치하도록 수정)
         function addInteractiveFeatures(element, overlay, name, outrigger) {
             let isDragging = false, startX, startY, startOverlayPoint; 
             let scaleX = 1, scaleY = 1, currentRotation = 0; 
@@ -334,7 +331,7 @@
 
             element.addEventListener('wheel', function(e) { 
                 e.preventDefault(); 
-                e.stopPropagation(); // 지도 줌인 방지 및 이벤트 고정
+                e.stopPropagation(); 
                 
                 if (e.shiftKey) {
                     currentRotation += (e.deltaY < 0) ? 15 : -15; 
@@ -370,7 +367,7 @@
         }
 
         function resetAll() { if(!confirm("전체 초기화하시겠습니까?")) return; deployedObjects.forEach(ov => ov.setMap(null)); deployedObjects = []; manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); document.getElementById('placesList').style.display = 'none'; document.getElementById('pagination').style.display = 'none'; }
-        function clearMeasure() { manager.manager = null; manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); }
+        function clearMeasure() { manager.cancel(); var overlays = manager.getOverlays(); for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov)); hoverTooltip.setMap(null); }
     </script>
 </body>
 </html>
