@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (프로페셔널 UI)</title>
+    <title>제주소방서 전술 배치도 (호버 툴팁 및 전체초기화 적용)</title>
     <!-- 카카오맵 API -->
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
@@ -36,8 +36,10 @@
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tool-btn { background: #e3f2fd; border: 1px solid #1976d2; color: #1976d2; padding: 8px; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 12px; transition: 0.2s; }
         .tool-btn:hover { background: #bbdefb; }
-        .clear-btn { background: #ffebee; border: 1px solid #d32f2f; color: #d32f2f; grid-column: span 2; }
-        .clear-btn:hover { background: #ffcdd2; }
+        
+        /* 전체 초기화 버튼 */
+        .reset-btn { background: #ffebee; border: 1px solid #d32f2f; color: #d32f2f; width: 100%; padding: 12px; margin-top: 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .reset-btn:hover { background: #d32f2f; color: white; }
         
         .color-picker { width: 100%; height: 32px; padding: 0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; }
 
@@ -69,7 +71,9 @@
         .deployed-vehicle { background: #d32f2f; color: white; padding: 5px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5); cursor: move; transform-origin: center; user-select: none; }
         .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; }
         .deployed-arrow svg { pointer-events: none; } 
-        .distanceInfo { background: rgba(0,0,0,0.8); color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 13px; font-weight: bold; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; border: 1px solid #444; }
+        
+        /* 마우스 호버 시 나타나는 말풍선 */
+        .distanceInfo { background: rgba(0,0,0,0.8); color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 13px; font-weight: bold; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; border: 1px solid #444; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -100,10 +104,12 @@
                     <button onclick="startDrawing('POLYLINE')" class="tool-btn" style="grid-column: span 2;">〰️ 수관/거리 연장</button>
                     <button onclick="startDrawing('POLYGON')" class="tool-btn">🟩 면적(구역)</button>
                     <button onclick="startDrawing('CIRCLE')" class="tool-btn">⭕ 반경(위험)</button>
-                    <button onclick="clearMeasure()" class="tool-btn clear-btn">🗑️ 그려진 선/도형 모두 지우기</button>
                 </div>
                 <!-- 진입 화살표 (공용) -->
                 <div class="vehicle arrow" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향 화살표 (드래그)</div>
+                
+                <!-- 💡 전체 초기화 버튼 -->
+                <button onclick="resetAll()" class="reset-btn">🚨 화면 전체 초기화</button>
             </div>
 
             <!-- 3. 차량 현황 (센터별 아코디언) -->
@@ -236,7 +242,7 @@
             <div class="guide-item">📍 <strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</div>
             <div class="guide-item">🔄 <strong>회전:</strong> <strong>Shift + 휠</strong> (크기: 마우스 휠)</div>
             <div class="guide-item">↕️ <strong>화살표 변형:</strong> <strong style="color: #1976d2;">Ctrl</strong> 또는 <strong style="color: #1976d2;">Alt + 휠</strong></div>
-            <div class="guide-item">✏️ <strong>선/도형 수정:</strong> 더블클릭 완료 후 <strong>클릭하여 점 수정</strong></div>
+            <div class="guide-item">✏️ <strong>선/도형:</strong> 완료 후 클릭 시 <strong>수정 가능</strong><br>👆 선/도형 위에 <strong>마우스를 올리면 결과 표시</strong></div>
         </div>
     </div>
 </div>
@@ -267,7 +273,7 @@
             });
         }
 
-        // 드로잉 매니저 설정 (수정 가능 모드)
+        // 드로잉 매니저 설정
         var options = {
             map: map,
             drawingMode: [kakao.maps.drawing.OverlayType.POLYLINE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE],
@@ -286,47 +292,36 @@
             manager.select(kakao.maps.drawing.OverlayType[type]);
         }
 
-        var infoOverlays = [];
-        function updateMeasurements() {
-            infoOverlays.forEach(ov => ov.setMap(null)); infoOverlays = [];
-            var data = manager.getData();
-            if (data[kakao.maps.drawing.OverlayType.POLYLINE]) {
-                data[kakao.maps.drawing.OverlayType.POLYLINE].forEach(function(line) {
-                    var path = line.points.map(p => new kakao.maps.LatLng(p.y, p.x));
-                    var distance = Math.round(new kakao.maps.Polyline({path: path}).getLength());
-                    createLabel('총 ' + distance + 'm', path[path.length - 1]);
-                });
-            }
-            if (data[kakao.maps.drawing.OverlayType.POLYGON]) {
-                data[kakao.maps.drawing.OverlayType.POLYGON].forEach(function(polygon) {
-                    var path = polygon.points.map(p => new kakao.maps.LatLng(p.y, p.x));
-                    var area = Math.round(new kakao.maps.Polygon({path: path}).getArea());
-                    createLabel('면적 ' + area + '㎡', path[path.length - 1]);
-                });
-            }
-            if (data[kakao.maps.drawing.OverlayType.CIRCLE]) {
-                data[kakao.maps.drawing.OverlayType.CIRCLE].forEach(function(circle) {
-                    var center = new kakao.maps.LatLng(circle.sPoint.y, circle.sPoint.x);
-                    var edge = new kakao.maps.LatLng(circle.ePoint.y, circle.ePoint.x);
-                    var radius = Math.round(new kakao.maps.Polyline({path: [center, edge]}).getLength());
-                    createLabel('반경 ' + radius + 'm', center);
-                });
-            }
-        }
-        function createLabel(text, position) {
-            infoOverlays.push(new kakao.maps.CustomOverlay({ map: map, content: '<div class="distanceInfo">' + text + '</div>', position: position, xAnchor: 0, yAnchor: 1, zIndex: 3 }));
-        }
+        // 💡 마우스 호버(Hover) 시에만 나타나는 공용 툴팁
+        var hoverTooltip = new kakao.maps.CustomOverlay({ map: null, content: '', xAnchor: 0, yAnchor: 1, zIndex: 10 });
 
-        manager.addListener('drawend', updateMeasurements);
-        manager.addListener('remove', updateMeasurements);
-        document.addEventListener('mouseup', function() { setTimeout(updateMeasurements, 100); });
-        
-        function clearMeasure() {
-            manager.cancel();
-            var overlays = manager.getOverlays();
-            for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov));
-            updateMeasurements();
-        }
+        // 선/도형을 다 그렸을 때 호버 이벤트 부여
+        manager.addListener('drawend', function(data) {
+            var overlay = data.target;
+            var type = data.overlayType;
+
+            kakao.maps.event.addListener(overlay, 'mouseover', function(mouseEvent) {
+                var text = '';
+                if(type === kakao.maps.drawing.OverlayType.POLYLINE) text = '총 ' + Math.round(overlay.getLength()) + 'm';
+                else if(type === kakao.maps.drawing.OverlayType.POLYGON) text = '면적 ' + Math.round(overlay.getArea()) + '㎡';
+                else if(type === kakao.maps.drawing.OverlayType.CIRCLE) text = '반경 ' + Math.round(overlay.getRadius()) + 'm';
+                
+                hoverTooltip.setContent('<div class="distanceInfo">' + text + '</div>');
+                hoverTooltip.setPosition(mouseEvent.latLng);
+                hoverTooltip.setMap(map);
+            });
+
+            kakao.maps.event.addListener(overlay, 'mousemove', function(mouseEvent) {
+                hoverTooltip.setPosition(mouseEvent.latLng);
+            });
+
+            kakao.maps.event.addListener(overlay, 'mouseout', function() {
+                hoverTooltip.setMap(null);
+            });
+        });
+
+        // 💡 배치된 차량/오버레이를 추적하는 배열
+        var deployedObjects = [];
 
         function allowDrop(ev) { ev.preventDefault(); }
         function drag(ev) { 
@@ -342,9 +337,7 @@
             var itemType = ev.dataTransfer.getData("type");
             if(!itemName) return;
             
-            // 이름 조합 (예: [이도] 펌프)
             var fullName = itemCenter ? "[" + itemCenter + "] " + itemName : itemName;
-
             var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - document.querySelector('.map-area').getBoundingClientRect().left, ev.clientY - document.querySelector('.map-area').getBoundingClientRect().top));
             
             var content = document.createElement('div');
@@ -358,12 +351,13 @@
             
             var customOverlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
             customOverlay.setMap(map);
+            deployedObjects.push(customOverlay); // 추적 배열에 추가
 
-            // 특수차량 아웃트리거 반경(10m) 생성
             var outrigger = null;
             if (fullName.includes('사다리') || fullName.includes('굴절') || fullName.includes('무인파괴')) {
                 outrigger = new kakao.maps.Circle({ center: latlng, radius: 10, strokeWeight: 2, strokeColor: '#FF8C00', strokeOpacity: 0.8, strokeStyle: 'dashed', fillColor: '#FF8C00', fillOpacity: 0.2 });
                 outrigger.setMap(map);
+                deployedObjects.push(outrigger); // 추적 배열에 추가
             }
             addInteractiveFeatures(content, customOverlay, fullName, outrigger); 
         }
@@ -382,7 +376,30 @@
                 else { let change = (e.deltaY < 0) ? 0.1 : -0.1; scaleX += change; scaleY += change; if(scaleX < 0.3) scaleX = 0.3; if(scaleY < 0.3) scaleY = 0.3; }
                 element.style.transform = `rotate(${currentRotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`;
             });
-            element.addEventListener('dblclick', function() { if(confirm((name.includes('화살표') ? '화살표를' : name) + ' 삭제하시겠습니까?')) { overlay.setMap(null); if(outrigger) outrigger.setMap(null); } });
+            element.addEventListener('dblclick', function() { 
+                if(confirm((name.includes('화살표') ? '화살표를' : name) + ' 삭제하시겠습니까?')) { 
+                    overlay.setMap(null); if(outrigger) outrigger.setMap(null); 
+                    // 추적 배열에서 제거 (메모리 관리)
+                    deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger);
+                } 
+            });
+        }
+
+        // 💡 화면 전체 초기화 기능 (버튼 클릭 시 실행)
+        function resetAll() {
+            if(!confirm("배치된 모든 차량과 수관, 측정 구역을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")) return;
+            
+            // 1. 드래그로 배치된 차량 및 화살표, 아웃트리거 삭제
+            deployedObjects.forEach(ov => ov.setMap(null));
+            deployedObjects = [];
+
+            // 2. 그려진 수관, 면적, 반경 삭제
+            manager.cancel();
+            var overlays = manager.getOverlays();
+            for (var type in overlays) overlays[type].forEach(ov => manager.remove(ov));
+            
+            // 3. 호버 툴팁이 혹시 떠있다면 숨기기
+            hoverTooltip.setMap(null);
         }
     </script>
 </body>
