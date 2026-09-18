@@ -31,7 +31,6 @@
         .btn-primary { background: #1E293B; color: white; font-size: 13px; }
         .btn-primary:hover { background: #0F172A; }
 
-        /* 지도 링크 버튼 한줄 반반 구성 */
         .map-btns-wrapper { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
         .map-link-btn { flex: 1; }
         .kakaomap-btn { background: #FDE047; color: #854D0E; }
@@ -73,6 +72,12 @@
         .map-area { flex-grow: 1; position: relative; display: flex; }
         #map { width: 100%; height: 100%; }
         
+        /* 지도 왼쪽 아래 스카이뷰 컨트롤 버튼 영역 */
+        .map-type-control { position: absolute; bottom: 24px; left: 24px; display: flex; gap: 6px; z-index: 10; }
+        .map-type-btn { background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .map-type-btn:hover { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
+        .map-type-btn.active { background: #1E293B; border-color: #1E293B; color: #FFFFFF; box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
+
         .guide-overlay { position: absolute; bottom: 24px; right: 24px; background: rgba(255, 255, 255, 0.9); padding: 16px 20px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.4); z-index: 10; pointer-events: none; }
         .guide-item { font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .guide-item:last-child { margin-bottom: 0; }
@@ -98,7 +103,6 @@
                 </div>
                 <ul id="placesList"></ul>
                 
-                <!-- 카카오맵 & 네이버지도 버튼 반반 한줄 구성 -->
                 <div class="map-btns-wrapper">
                     <button class="map-link-btn kakaomap-btn" onclick="window.open('https://map.kakao.com/', '_blank')">🗺️ 카카오맵</button>
                     <button class="map-link-btn navermap-btn" onclick="window.open('https://map.naver.com/', '_blank')">🧭 네이버지도</button>
@@ -142,6 +146,13 @@
 
     <div class="map-area" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="map"></div>
+        
+        <!-- 지도 왼쪽 아래 스카이뷰 전환 버튼 -->
+        <div class="map-type-control">
+            <button id="btnNormal" class="map-type-btn active" onclick="setMapType('normal')">일반지도</button>
+            <button id="btnSkyview" class="map-type-btn" onclick="setMapType('skyview')">스카이뷰</button>
+        </div>
+
         <div class="guide-overlay">
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
             <div class="guide-item"><span>🔄</span> <span><strong>회전:</strong> <strong>Shift + 휠</strong> (크기: 마우스 휠)</span></div>
@@ -181,6 +192,22 @@
         });
         listEl.appendChild(fragment);
         listEl.style.display = 'block';
+    }
+
+    // 지도 타입 변경 함수 (일반지도 / 스카이뷰)
+    function setMapType(type) {
+        var btnNormal = document.getElementById('btnNormal');
+        var btnSkyview = document.getElementById('btnSkyview');
+
+        if (type === 'normal') {
+            map.setMapTypeId(kakao.maps.MapTypeId.NORMAL);
+            btnNormal.classList.add('active');
+            btnSkyview.classList.remove('active');
+        } else if (type === 'skyview') {
+            map.setMapTypeId(kakao.maps.MapTypeId.SKYVIEW);
+            btnSkyview.classList.add('active');
+            btnNormal.classList.remove('active');
+        }
     }
 
     var manager = new kakao.maps.drawing.DrawingManager({
