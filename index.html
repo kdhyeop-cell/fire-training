@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (측정도구 탑재)</title>
+    <title>제주소방서 전술 배치도 (오류 수정 완결판)</title>
     <!-- 검색(services) 및 그리기(drawing) 라이브러리 추가 -->
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
@@ -54,6 +54,8 @@
         .deployed-vehicle { background: #d32f2f; color: white; padding: 5px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5); cursor: move; transform-origin: center; user-select: none; }
         .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; }
         .deployed-arrow svg { pointer-events: none; } 
+        
+        /* 결과 툴팁 창 */
         .distanceInfo { background: rgba(0,0,0,0.8); color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 13px; font-weight: bold; transform: translate(15px, -15px); pointer-events: none; }
     </style>
 </head>
@@ -63,7 +65,6 @@
         <h1>🚒 제주소방서 도상 훈련 전술 배치도</h1>
     </div>
 
-    <!-- 툴바 영역 -->
     <div class="toolbar">
         <div class="tool-group">
             <span class="tool-group-title">차량 부서</span>
@@ -85,10 +86,10 @@
 
         <div class="divider"></div>
 
-        <!-- 💡 새로 추가된 측정 도구 영역 -->
         <div class="tool-group">
             <span class="tool-group-title">📐 측정 도구</span>
-            <button onclick="setMeasureMode('DISTANCE')" class="measure-btn">📏 거리재기</button>
+            <!-- 💡 에러 원인이었던 명령어 수정 완료 (DISTANCE -> POLYLINE) -->
+            <button onclick="setMeasureMode('POLYLINE')" class="measure-btn">📏 거리재기</button>
             <button onclick="setMeasureMode('POLYGON')" class="measure-btn">🟩 면적재기</button>
             <button onclick="setMeasureMode('CIRCLE')" class="measure-btn">⭕ 반경(원)재기</button>
             <button onclick="clearMeasure()" class="measure-btn clear-btn">🗑️ 측정 지우기</button>
@@ -114,14 +115,14 @@
     </div>
 
     <div class="guide-box">
-        <div class="guide-item">📍 <strong>아이콘:</strong> 지도로 드래그 후 <strong>더블클릭</strong>으로 삭제<br>🔄 <strong>회전/비율:</strong> <strong>Shift + 휠</strong> / <strong>마우스 휠</strong></div>
+        <div class="guide-item">📍 <strong>배치:</strong> 지도로 드래그 후 <strong>더블클릭</strong> 삭제<br>🔄 <strong>회전:</strong> <strong>Shift + 휠</strong> (크기: 마우스 휠)</div>
         <div class="guide-item">
             ↔️ <strong>화살표 폭:</strong> <strong style="color: #1976d2;">Ctrl + 휠</strong><br>
             ↕️ <strong>화살표 길이:</strong> <strong style="color: #1976d2;">Alt + 휠</strong>
         </div>
         <div class="guide-item">
             〰️ <strong>수관 연장:</strong> 클릭하며 선 긋기 ➔ <strong>더블클릭 완료</strong> (거리표시 유지)<br>
-            📐 <strong>측정 도구:</strong> 클릭으로 그리기 시작 ➔ <strong>우클릭</strong>으로 완료
+            📐 <strong>측정 도구:</strong> 클릭으로 그리기 ➔ <strong>우클릭 완료</strong> (결과 말풍선 출력)
         </div>
     </div>
 </div>
@@ -137,7 +138,6 @@
         function searchPlaces() {
             var keyword = document.getElementById('keyword').value;
             if (!keyword.trim()) return alert('검색어를 입력해주세요!');
-            
             ps.keywordSearch(keyword, function(data, status) {
                 if (status === kakao.maps.services.Status.OK) {
                     var bounds = new kakao.maps.LatLngBounds();
@@ -158,28 +158,61 @@
             var sName = document.getElementById('startLoc').value;
             var eName = document.getElementById('endLoc').value;
             if(!sName.trim() || !eName.trim()) { alert('출발지와 도착지를 모두 입력해주세요.'); return; }
-            var url = 'https://map.kakao.com/?sName=' + encodeURIComponent(sName) + '&eName=' + encodeURIComponent(eName);
-            window.open(url, '_blank');
+            window.open('https://map.kakao.com/?sName=' + encodeURIComponent(sName) + '&eName=' + encodeURIComponent(eName), '_blank');
         }
 
-        // 💡 카카오 공식 측정 도구 (Drawing Manager) 설정
+        // 💡 측정 도구 (Drawing Manager) 설정 및 오류 수정
         var measureOptions = {
             map: map,
-            drawingMode: [kakao.maps.drawing.OverlayType.DISTANCE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE],
+            drawingMode: [
+                kakao.maps.drawing.OverlayType.POLYLINE, 
+                kakao.maps.drawing.OverlayType.POLYGON, 
+                kakao.maps.drawing.OverlayType.CIRCLE
+            ],
             guideTooltip: ['draw', 'edit', 'mac'],
-            distanceOptions: { strokeColor: '#e91e63', strokeWeight: 4, strokeOpacity: 0.8 },
+            polylineOptions: { strokeColor: '#e91e63', strokeWeight: 4, strokeOpacity: 0.8 },
             polygonOptions: { strokeColor: '#9c27b0', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#9c27b0', fillOpacity: 0.4 },
             circleOptions: { strokeColor: '#ff9800', strokeWeight: 4, strokeOpacity: 0.8, fillColor: '#ff9800', fillOpacity: 0.4 }
         };
         var manager = new kakao.maps.drawing.DrawingManager(measureOptions);
 
-        // 측정 도구 실행 함수
+        var measureInfoOverlays = []; // 측정 결과 말풍선들을 저장할 배열
+
+        // 측정 완료 시(drawend) 계산된 결과값(거리, 면적, 반경)을 지도에 말풍선으로 띄우는 이벤트
+        manager.addListener('drawend', function(data) {
+            var overlay = data.target;
+            var type = data.overlayType;
+            var content = '';
+            var position = null;
+
+            if (type === kakao.maps.drawing.OverlayType.POLYLINE) {
+                content = '<div class="distanceInfo">총거리: ' + Math.round(overlay.getLength()) + 'm</div>';
+                var path = overlay.getPath();
+                position = path[path.length - 1]; // 선의 끝점
+            } else if (type === kakao.maps.drawing.OverlayType.POLYGON) {
+                content = '<div class="distanceInfo">총면적: ' + Math.round(overlay.getArea()) + '㎡</div>';
+                var path = overlay.getPath();
+                position = path[path.length - 1]; // 다각형의 마지막 점
+            } else if (type === kakao.maps.drawing.OverlayType.CIRCLE) {
+                content = '<div class="distanceInfo">반경: ' + Math.round(overlay.getRadius()) + 'm</div>';
+                position = overlay.getPosition(); // 원의 중심점
+            }
+
+            if (content && position) {
+                var infoOverlay = new kakao.maps.CustomOverlay({
+                    map: map, content: content, position: position, xAnchor: 0, yAnchor: 1, zIndex: 3
+                });
+                measureInfoOverlays.push(infoOverlay);
+            }
+        });
+
         function setMeasureMode(type) {
-            manager.cancel(); // 이전 작업 취소
-            manager.select(kakao.maps.drawing.OverlayType[type]); // 선택한 모드 실행
+            if (isDrawingHose) startDrawingLine(); // 수관 연장 모드 끄기 (충돌 방지)
+            manager.cancel();
+            manager.select(kakao.maps.drawing.OverlayType[type]);
+            alert('지도 위에 마우스를 클릭하여 측정을 시작하고, 다 그렸으면 우클릭을 눌러 종료하세요.');
         }
 
-        // 측정 도구 초기화(지우기) 함수
         function clearMeasure() {
             manager.cancel();
             var overlays = manager.getOverlays();
@@ -188,6 +221,9 @@
                     manager.remove(overlay);
                 });
             }
+            // 결과 말풍선도 모두 삭제
+            measureInfoOverlays.forEach(function(ov) { ov.setMap(null); });
+            measureInfoOverlays = [];
         }
 
         // 아이콘 드래그 앤 드롭
@@ -262,15 +298,15 @@
             });
         }
 
-        // 수관 그리기 (사용자 지정 색상 반영 및 커스텀 로직 유지)
+        // 수관 그리기 로직
         var isDrawingHose = false, hosePath = [], activePolyline = null, distanceOverlay = null;
 
         function startDrawingLine() {
-            manager.cancel(); // 측정 도구 강제 취소 (충돌 방지)
+            manager.cancel(); // 측정 도구 강제 취소
             isDrawingHose = !isDrawingHose;
             var btn = document.getElementById('hoseBtn');
             if(isDrawingHose) {
-                btn.classList.add('active'); btn.innerText = '🛑 수관 그리기 종료 (ESC)';
+                btn.classList.add('active'); btn.innerText = '🛑 그리기 종료 (ESC)';
                 mapContainer.style.cursor = 'crosshair';
                 hosePath = []; activePolyline = null; distanceOverlay = null;
             } else {
@@ -294,7 +330,6 @@
         kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
             if(!isDrawingHose) return;
             hosePath.push(mouseEvent.latLng);
-            
             var selectedColor = document.getElementById('toolColor').value;
             
             if (!activePolyline) { 
