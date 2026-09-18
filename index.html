@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (안정 원복 버전)</title>
+    <title>제주소방서 전술 배치도 (차량 배치 완벽 수정본)</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -132,22 +132,22 @@
                 <div class="arrow-dragger" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향 화살표 (드래그)</div>
             </div>
 
-            <!-- 3. 차량 현황 -->
+            <!-- 3. 차량 현황 (모든 센터 open 기본 적용) -->
             <div>
                 <div class="section-title">차량 현황</div>
                 <div class="center-grid-wrapper">
                     <details class="center-group" open><summary>현장대응단</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">지휘차</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">조사차</div></div></details>
-                    <details class="center-group"><summary>이도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">조연</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">소형사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">고가사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">특별구급</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">음압구급</div></div></details>
-                    <details class="center-group"><summary>삼도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">구급</div></div></details>
-                    <details class="center-group"><summary>연동</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">구급</div></div></details>
-                    <details class="center-group"><summary>오라</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">구급</div></div></details>
-                    <details class="center-group"><summary>항만</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">화학</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">구급</div></div></details>
-                    <details class="center-group"><summary>추자</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">구급</div></div></details>
-                    <details class="center-group"><summary>화북</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">구급</div></div></details>
-                    <details class="center-group"><summary>노형</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">구급</div></div></details>
-                    <details class="center-group"><summary>외도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">무인파괴</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">구급</div></div></details>
-                    <details class="center-group"><summary>아라</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">구급</div></div></details>
-                    <details class="center-group"><summary>구조</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">구조차</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">생활안전</div></div></details>
+                    <details class="center-group" open><summary>이도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">조연</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">소형사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">고가사다리</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">특별구급</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">음압구급</div></div></details>
+                    <details class="center-group" open><summary>삼도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">구급</div></div></details>
+                    <details class="center-group" open><summary>연동</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">구급</div></div></details>
+                    <details class="center-group" open><summary>오라</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">구급</div></div></details>
+                    <details class="center-group" open><summary>항만</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">화학</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">구급</div></div></details>
+                    <details class="center-group" open><summary>추자</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">구급</div></div></details>
+                    <details class="center-group" open><summary>화북</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">구급</div></div></details>
+                    <details class="center-group" open><summary>노형</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">굴절</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">구급</div></div></details>
+                    <details class="center-group" open><summary>외도</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">물탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">무인파괴</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">구급</div></div></details>
+                    <details class="center-group" open><summary>아라</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">펌프</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">탱크</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">구급</div></div></details>
+                    <details class="center-group" open><summary>구조</summary><div class="vehicle-grid"><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">구조차</div><div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">생활안전</div></div></details>
                 </div>
                 
                 <button onclick="resetAll()" class="reset-btn">🚨 배치 전체 초기화 (리셋)</button>
@@ -155,9 +155,9 @@
         </div>
     </div>
 
-    <!-- 우측 지도 영역 -->
+    <!-- 우측 지도 영역 (이벤트 전파 완벽 보장) -->
     <div class="map-area" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <div id="map"></div>
+        <div id="map" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
         
         <div class="guide-overlay">
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
@@ -293,14 +293,41 @@
         var deployedObjects = [];
         function allowDrop(ev) { ev.preventDefault(); }
         function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); ev.dataTransfer.setData("center", ev.target.getAttribute("data-center") || ""); ev.dataTransfer.setData("type", ev.target.getAttribute("data-type") || "vehicle"); }
+        
         function drop(ev) {
-            ev.preventDefault(); var itemName = ev.dataTransfer.getData("text"); var itemCenter = ev.dataTransfer.getData("center"); var itemType = ev.dataTransfer.getData("type"); if(!itemName) return;
+            ev.preventDefault(); 
+            var itemName = ev.dataTransfer.getData("text"); 
+            var itemCenter = ev.dataTransfer.getData("center"); 
+            var itemType = ev.dataTransfer.getData("type"); 
+            if(!itemName) return;
+            
             var fullName = itemCenter ? "[" + itemCenter + "] " + itemName : itemName;
-            var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - document.querySelector('.map-area').getBoundingClientRect().left, ev.clientY - document.querySelector('.map-area').getBoundingClientRect().top));
+            
+            // 지도 영역 기준 좌표 계산 보정
+            var mapRect = mapContainer.getBoundingClientRect();
+            var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - mapRect.left, ev.clientY - mapRect.top));
+            
             var content = document.createElement('div');
-            if(itemType === 'arrow') { var selectedColor = document.getElementById('toolColor').value; content.className = 'deployed-arrow'; content.innerHTML = '<svg width="50" height="80" viewBox="0 0 50 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="' + selectedColor + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'; } else { content.className = 'deployed-vehicle'; content.innerText = fullName; }
-            var customOverlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true }); customOverlay.setMap(map); deployedObjects.push(customOverlay);
-            var outrigger = null; if (fullName.includes('사다리') || fullName.includes('굴절') || fullName.includes('무인파괴')) { outrigger = new kakao.maps.Circle({ center: latlng, radius: 10, strokeWeight: 2, strokeColor: '#FF8C00', strokeOpacity: 0.8, strokeStyle: 'dashed', fillColor: '#FF8C00', fillOpacity: 0.2 }); outrigger.setMap(map); deployedObjects.push(outrigger); }
+            if(itemType === 'arrow') { 
+                var selectedColor = document.getElementById('toolColor').value; 
+                content.className = 'deployed-arrow'; 
+                content.innerHTML = '<svg width="50" height="80" viewBox="0 0 50 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="' + selectedColor + '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'; 
+            } else { 
+                content.className = 'deployed-vehicle'; 
+                content.innerText = fullName; 
+            }
+            
+            var customOverlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true }); 
+            customOverlay.setMap(map); 
+            deployedObjects.push(customOverlay);
+
+            var outrigger = null; 
+            if (fullName.includes('사다리') || fullName.includes('굴절') || fullName.includes('무인파괴')) { 
+                outrigger = new kakao.maps.Circle({ center: latlng, radius: 10, strokeWeight: 2, strokeColor: '#FF8C00', strokeOpacity: 0.8, strokeStyle: 'dashed', fillColor: '#FF8C00', fillOpacity: 0.2 }); 
+                outrigger.setMap(map); 
+                deployedObjects.push(outrigger); 
+            }
+            
             addInteractiveFeatures(content, customOverlay, fullName, outrigger); 
         }
 
