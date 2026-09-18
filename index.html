@@ -52,6 +52,8 @@
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 13px; }
         .tool-btn:hover { background: #E0F2FE; }
+        .memo-tool-btn { background: #FFFBEB; border: 1px solid #FDE68A; color: #D97706; font-size: 13px; grid-column: span 2; }
+        .memo-tool-btn:hover { background: #FEF3C7; }
         .clear-btn { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; grid-column: span 2; }
         .clear-btn:hover { background: #FEE2E2; }
         
@@ -96,6 +98,8 @@
         .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); background: white; border-radius: 50%; padding: 4px; border: 2px solid #DC2626; }
         .deployed-hydrant img { pointer-events: none; display: block; }
 
+        .deployed-memo { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: move; transform-origin: center; user-select: none; }
+
         .distanceInfo { background: rgba(15, 23, 42, 0.9); color: #F8FAFC; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -131,6 +135,7 @@
                 </div>
                 <div class="tool-grid">
                     <button onclick="startDrawing('POLYLINE')" class="tool-btn" style="grid-column: span 2;">〰️ 수관/거리 연장</button>
+                    <button onclick="addTextMemo()" class="tool-btn memo-tool-btn">📝 자유 텍스트 메모</button>
                     <button onclick="startDrawing('POLYGON')" class="tool-btn">🟩 면적(구역)</button>
                     <button onclick="startDrawing('CIRCLE')" class="tool-btn">⭕ 반경(위험)</button>
                     <button onclick="clearMeasure()" class="tool-btn clear-btn">🗑️ 선/도형 지우기</button>
@@ -173,7 +178,7 @@
         <div class="guide-overlay">
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
             <div class="guide-item"><span>🔄</span> <span><strong>회전(Shift+휠):</strong> <strong>5도 단위 정밀 조절</strong></span></div>
-            <div class="guide-item"><span>↕️</span> <span><strong>화살표/소화전/차량 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
+            <div class="guide-item"><span>↕️</span> <span><strong>화살표/소화전/메모/차량 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
             <div class="guide-item"><span>✏️</span> <span><strong>선/도형:</strong> 마우스 호버 시 <strong>거리/면적 확인</strong></span></div>
         </div>
     </div>
@@ -330,7 +335,6 @@
             fullName = '진입 방향 화살표';
         } else if (itemType === 'hydrant') {
             content.className = 'deployed-hydrant';
-            // 깃허브에 업로드한 이미지 파일명 (hydrant.png) 연동
             content.innerHTML = `<img src="hydrant.png" width="40" height="40" alt="소화전" />`;
             fullName = '소화전';
         } else {
@@ -349,6 +353,22 @@
             deployedObjects.push(outrigger);
         }
         addInteractiveFeatures(content, overlay, fullName, outrigger);
+    }
+
+    function addTextMemo() {
+        var text = prompt('지도에 추가할 메모 내용을 입력하세요:', '1선착대 진입로 / 통제선');
+        if (!text) return;
+        var center = map.getCenter();
+
+        var content = document.createElement('div');
+        content.className = 'deployed-memo';
+        content.innerText = text;
+
+        var overlay = new kakao.maps.CustomOverlay({ position: center, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
+        overlay.setMap(map);
+        deployedObjects.push(overlay);
+
+        addInteractiveFeatures(content, overlay, text, null);
     }
 
     function addInteractiveFeatures(element, overlay, name, outrigger) {
@@ -392,7 +412,7 @@
 
         element.addEventListener('dblclick', function(e) {
             e.stopPropagation();
-            if (confirm(`${name.includes('화살표') || name.includes('소화전') ? name + '를' : name} 삭제하시겠습니까?`)) {
+            if (confirm(`${name.includes('화살표') || name.includes('소화전') ? name + '를' : "'" + name + "' 메모를"} 삭제하시겠습니까?`)) {
                 overlay.setMap(null);
                 if (outrigger) outrigger.setMap(null);
                 deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger);
