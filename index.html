@@ -63,10 +63,6 @@
         .hydrant-dragger { background: #FEF2F2; border: 1px dashed #FECACA; color: #DC2626; padding: 10px; text-align: center; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: grab; }
         .hydrant-dragger:hover { background: #FEE2E2; }
 
-        .system-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-        .sys-btn { background: #F8FAFC; border: 1px solid #CBD5E1; color: #334155; padding: 8px; font-size: 11px; font-weight: 600; border-radius: 8px; cursor: pointer; }
-        .sys-btn:hover { background: #F1F5F9; border-color: #94A3B8; }
-
         .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; font-size: 13px; }
         .reset-btn:hover { background: #DC2626; color: white; }
 
@@ -147,10 +143,6 @@
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
                     <div class="arrow-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향(드래그)</div>
                     <div class="hydrant-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="hydrant">🧯 소화전(드래그)</div>
-                </div>
-                <div class="system-action-grid">
-                    <button onclick="saveDeployment()" class="sys-btn">💾 배치 저장</button>
-                    <button onclick="loadDeployment()" class="sys-btn">📂 배치 불러오기</button>
                 </div>
             </div>
 
@@ -335,40 +327,23 @@
         var mapRect = map.getNode().getBoundingClientRect();
         var latlng = map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(ev.clientX - mapRect.left, ev.clientY - mapRect.top));
 
-        createCustomOverlay(latlng, itemType, fullName, 0, 1, 1);
-    }
-
-    function createCustomOverlay(latlng, itemType, fullName, rotation, scaleX, scaleY, bgColor, borderColor) {
         var content = document.createElement('div');
         if (itemType === 'arrow') {
             var color = document.getElementById('toolColor').value;
             content.className = 'deployed-arrow';
             content.innerHTML = `<svg width="50" height="80" viewBox="0 0 50 80" fill="none"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
             fullName = '진입 방향 화살표';
-            content.dataset.type = 'arrow';
         } else if (itemType === 'hydrant') {
             content.className = 'deployed-hydrant';
             content.innerHTML = `<img src="hydrant.png" width="40" height="40" alt="소화전" />`;
             fullName = '소화전';
-            content.dataset.type = 'hydrant';
-        } else if (itemType === 'memo') {
-            content.className = 'deployed-memo';
-            content.innerText = fullName;
-            content.dataset.type = 'memo';
-            content.style.backgroundColor = bgColor || document.getElementById('toolColor').value;
-            content.style.border = borderColor || '2px solid white';
         } else {
             content.className = 'deployed-vehicle';
             content.innerText = fullName;
-            content.dataset.type = 'vehicle';
         }
-
-        content.style.transform = `rotate(${rotation}deg) scaleX(${scaleX}) scaleY(${scaleY})`;
 
         var overlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
         overlay.setMap(map);
-        overlay.customType = itemType;
-        overlay.customName = fullName;
         deployedObjects.push(overlay);
 
         var outrigger = null;
@@ -381,11 +356,22 @@
     }
 
     function addTextMemo() {
-        var text = prompt('지도에 추가할 메모 내용을 입력하세요:', '1선착대 진입로 / 통제선');
+        var text = prompt('지도에 추가할 텍스트 메모 내용을 입력하세요:', '1선착대 진입로 / 통제선');
         if (!text) return;
         var center = map.getCenter();
         var color = document.getElementById('toolColor').value;
-        createCustomOverlay(center, 'memo', text, 0, 1, 1, color, '2px solid white');
+
+        var content = document.createElement('div');
+        content.className = 'deployed-memo';
+        content.innerText = text;
+        content.style.backgroundColor = color;
+        content.style.border = '2px solid white';
+
+        var overlay = new kakao.maps.CustomOverlay({ position: center, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
+        overlay.setMap(map);
+        deployedObjects.push(overlay);
+
+        addInteractiveFeatures(content, overlay, text, null);
     }
 
     function addInteractiveFeatures(element, overlay, name, outrigger) {
@@ -462,44 +448,6 @@
                 deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger);
             }
         });
-    }
-
-    function saveDeployment() {
-        var data = deployedObjects.map(obj => {
-            var el = obj.getContent();
-            return {
-                type: obj.customType || 'vehicle',
-                name: obj.customName || '',
-                position: { lat: obj.getPosition().getLat(), lng: obj.getPosition().getLng() },
-                transform: el ? el.style.transform : '',
-                bgColor: el ? el.style.backgroundColor : '',
-                borderColor: el ? el.style.border : ''
-            };
-        });
-        localStorage.setItem('fireMapDeployment', JSON.stringify(data));
-        alert('전술 배치 상태가 브라우저에 안전하게 저장되었습니다!');
-    }
-
-    function loadDeployment() {
-        var saved = localStorage.getItem('fireMapDeployment');
-        if (!saved) return alert('저장된 배치 데이터가 없습니다.');
-        if (!confirm('저장된 배치를 불러오시겠습니까? 현재 화면의 배치는 초기화됩니다.')) return;
-        
-        deployedObjects.forEach(ov => ov.setMap(null));
-        deployedObjects = [];
-        
-        var data = JSON.parse(saved);
-        data.forEach(item => {
-            var latlng = new kakao.maps.LatLng(item.position.lat, item.position.lng);
-            createCustomOverlay(latlng, item.type, item.name, 0, 1, 1, item.bgColor, item.borderColor);
-            if (item.transform && deployedObjects.length > 0) {
-                var lastObj = deployedObjects[deployedObjects.length - 1];
-                if (lastObj.getContent()) {
-                    lastObj.getContent().style.transform = item.transform;
-                }
-            }
-        });
-        alert('배치 데이터를 성공적으로 불러왔습니다!');
     }
 
     function resetAll() {
