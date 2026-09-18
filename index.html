@@ -72,9 +72,9 @@
         .map-area { flex-grow: 1; position: relative; display: flex; }
         #map { width: 100%; height: 100%; }
         
-        /* 지도 왼쪽 아래 스카이뷰 컨트롤 버튼 영역 */
+        /* 지도 왼쪽 아래 지도 타입 및 로드뷰 컨트롤 버튼 영역 */
         .map-type-control { position: absolute; bottom: 24px; left: 24px; display: flex; gap: 6px; z-index: 10; }
-        .map-type-btn { background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .map-type-btn { background: #FFFFFF; border: 1px solid #CBD5E1; color: #475569; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.2s; }
         .map-type-btn:hover { background: #F1F5F9; border-color: #94A3B8; color: #0F172A; }
         .map-type-btn.active { background: #1E293B; border-color: #1E293B; color: #FFFFFF; box-shadow: 0 4px 12px rgba(15,23,42,0.2); }
 
@@ -147,10 +147,11 @@
     <div class="map-area" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="map"></div>
         
-        <!-- 지도 왼쪽 아래 스카이뷰 전환 버튼 -->
+        <!-- 지도 왼쪽 아래 일반지도, 스카이뷰, 로드뷰 전환 버튼 -->
         <div class="map-type-control">
             <button id="btnNormal" class="map-type-btn active" onclick="setMapType('normal')">일반지도</button>
             <button id="btnSkyview" class="map-type-btn" onclick="setMapType('skyview')">스카이뷰</button>
+            <button id="btnRoadview" class="map-type-btn" onclick="setMapType('roadview')">로드뷰</button>
         </div>
 
         <div class="guide-overlay">
@@ -194,10 +195,12 @@
         listEl.style.display = 'block';
     }
 
-    // 지도 타입 변경 함수 (일반지도 / 스카이뷰)
+    // 지도 타입 및 로드뷰 오버레이 토글 함수
+    var roadviewOverlayOn = false;
     function setMapType(type) {
         var btnNormal = document.getElementById('btnNormal');
         var btnSkyview = document.getElementById('btnSkyview');
+        var btnRoadview = document.getElementById('btnRoadview');
 
         if (type === 'normal') {
             map.setMapTypeId(kakao.maps.MapTypeId.NORMAL);
@@ -207,6 +210,15 @@
             map.setMapTypeId(kakao.maps.MapTypeId.SKYVIEW);
             btnSkyview.classList.add('active');
             btnNormal.classList.remove('active');
+        } else if (type === 'roadview') {
+            roadviewOverlayOn = !roadviewOverlayOn;
+            if (roadviewOverlayOn) {
+                map.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+                btnRoadview.classList.add('active');
+            } else {
+                map.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW);
+                btnRoadview.classList.remove('active');
+            }
         }
     }
 
