@@ -21,7 +21,7 @@
         .guide-toggle-btn { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .guide-toggle-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-        /* 가독성을 높인 조작 가이드 패널 (글자 크기 확대) */
+        /* 가독성을 높인 조작 가이드 패널 */
         .sidebar-guide-box { background: #FFFBEB; border-bottom: 1px solid #FDE68A; padding: 14px 16px; font-size: 13px; color: #78350F; line-height: 1.6; display: none; }
         .sidebar-guide-box div { margin-bottom: 6px; }
         .sidebar-guide-box div:last-child { margin-bottom: 0; }
@@ -117,11 +117,11 @@
             <span>제주소방서 전술 배치도</span>
             <button class="guide-toggle-btn" onclick="toggleGuide()">📖 조작 가이드</button>
         </div>
-        <!-- 접이식 가이드 박스 (글자 크기 확대) -->
+        <!-- 접이식 가이드 박스 -->
         <div id="sidebarGuide" class="sidebar-guide-box">
             <div>📍 <strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</div>
             <div>🔄 <strong>회전(Shift+휠):</strong> 5도 단위 정밀 조절</div>
-            <div>↕️ <strong>항목 변형:</strong> Ctrl/Alt + 휠</div>
+            <div>↕️ <strong>크기변경:</strong> Ctrl/Alt + 휠</div>
             <div>📱 <strong>태블릿:</strong> 터치 드래그 지원</div>
         </div>
 
