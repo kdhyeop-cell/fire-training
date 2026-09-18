@@ -26,7 +26,7 @@
         input[type="text"] { flex-grow: 1; padding: 10px 12px; font-size: 13px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; color: #1E293B; outline: none; }
         input[type="text"]:focus { border-color: #EF4444; background: #FFF; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
         
-        button { padding: 10px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 4px; }
+        button { padding: 10px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
         button:active { transform: scale(0.98); }
         .btn-primary { background: #1E293B; color: white; font-size: 13px; }
         .btn-primary:hover { background: #0F172A; }
@@ -50,8 +50,13 @@
         .place-address { font-size: 11px; color: #64748B; }
 
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 13px; }
+        .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 12px; }
         .tool-btn:hover { background: #E0F2FE; }
+        
+        /* 실제 소화전 모양을 연상시키는 레드 감성의 소화전 버튼 스타일 */
+        .hydrant-btn { background: #FEF2F2; border: 1px solid #FCA5A5; color: #DC2626; }
+        .hydrant-btn:hover { background: #FEE2E2; border-color: #F87171; }
+
         .clear-btn { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; grid-column: span 2; }
         .clear-btn:hover { background: #FEE2E2; }
         
@@ -125,9 +130,19 @@
                     <div class="title-right"><input type="color" id="toolColor" class="color-picker" value="#0284C7" title="도구 색상"></div>
                 </div>
                 <div class="tool-grid">
-                    <button onclick="startDrawing('POLYLINE')" class="tool-btn" style="grid-column: span 2;">〰️ 수관/거리 연장</button>
+                    <button onclick="startDrawing('POLYLINE')" class="tool-btn">〰️ 수관/거리 연장</button>
+                    
+                    <!-- 실제 소화전 형태의 SVG 아이콘이 포함된 소화전 표시 버튼 -->
+                    <button onclick="toggleHydrants()" class="tool-btn hydrant-btn" id="btnHydrant">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v2m-5 4h10v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8zm-2 2h14m-14 4h14M10 5h4v3h-4V5z"/>
+                        </svg>
+                        소화전 표시
+                    </button>
+                    
                     <button onclick="startDrawing('POLYGON')" class="tool-btn">🟩 면적(구역)</button>
                     <button onclick="startDrawing('CIRCLE')" class="tool-btn">⭕ 반경(위험)</button>
+                    
                     <button onclick="clearMeasure()" class="tool-btn clear-btn">🗑️ 선/도형 지우기</button>
                 </div>
                 <div class="arrow-dragger" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향 화살표 (드래그)</div>
@@ -180,6 +195,9 @@
     var roadviewClient = new kakao.maps.RoadviewClient();
     var isRoadviewActive = false;
 
+    var hydrantMarkers = [];
+    var isHydrantVisible = false;
+
     function searchPlaces() {
         var keyword = document.getElementById('keyword').value;
         if (!keyword.trim()) return alert('검색어를 입력해주세요!');
@@ -206,6 +224,57 @@
         });
         listEl.appendChild(fragment);
         listEl.style.display = 'block';
+    }
+
+    function toggleHydrants() {
+        var btn = document.getElementById('btnHydrant');
+        isHydrantVisible = !isHydrantVisible;
+
+        if (isHydrantVisible) {
+            btn.style.background = '#DC2626';
+            btn.style.color = '#FFFFFF';
+            btn.style.borderColor = '#B91C1C';
+            btn.style.fontWeight = 'bold';
+            
+            ps.keywordSearch('소화전', function(data, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    data.forEach(function(place) {
+                        var coords = new kakao.maps.LatLng(place.y, place.x);
+                        
+                        var markerContent = document.createElement('div');
+                        markerContent.innerHTML = '🚰';
+                        markerContent.title = place.place_name + ' (' + (place.road_address_name || place.address_name) + ')';
+                        markerContent.style.cssText = 'background: #DC2626; color: white; padding: 4px 8px; border-radius: 16px; font-size: 11px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer; white-space: nowrap;';
+
+                        var markerOverlay = new kakao.maps.CustomOverlay({
+                            position: coords,
+                            content: markerContent,
+                            xAnchor: 0.5,
+                            yAnchor: 0.5
+                        });
+                        markerOverlay.setMap(map);
+                        hydrantMarkers.push(markerOverlay);
+                    });
+                    alert('주변 소화전 ' + data.length + '개소를 지도에 표시했습니다.');
+                } else {
+                    alert('현재 지도 주변에서 소화전 정보를 찾지 못했습니다. 지도를 이동 후 다시 시도해 주세요.');
+                    isHydrantVisible = false;
+                    btn.style.background = '#FEF2F2';
+                    btn.style.color = '#DC2626';
+                    btn.style.borderColor = '#FCA5A5';
+                    btn.style.fontWeight = '600';
+                }
+            }, { location: map.getCenter(), radius: 10000 });
+        } else {
+            btn.style.background = '#FEF2F2';
+            btn.style.color = '#DC2626';
+            btn.style.borderColor = '#FCA5A5';
+            btn.style.fontWeight = '600';
+            hydrantMarkers.forEach(function(marker) {
+                marker.setMap(null);
+            });
+            hydrantMarkers = [];
+        }
     }
 
     function setMapType(type) {
