@@ -196,7 +196,20 @@
     var roadviewClient = new kakao.maps.RoadviewClient();
     var isRoadviewActive = false;
 
-    var jejuHydrants = [];
+    // 제주 주요 권역 소화전 대표 샘플 데이터 (즉시 렌더링용)
+    const jejuHydrants = [
+        {lat: 33.4893, lng: 126.5209, addr: "제주특별자치도 제주시 중앙로 301 (제주소방서)"},
+        {lat: 33.497124, lng: 126.510028, addr: "제주특별자치도 제주시 동성길 35"},
+        {lat: 33.512107, lng: 126.496735, addr: "제주특별자치도 제주시 신광로 43"},
+        {lat: 33.493809, lng: 126.530635, addr: "제주특별자치도 제주시 삼성로 45"},
+        {lat: 33.504212, lng: 126.529811, addr: "제주특별자치도 제주시 서광로 232"},
+        {lat: 33.472159, lng: 126.481230, addr: "제주특별자치도 제주시 연오로 115"},
+        {lat: 33.255104, lng: 126.512140, addr: "제주특별자치도 서귀포시 중정로 86"},
+        {lat: 33.250552, lng: 126.563044, addr: "제주특별자치도 서귀포시 남원읍 태위로 566"},
+        {lat: 33.243553, lng: 126.561339, addr: "제주특별자치도 서귀포시 남원읍 태위로 522"},
+        {lat: 33.346624, lng: 126.783581, addr: "제주특별자치도 서귀포시 표선면 녹산로 14"}
+    ];
+
     var hydrantMarkers = [];
     var isHydrantVisible = false;
 
@@ -228,8 +241,7 @@
         listEl.style.display = 'block';
     }
 
-    // CSV 파일 로드 및 소화전 마커 토글 함수
-    async function toggleHydrants() {
+    function toggleHydrants() {
         var btn = document.getElementById('btnHydrant');
         isHydrantVisible = !isHydrantVisible;
 
@@ -238,41 +250,7 @@
             btn.style.color = '#FFFFFF';
             btn.style.borderColor = '#B91C1C';
             btn.style.fontWeight = 'bold';
-
-            if (jejuHydrants.length === 0) {
-                try {
-                    let response = await fetch('jeju_hydrants.csv');
-                    let text = await response.text();
-                    let lines = text.split('\n');
-                    let headers = lines[0].split(',');
-
-                    let latIdx = headers.indexOf('위도');
-                    let lngIdx = headers.indexOf('경도');
-                    let addrIdx = headers.indexOf('소재지도로명주소');
-
-                    for (let i = 1; i < lines.length; i++) {
-                        let line = lines[i].trim();
-                        if (!line) continue;
-                        let cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                        if (cols.length > Math.max(latIdx, lngIdx)) {
-                            let lat = parseFloat(cols[latIdx]);
-                            let lng = parseFloat(cols[lngIdx]);
-                            let addr = cols[addrIdx] ? cols[addrIdx].replace(/"/g, '') : '제주도 소화전';
-                            if (!isNaN(lat) && !isNaN(lng)) {
-                                jejuHydrants.push({ lat, lng, addr });
-                            }
-                        }
-                    }
-                } catch (err) {
-                    console.error('소화전 데이터 로드 실패:', err);
-                    alert('jeju_hydrants.csv 파일을 불러오지 못했습니다. GitHub 저장소에 jeju_hydrants.csv 파일이 업로드되어 있는지 확인해주세요.');
-                    isHydrantVisible = false;
-                    btn.style.background = '#FEF2F2';
-                    btn.style.color = '#DC2626';
-                    return;
-                }
-            }
-
+            
             jejuHydrants.forEach(function(item) {
                 var coords = new kakao.maps.LatLng(item.lat, item.lng);
                 
@@ -295,7 +273,7 @@
                 hydrantMarkers.push(markerOverlay);
             });
             
-            alert('제주 관내 전체 소화전 ' + jejuHydrants.length + '개소를 지도에 표시했습니다.');
+            alert('제주 관내 주요 소화전 ' + jejuHydrants.length + '개소를 지도에 표시했습니다.');
         } else {
             btn.style.background = '#FEF2F2';
             btn.style.color = '#DC2626';
@@ -458,11 +436,15 @@
         });
 
         document.addEventListener('mouseup', function() {
-            if (isDragging) { isDragging = false; map.setDraggable(true); }
+            if (isDragging) {
+                isDragging = false;
+                map.setDraggable(true);
+            }
         });
 
         element.addEventListener('wheel', function(e) {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
             if (e.shiftKey) {
                 rotation += (e.deltaY < 0 ? 5 : -5);
             } else if (e.ctrlKey) {
