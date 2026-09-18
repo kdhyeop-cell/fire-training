@@ -3,41 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (고도화)</title>
+    <title>제주소방서 전술 배치도 (UI 개편본)</title>
     <!-- 검색 기능(services)이 추가된 카카오맵 API -->
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services"></script>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .header { background-color: #d32f2f; color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+        .header { background-color: #d32f2f; color: white; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
         
-        .search-box { margin-bottom: 15px; display: flex; gap: 10px; }
-        .search-box input { flex-grow: 1; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
-        .search-box button { padding: 10px 20px; font-size: 16px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        /* 1. 상단 툴바 (차량 및 도구) */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 20px; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; align-items: center; }
+        .tool-group { display: flex; align-items: center; gap: 10px; }
+        .tool-group-title { font-weight: bold; color: #444; font-size: 15px; margin-right: 5px; }
+        .divider { width: 1px; height: 30px; background: #ddd; margin: 0 10px; }
         
-        .container { display: flex; gap: 20px; height: 600px; }
-        
-        /* 왼쪽: 팔레트 */
-        .palette { width: 250px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow-y: auto; }
-        .palette h3 { margin-top: 0; color: #333; }
-        
-        .vehicle { background: #ffebee; border: 1px solid #d32f2f; padding: 10px; margin-bottom: 10px; text-align: center; cursor: grab; border-radius: 5px; font-weight: bold; transition: 0.2s; }
+        .vehicle { background: #ffebee; border: 1px solid #d32f2f; padding: 8px 12px; text-align: center; cursor: grab; border-radius: 5px; font-weight: bold; font-size: 14px; transition: 0.2s; user-select: none; }
         .vehicle:hover { background: #ffcdd2; }
         .vehicle:active { cursor: grabbing; }
 
-        .tool-btn { display: block; width: 100%; background: #e3f2fd; border: 1px solid #1976d2; color: #1976d2; padding: 10px; text-align: center; cursor: pointer; border-radius: 5px; font-weight: bold; margin-bottom: 10px; transition: 0.2s; }
+        .arrow { background: #e8f5e9; border: 1px solid #2e7d32; color: #2e7d32; }
+        .arrow:hover { background: #c8e6c9; }
+
+        .tool-btn { background: #e3f2fd; border: 1px solid #1976d2; color: #1976d2; padding: 8px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.2s; }
         .tool-btn:hover { background: #bbdefb; }
         .tool-btn.active { background: #1976d2; color: white; }
+
+        /* 2. 지도 및 검색창 영역 */
+        .search-box { display: flex; gap: 10px; margin-bottom: 10px; }
+        .search-box input { flex-grow: 1; padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+        .search-box button { padding: 10px 25px; font-size: 15px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
-        .map-container { flex-grow: 1; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .map-container { width: 100%; height: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #map { width: 100%; height: 100%; }
         
-        /* 차량 아이콘 */
-        .deployed-vehicle { 
-            background: #d32f2f; color: white; padding: 6px 10px; border-radius: 4px; 
-            font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; 
-            border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5); 
-            cursor: move; transform-origin: center; user-select: none;
-        }
+        /* 3. 하단 조작 가이드 영역 */
+        .guide-box { display: flex; justify-content: space-around; flex-wrap: wrap; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .guide-item { font-size: 14px; color: #555; }
+        .guide-item strong { color: #d32f2f; }
+        
+        /* 지도 위 오버레이 디자인 */
+        .deployed-vehicle { background: #d32f2f; color: white; padding: 6px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; text-align: center; white-space: nowrap; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.5); cursor: move; transform-origin: center; user-select: none; }
+        .deployed-arrow { background: transparent; color: #2e7d32; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); cursor: move; transform-origin: center; user-select: none; }
     </style>
 </head>
 <body>
@@ -46,37 +51,49 @@
         <h1>🚒 제주소방서 도상 훈련 전술 배치도</h1>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="keyword" placeholder="훈련 대상물 주소나 명칭을 검색하세요" onkeypress="if(event.keyCode==13) {searchPlaces();}">
-        <button onclick="searchPlaces()">검색</button>
-    </div>
-
-    <div class="container">
-        <div class="palette">
-            <h3>소방 차량</h3>
+    <!-- 상단 툴바 영역 (왼쪽에 있던 메뉴를 위로 이동) -->
+    <div class="toolbar">
+        <div class="tool-group">
+            <span class="tool-group-title">차량 부서</span>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">🚒 펌프차</div>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">💧 물탱크차</div>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">🪜 고가사다리차</div>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">🚑 구급차</div>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">👨‍🚒 지휘차</div>
-            
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
-            
-            <h3>전술 도구</h3>
-            <button id="hoseBtn" onclick="toggleHoseMode()" class="tool-btn">〰️ 수관 연장 (선 그리기)</button>
-
-            <div style="font-size: 12px; color: #555; margin-top: 20px; line-height: 1.6; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                <strong>[조작 가이드]</strong><br>
-                • <strong>특수차량:</strong> 사다리차 배치 시 10m 아웃트리거 반경 자동 표시<br>
-                • <strong>방향 회전:</strong> 차량 위에서 <span style="color: #d32f2f; font-weight: bold;">Shift + 마우스 휠</span><br>
-                • <strong>크기 조절:</strong> 차량 위에서 마우스 휠<br>
-                • <strong>수관 그리기:</strong> 버튼 클릭 ➔ 지도 클릭 ➔ <strong>우클릭으로 종료</strong>
-            </div>
         </div>
-
-        <div class="map-container" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div id="map"></div>
+        
+        <div class="divider"></div>
+        
+        <div class="tool-group">
+            <span class="tool-group-title">진입 방향</span>
+            <div class="vehicle arrow" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 화살표</div>
         </div>
+        
+        <div class="divider"></div>
+
+        <div class="tool-group">
+            <span class="tool-group-title">전술 도구</span>
+            <button id="hoseBtn" onclick="toggleHoseMode()" class="tool-btn">〰️ 수관 연장 (선 긋기)</button>
+        </div>
+    </div>
+
+    <!-- 지도 및 검색 영역 (가로 폭 100% 사용) -->
+    <div class="search-box">
+        <input type="text" id="keyword" placeholder="훈련 대상물 주소나 명칭을 검색하세요 (예: 제주소방서)" onkeypress="if(event.keyCode==13) {searchPlaces();}">
+        <button onclick="searchPlaces()">검색</button>
+    </div>
+
+    <div class="map-container" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div id="map"></div>
+    </div>
+
+    <!-- 하단 조작 가이드 영역 (한눈에 보이도록 가로 정렬) -->
+    <div class="guide-box">
+        <div class="guide-item">📍 <strong>배치 및 이동:</strong> 아이콘을 지도로 드래그</div>
+        <div class="guide-item">🔄 <strong>방향 회전:</strong> 아이콘 위에서 <strong>Shift + 휠</strong></div>
+        <div class="guide-item">🔍 <strong>크기 조절:</strong> 아이콘 위에서 마우스 휠</div>
+        <div class="guide-item">〰️ <strong>수관 그리기:</strong> 클릭으로 선 긋기 ➔ <strong>ESC/우클릭 종료</strong></div>
+        <div class="guide-item">🗑️ <strong>삭제(수정):</strong> 차량 더블클릭 (수관 선은 클릭)</div>
     </div>
 
     <script>
@@ -98,12 +115,16 @@
         }
 
         function allowDrop(ev) { ev.preventDefault(); }
-        function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); }
+        function drag(ev) { 
+            ev.dataTransfer.setData("text", ev.target.innerText); 
+            ev.dataTransfer.setData("type", ev.target.getAttribute("data-type") || "vehicle");
+        }
 
         function drop(ev) {
             ev.preventDefault();
-            var vehicleName = ev.dataTransfer.getData("text");
-            if(!vehicleName) return;
+            var itemName = ev.dataTransfer.getData("text");
+            var itemType = ev.dataTransfer.getData("type");
+            if(!itemName) return;
             
             var mapContainerRect = document.getElementById('map').getBoundingClientRect();
             var x = ev.clientX - mapContainerRect.left;
@@ -113,8 +134,8 @@
             var latlng = proj.coordsFromContainerPoint(new kakao.maps.Point(x, y));
 
             var content = document.createElement('div');
-            content.className = 'deployed-vehicle';
-            content.innerText = vehicleName;
+            content.className = itemType === 'arrow' ? 'deployed-arrow' : 'deployed-vehicle';
+            content.innerText = itemName;
             
             var customOverlay = new kakao.maps.CustomOverlay({
                 position: latlng,
@@ -124,28 +145,20 @@
             });
             customOverlay.setMap(map);
 
-            // 고가사다리차일 경우 아웃트리거 반경(원) 생성
             var outriggerCircle = null;
-            if (vehicleName.includes('고가사다리차')) {
+            if (itemName.includes('고가사다리차')) {
                 outriggerCircle = new kakao.maps.Circle({
-                    center: latlng,
-                    radius: 10, // 10미터 반경
-                    strokeWeight: 2,
-                    strokeColor: '#FF8C00',
-                    strokeOpacity: 0.8,
-                    strokeStyle: 'dashed',
-                    fillColor: '#FF8C00',
-                    fillOpacity: 0.2
+                    center: latlng, radius: 10, strokeWeight: 2, strokeColor: '#FF8C00',
+                    strokeOpacity: 0.8, strokeStyle: 'dashed', fillColor: '#FF8C00', fillOpacity: 0.2
                 });
                 outriggerCircle.setMap(map);
             }
 
-            addInteractiveFeatures(content, customOverlay, vehicleName, outriggerCircle); 
+            addInteractiveFeatures(content, customOverlay, itemName, outriggerCircle); 
         }
 
         function addInteractiveFeatures(element, overlay, name, outrigger) {
-            let isDragging = false;
-            let startX, startY, startOverlayPoint;
+            let isDragging = false, startX, startY, startOverlayPoint;
             let currentScale = 1, currentRotation = 0;
 
             element.addEventListener('mousedown', function(e) {
@@ -162,8 +175,6 @@
                 let newPoint = new kakao.maps.Point(startOverlayPoint.x + deltaX, startOverlayPoint.y + deltaY);
                 let newPos = map.getProjection().coordsFromContainerPoint(newPoint);
                 overlay.setPosition(newPos);
-                
-                // 차량 이동 시 아웃트리거 반경도 함께 이동
                 if (outrigger) outrigger.setPosition(newPos);
             });
 
@@ -183,59 +194,49 @@
             });
 
             element.addEventListener('dblclick', function() {
-                if(confirm(name + ' 배치를 취소하시겠습니까?')) {
+                if(confirm(name + ' 삭제하시겠습니까?')) {
                     overlay.setMap(null);
                     if(outrigger) outrigger.setMap(null);
                 }
             });
         }
 
-        // 수관 연장 (선 그리기) 로직
-        var isDrawingHose = false;
-        var hosePath = [];
-        var activePolyline = null;
+        // 수관 연장 로직
+        var isDrawingHose = false, hosePath = [], activePolyline = null;
 
         function toggleHoseMode() {
             isDrawingHose = !isDrawingHose;
             var btn = document.getElementById('hoseBtn');
             if(isDrawingHose) {
                 btn.classList.add('active');
-                btn.innerText = '🛑 수관 연장 종료 (ESC)';
+                btn.innerText = '🛑 그리기 종료 (ESC / 우클릭)';
                 mapContainer.style.cursor = 'crosshair';
-                hosePath = [];
-                activePolyline = null;
+                hosePath = []; activePolyline = null;
             } else {
                 btn.classList.remove('active');
-                btn.innerText = '〰️ 수관 연장 (선 그리기)';
+                btn.innerText = '〰️ 수관 연장 (선 긋기)';
                 mapContainer.style.cursor = 'default';
+                
+                if(activePolyline) {
+                    let finishedLine = activePolyline;
+                    kakao.maps.event.addListener(finishedLine, 'click', function() {
+                        if(confirm('이 수관 선을 삭제하시겠습니까?')) finishedLine.setMap(null);
+                    });
+                }
+                hosePath = []; activePolyline = null;
             }
         }
 
-        // 지도 클릭 시 수관 포인트 추가
         kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
             if(!isDrawingHose) return;
             hosePath.push(mouseEvent.latLng);
-
             if (!activePolyline) {
-                activePolyline = new kakao.maps.Polyline({
-                    map: map,
-                    path: hosePath,
-                    strokeWeight: 4,
-                    strokeColor: '#1976d2', // 파란색 수관
-                    strokeOpacity: 0.9,
-                    strokeStyle: 'solid'
-                });
-            } else {
-                activePolyline.setPath(hosePath);
-            }
+                activePolyline = new kakao.maps.Polyline({ map: map, path: hosePath, strokeWeight: 5, strokeColor: '#1976d2', strokeOpacity: 0.9, strokeStyle: 'solid' });
+            } else { activePolyline.setPath(hosePath); }
         });
 
-        // 마우스 우클릭 시 선 그리기 종료
-        kakao.maps.event.addListener(map, 'rightclick', function(mouseEvent) {
-            if(isDrawingHose) {
-                toggleHoseMode(); // 모드 종료
-            }
-        });
+        kakao.maps.event.addListener(map, 'rightclick', function() { if(isDrawingHose) toggleHoseMode(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && isDrawingHose) toggleHoseMode(); });
     </script>
 </body>
 </html>
