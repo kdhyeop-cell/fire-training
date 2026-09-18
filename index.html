@@ -19,7 +19,7 @@
         .container { display: flex; gap: 20px; height: 600px; }
         
         /* 왼쪽: 소방차량 팔레트 */
-        .palette { width: 220px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .palette { width: 250px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .vehicle { background: #ffebee; border: 1px solid #d32f2f; padding: 10px; margin-bottom: 10px; text-align: center; cursor: grab; border-radius: 5px; font-weight: bold; }
         .vehicle:active { cursor: grabbing; }
         
@@ -59,13 +59,14 @@
             <div class="vehicle" draggable="true" ondragstart="drag(event)">🚑 구급차</div>
             <div class="vehicle" draggable="true" ondragstart="drag(event)">👨‍🚒 지휘차</div>
             
-            <p style="font-size: 12px; color: #555; margin-top: 20px; line-height: 1.5;">
-                <strong>[조작 방법]</strong><br>
-                1. <strong>배치:</strong> 차량을 지도로 드래그<br>
-                2. <strong>이동:</strong> 배치된 차량을 다시 드래그<br>
-                3. <strong>크기 조절:</strong> 차량 위에서 마우스 휠 굴리기<br>
-                4. <strong>삭제:</strong> 배치된 차량 <strong>더블 클릭</strong>
-            </p>
+            <div style="font-size: 13px; color: #333; margin-top: 20px; line-height: 1.6; background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                <strong>[마우스 조작 방법]</strong><br>
+                • <strong>배치:</strong> 차량을 지도로 드래그<br>
+                • <strong>이동:</strong> 배치된 차량 드래그<br>
+                • <strong>크기 조절:</strong> 마우스 휠 굴리기<br>
+                • <span style="color: #d32f2f; font-weight: bold;">방향 회전: Shift + 마우스 휠</span><br>
+                • <strong>삭제:</strong> 차량 더블 클릭
+            </div>
         </div>
 
         <!-- 지도 영역 -->
@@ -88,7 +89,6 @@
                 alert('검색어를 입력해주세요!');
                 return false;
             }
-            // 장소 검색 후 지도 중심 이동
             ps.keywordSearch(keyword, function(data, status) {
                 if (status === kakao.maps.services.Status.OK) {
                     var bounds = new kakao.maps.LatLngBounds();
@@ -130,19 +130,20 @@
             });
             
             customOverlay.setMap(map);
-            addInteractiveFeatures(content, customOverlay, vehicleName); // 재드래그, 확대/축소, 삭제 이벤트 부여
+            addInteractiveFeatures(content, customOverlay, vehicleName); 
         }
 
-        // 4. 배치된 차량의 상호작용 (재이동, 확대/축소, 삭제)
+        // 4. 배치된 차량의 상호작용 (재이동, 확대/축소, 회전, 삭제)
         function addInteractiveFeatures(element, overlay, name) {
             let isDragging = false;
             let startX, startY, startOverlayPoint;
             let currentScale = 1; // 기본 크기
+            let currentRotation = 0; // 기본 각도 (도 단위)
 
             // 마우스 누를 때 (드래그 시작)
             element.addEventListener('mousedown', function(e) {
                 isDragging = true;
-                map.setDraggable(false); // 지도 이동 잠금
+                map.setDraggable(false); 
                 startX = e.clientX;
                 startY = e.clientY;
                 
@@ -167,22 +168,34 @@
             document.addEventListener('mouseup', function() {
                 if (isDragging) {
                     isDragging = false;
-                    map.setDraggable(true); // 지도 이동 잠금 해제
+                    map.setDraggable(true); 
                 }
             });
 
-            // 마우스 휠 (확대/축소)
+            // 마우스 휠 (확대/축소 및 회전)
             element.addEventListener('wheel', function(e) {
                 e.preventDefault();
                 e.stopPropagation(); // 지도가 같이 확대/축소되는 것 방지
                 
-                if (e.deltaY < 0) {
-                    currentScale += 0.1; // 확대
+                if (e.shiftKey) {
+                    // Shift 키를 누른 상태면 360도 회전 (15도씩)
+                    if (e.deltaY < 0) {
+                        currentRotation += 15; // 시계 방향
+                    } else {
+                        currentRotation -= 15; // 반시계 방향
+                    }
                 } else {
-                    currentScale -= 0.1; // 축소
-                    if(currentScale < 0.5) currentScale = 0.5; // 최소 크기 제한
+                    // Shift 키를 누르지 않으면 크기 조절
+                    if (e.deltaY < 0) {
+                        currentScale += 0.1; // 확대
+                    } else {
+                        currentScale -= 0.1; // 축소
+                        if(currentScale < 0.5) currentScale = 0.5; // 최소 크기 제한
+                    }
                 }
-                element.style.transform = `scale(${currentScale})`;
+                
+                // 크기와 각도를 동시에 CSS에 적용
+                element.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
             });
 
             // 더블 클릭 (삭제)
