@@ -56,8 +56,10 @@
         .clear-btn:hover { background: #FEE2E2; }
         
         .color-picker { width: 36px; height: 28px; padding: 0; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; background: white; }
-        .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 10px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: grab; margin-top: 10px; }
+        .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 10px; text-align: center; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: grab; }
         .arrow-dragger:hover { background: #DCFCE7; }
+        .hydrant-dragger { background: #FEF2F2; border: 1px dashed #FECACA; color: #DC2626; padding: 10px; text-align: center; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: grab; }
+        .hydrant-dragger:hover { background: #FEE2E2; }
 
         .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; font-size: 13px; }
         .reset-btn:hover { background: #DC2626; color: white; }
@@ -91,6 +93,9 @@
         .deployed-arrow { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
         .deployed-arrow svg { pointer-events: none; } 
         
+        .deployed-hydrant { cursor: move; transform-origin: center; user-select: none; display: flex; justify-content: center; align-items: center; background: white; border-radius: 50%; padding: 4px; border: 2px solid #DC2626; box-shadow: 0 4px 10px rgba(0,0,0,0.25); }
+        .deployed-hydrant svg { pointer-events: none; }
+
         .distanceInfo { background: rgba(15, 23, 42, 0.9); color: #F8FAFC; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     </style>
 </head>
@@ -130,7 +135,10 @@
                     <button onclick="startDrawing('CIRCLE')" class="tool-btn">⭕ 반경(위험)</button>
                     <button onclick="clearMeasure()" class="tool-btn clear-btn">🗑️ 선/도형 지우기</button>
                 </div>
-                <div class="arrow-dragger" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향 화살표 (드래그)</div>
+                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                    <div class="arrow-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="arrow">⬆️ 진입 방향</div>
+                    <div class="hydrant-dragger" style="flex: 1;" draggable="true" ondragstart="drag(event)" data-type="hydrant">🧯 소화전 배치</div>
+                </div>
             </div>
 
             <div>
@@ -165,7 +173,7 @@
         <div class="guide-overlay">
             <div class="guide-item"><span>📍</span> <span><strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</span></div>
             <div class="guide-item"><span>🔄</span> <span><strong>회전(Shift+휠):</strong> <strong>5도 단위 정밀 조절</strong></span></div>
-            <div class="guide-item"><span>↕️</span> <span><strong>화살표/차량 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
+            <div class="guide-item"><span>↕️</span> <span><strong>화살표/소화전/차량 변형:</strong> <strong style="color: #0284C7;">Ctrl/Alt + 휠</strong></span></div>
             <div class="guide-item"><span>✏️</span> <span><strong>선/도형:</strong> 마우스 호버 시 <strong>거리/면적 확인</strong></span></div>
         </div>
     </div>
@@ -308,7 +316,7 @@
         var itemName = ev.dataTransfer.getData("text");
         var itemCenter = ev.dataTransfer.getData("center");
         var itemType = ev.dataTransfer.getData("type");
-        if (!itemName) return;
+        if (!itemName && itemType !== 'arrow' && itemType !== 'hydrant') return;
 
         var fullName = itemCenter ? `[${itemCenter}] ${itemName}` : itemName;
         var mapRect = map.getNode().getBoundingClientRect();
@@ -319,6 +327,11 @@
             var color = document.getElementById('toolColor').value;
             content.className = 'deployed-arrow';
             content.innerHTML = `<svg width="50" height="80" viewBox="0 0 50 80" fill="none"><path d="M25 75 L25 5 M10 20 L25 5 L40 20" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            fullName = '진입 방향 화살표';
+        } else if (itemType === 'hydrant') {
+            content.className = 'deployed-hydrant';
+            content.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/><rect x="9" y="6" width="6" height="12" rx="2" fill="#EF4444" stroke="#991B1B" stroke-width="1"/><circle cx="12" cy="10" r="1.2" fill="white"/><path d="M7 11H9M15 11H17" stroke="#991B1B" stroke-width="1.2" stroke-linecap="round"/><path d="M7 15H9M15 15H17" stroke="#991B1B" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+            fullName = '소화전';
         } else {
             content.className = 'deployed-vehicle';
             content.innerText = fullName;
@@ -378,7 +391,7 @@
 
         element.addEventListener('dblclick', function(e) {
             e.stopPropagation();
-            if (confirm(`${name.includes('화살표') ? '화살표를' : name} 삭제하시겠습니까?`)) {
+            if (confirm(`${name.includes('화살표') || name.includes('소화전') ? name + '를' : name} 삭제하시겠습니까?`)) {
                 overlay.setMap(null);
                 if (outrigger) outrigger.setMap(null);
                 deployedObjects = deployedObjects.filter(obj => obj !== overlay && obj !== outrigger);
