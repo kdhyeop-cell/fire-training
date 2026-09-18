@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>제주소방서 전술 배치도 (UI 정렬 개선)</title>
+    <title>제주소방서 전술 배치도 (차량현황 2단 정렬)</title>
     <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=08073e9f7fc345da1255db5578263067&libraries=services,drawing"></script>
     <style>
         /* 폰트 및 기본 리셋 */
@@ -20,15 +20,14 @@
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
         /* ================= 좌측 사이드바 ================= */
-        .sidebar { width: 360px; background: #FFFFFF; box-shadow: 4px 0 24px rgba(0,0,0,0.06); display: flex; flex-direction: column; z-index: 10; flex-shrink: 0; border-right: 1px solid #E2E8F0; }
+        .sidebar { width: 380px; /* 2단 배열을 위해 넓이를 살짝(20px) 키움 */ background: #FFFFFF; box-shadow: 4px 0 24px rgba(0,0,0,0.06); display: flex; flex-direction: column; z-index: 10; flex-shrink: 0; border-right: 1px solid #E2E8F0; }
         
         .brand { background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); color: white; padding: 20px 15px; font-size: 18px; font-weight: 700; text-align: center; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 2; }
         .sidebar-content { padding: 20px 15px; overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 24px; }
         
-        /* 💡 섹션 타이틀 (완벽한 왼쪽 정렬 및 여백 조정) */
+        /* 섹션 타이틀 (완벽한 왼쪽 정렬) */
         .section-title { font-weight: 700; color: #0F172A; font-size: 15px; display: flex; justify-content: flex-start; align-items: center; margin-bottom: 12px; width: 100%; }
         .section-title::before { content: ''; display: inline-block; width: 4px; height: 16px; background: #DC2626; border-radius: 2px; margin-right: 8px; }
-        /* 타이틀 내 우측 요소(색상표)를 오른쪽 끝으로 밀어냄 */
         .section-title .title-right { margin-left: auto; display: flex; align-items: center; }
         
         /* 검색 및 폼 */
@@ -57,21 +56,24 @@
         .arrow-dragger { background: #F0FDF4; border: 1px dashed #86EFAC; color: #16A34A; padding: 10px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: grab; margin-top: 10px; transition: all 0.2s; }
         .arrow-dragger:hover { background: #DCFCE7; border-color: #4ADE80; color: #15803D; }
 
-        .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 24px; }
+        .reset-btn { background: white; border: 1px solid #DC2626; color: #DC2626; width: 100%; padding: 12px; margin-top: 12px; }
         .reset-btn:hover { background: #DC2626; color: white; box-shadow: 0 4px 14px rgba(220,38,38,0.25); }
 
+        /* 💡 차량 현황 2단 정렬 래퍼 (Grid Layout) */
+        .center-grid-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
         /* 차량 현황 아코디언 */
-        details.center-group { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: all 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-        details.center-group summary { padding: 12px 16px; font-weight: 600; cursor: pointer; user-select: none; outline: none; background: #F8FAFC; font-size: 13px; color: #334155; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; list-style: none; }
+        details.center-group { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; transition: all 0.3s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); height: max-content; }
+        details.center-group summary { padding: 10px 12px; font-weight: 600; cursor: pointer; user-select: none; outline: none; background: #F8FAFC; font-size: 12px; color: #334155; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; list-style: none; }
         details.center-group summary::-webkit-details-marker { display: none; }
-        details.center-group summary::after { content: '▼'; font-size: 10px; color: #94A3B8; transition: transform 0.3s ease; }
+        details.center-group summary::after { content: '▼'; font-size: 9px; color: #94A3B8; transition: transform 0.3s ease; }
         details.center-group[open] summary::after { transform: rotate(180deg); }
         details.center-group summary:hover { background: #F1F5F9; }
         details.center-group[open] summary { border-bottom: 1px solid #E2E8F0; background: #FFFFFF; color: #0F172A; }
         
-        .vehicle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 12px; background: #FFFFFF; }
-        .vehicle { background: #FFFFFF; border: 1px solid #E2E8F0; color: #475569; padding: 8px 4px; text-align: center; cursor: grab; border-radius: 6px; font-weight: 600; font-size: 12px; transition: all 0.2s; user-select: none; }
-        .vehicle:hover { border-color: #EF4444; color: #EF4444; background: #FEF2F2; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(239,68,68,0.15); }
+        .vehicle-grid { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; background: #FFFFFF; }
+        .vehicle { flex: 1 1 calc(50% - 4px); /* 한 줄에 2대씩(좁은 공간 최적화) */ background: #FFFFFF; border: 1px solid #E2E8F0; color: #475569; padding: 6px 2px; text-align: center; cursor: grab; border-radius: 4px; font-weight: 600; font-size: 11px; transition: all 0.2s; user-select: none; }
+        .vehicle:hover { border-color: #EF4444; color: #EF4444; background: #FEF2F2; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(239,68,68,0.15); }
         .vehicle:active { cursor: grabbing; transform: translateY(0); }
 
         /* ================= 우측 지도 ================= */
@@ -133,118 +135,121 @@
             <div>
                 <div class="section-title">차량 현황</div>
                 
-                <details class="center-group" open>
-                    <summary>현장대응단</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">지휘차</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">조사차</div>
-                    </div>
-                </details>
+                <!-- 💡 2단 그리드 래퍼 적용 -->
+                <div class="center-grid-wrapper">
+                    <details class="center-group" open>
+                        <summary>현장대응단</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">지휘차</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="대응단">조사차</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>이도</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">조연</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">소형사다리</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">고가사다리</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">특별구급</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">음압구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>이도</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">조연</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">소형사다리</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">고가사다리</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">특별구급</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="이도">음압구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>삼도</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>삼도</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="삼도">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>연동</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">굴절</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>연동</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">굴절</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="연동">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>오라</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>오라</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="오라">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>항만</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">화학</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>항만</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">화학</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="항만">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>추자</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>추자</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="추자">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>화북</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">굴절</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>화북</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">굴절</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="화북">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>노형</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">굴절</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>노형</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">굴절</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="노형">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>외도</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">물탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">무인파괴</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>외도</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">물탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">무인파괴</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="외도">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>아라</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">펌프</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">탱크</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">구급</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>아라</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">펌프</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">탱크</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="아라">구급</div>
+                        </div>
+                    </details>
 
-                <details class="center-group">
-                    <summary>구조</summary>
-                    <div class="vehicle-grid">
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">구조차</div>
-                        <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">생활안전</div>
-                    </div>
-                </details>
+                    <details class="center-group">
+                        <summary>구조</summary>
+                        <div class="vehicle-grid">
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">구조차</div>
+                            <div class="vehicle" draggable="true" ondragstart="drag(event)" data-center="구조">생활안전</div>
+                        </div>
+                    </details>
+                </div>
                 
                 <button onclick="resetAll()" class="reset-btn">🚨 배치 전체 초기화 (리셋)</button>
             </div>
