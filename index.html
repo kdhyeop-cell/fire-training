@@ -52,7 +52,7 @@
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tool-btn { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 13px; }
         .tool-btn:hover { background: #E0F2FE; }
-        .memo-tool-btn { background: #FFFBEB; border: 1px solid #FDE68A; color: #D97706; font-size: 13px; grid-column: span 2; }
+        .memo-tool-btn { background: #FFFBEB; border: 1px solid #FDE68A; color: #D97706; font-size: 13px; }
         .memo-tool-btn:hover { background: #FEF3C7; }
         .clear-btn { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; grid-column: span 2; }
         .clear-btn:hover { background: #FEE2E2; }
@@ -134,7 +134,7 @@
                     <div class="title-right"><input type="color" id="toolColor" class="color-picker" value="#0284C7" title="도구 색상"></div>
                 </div>
                 <div class="tool-grid">
-                    <button onclick="startDrawing('POLYLINE')" class="tool-btn" style="grid-column: span 2;">〰️ 수관/거리 연장</button>
+                    <button onclick="startDrawing('POLYLINE')" class="tool-btn">〰️ 수관/거리 연장</button>
                     <button onclick="addTextMemo()" class="tool-btn memo-tool-btn">📝 자유 텍스트 메모</button>
                     <button onclick="startDrawing('POLYGON')" class="tool-btn">🟩 면적(구역)</button>
                     <button onclick="startDrawing('CIRCLE')" class="tool-btn">⭕ 반경(위험)</button>
