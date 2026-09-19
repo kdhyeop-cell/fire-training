@@ -28,12 +28,12 @@
         .sidebar-guide-box div:last-child { margin-bottom: 0; }
         .sidebar-guide-box strong { color: #DC2626; }
 
-        /* 사이드바 뷰 컨테이너 (스크롤 분리) */
+        /* 사이드바 스크롤 콘텐츠 구역 */
         .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
         .sidebar-view { padding: 20px 15px; display: none; flex-direction: column; gap: 24px; }
         .sidebar-view.active { display: flex; }
 
-        /* [1번 전술 관제 다크 독] 좌측 최하단 고정 독 네비게이션 */
+        /* [전술 관제 다크 독] 좌측 최하단 고정 독 네비게이션 */
         .sidebar-bottom-dock { 
             flex-shrink: 0; 
             background: #0F172A; 
@@ -78,7 +78,7 @@
 
         /* 우측 메인 영역 */
         .main-container { flex-grow: 1; height: 100vh; position: relative; overflow: hidden; background: #F8FAFC; }
-        .main-view { width: 100%; height: 100%; display: none; }
+        .main-view { width: 100%; height: 100%; display: none; position: relative; }
         .main-view.active { display: flex; }
 
         /* 공통 폼 스타일 */
@@ -86,7 +86,6 @@
         .section-title::before { content: ''; width: 4px; height: 16px; background: #DC2626; border-radius: 2px; margin-right: 8px; }
         .section-title .title-right { margin-left: auto; display: flex; align-items: center; }
         
-        /* 검색창 가로 정렬 고정 */
         .search-box { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; width: 100%; }
         .search-box input[type="text"] { flex: 1; min-width: 0; width: auto; }
         .search-box button { flex-shrink: 0; white-space: nowrap; }
@@ -101,7 +100,7 @@
         .btn-danger-action { background: #DC2626; color: white; width: 100%; padding: 13px; font-size: 13px; font-weight: 700; border-radius: 8px; transition: background 0.2s; }
         .btn-danger-action:hover { background: #B91C1C; }
 
-        /* [전술 배치도] 기존 CSS 보존 */
+        /* [전술 배치도] 컨트롤 */
         .map-btns-wrapper { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
         .map-link-btn { flex: 1; }
         .kakaomap-btn { background: #FDE047; color: #854D0E; }
@@ -149,7 +148,6 @@
         .vehicle { flex: 1 1 calc(50% - 4px); background: #FFFFFF; border: 1px solid #E2E8F0; color: #475569; padding: 6px 2px; text-align: center; cursor: grab; border-radius: 4px; font-weight: 600; font-size: 11px; user-select: none; }
         .vehicle:hover { border-color: #EF4444; color: #EF4444; background: #FEF2F2; }
 
-        .map-area { flex-grow: 1; position: relative; display: flex; width: 100%; height: 100%; }
         #map { width: 100%; height: 100%; }
         
         .roadview-panel { position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: #000; z-index: 20; display: none; border-left: 2px solid #E2E8F0; box-shadow: -4px 0 24px rgba(0,0,0,0.15); }
@@ -168,10 +166,10 @@
 
         .distanceInfo { background: rgba(15, 23, 42, 0.9); color: #F8FAFC; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; transform: translate(15px, -15px); pointer-events: none; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
-        /* [신규 탭 메인 영역 전용 스타일] */
+        /* 메인 콘텐츠 스크롤 뷰 */
         .workspace-scroll { padding: 32px; width: 100%; height: 100%; overflow-y: auto; }
         
-        /* ① AI 시나리오 카드 그리드 */
+        /* ① AI 시나리오 그리드 */
         .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; margin-top: 16px; }
         .scenario-card { background: #FFFFFF; border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 16px rgba(0,0,0,0.04); display: flex; flex-direction: column; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
         .scenario-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
@@ -257,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- ② [🗺️ 전술 배치도] 사이드바 패널 (원형 100% 보존) -->
+            <!-- ② [🗺️ 전술 배치도] 사이드바 패널 -->
             <div id="sidebarMap" class="sidebar-view active">
                 <div>
                     <div class="section-title">장소 검색</div>
@@ -386,7 +384,7 @@
             </div>
         </div>
 
-        <!-- [1번 전술 관제 다크 독] 사이드바 최하단 고정 독 -->
+        <!-- [전술 관제 다크 독] 사이드바 최하단 고정 독 -->
         <div class="sidebar-bottom-dock">
             <button class="dock-btn" onclick="switchTab('scenario')">
                 <span class="dock-icon">🤖</span>
@@ -496,7 +494,7 @@
             </div>
         </div>
 
-        <!-- ② [🗺️ 전술 배치도] 메인 화면 (원형 100% 보존) -->
+        <!-- ② [🗺️ 전술 배치도] 메인 화면 -->
         <div id="mainMap" class="main-view active" ondrop="drop(event)" ondragover="allowDrop(event)">
             <div id="map"></div>
             
@@ -696,7 +694,7 @@
 </div>
 
 <script>
-    // ================= 1. 지도 및 로드뷰 초기화 (기존 코드 100% 보존) =================
+    // ================= 1. 지도 및 로드뷰 초기화 =================
     var map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 });
     var ps = new kakao.maps.services.Places();
 
@@ -721,25 +719,20 @@
     };
 
     function switchTab(tabKey) {
-        // 1) 브랜드 타이틀 변경
         document.getElementById('brandTitle').innerText = tabInfo[tabKey].title;
 
-        // 2) 사이드바 전환
         document.querySelectorAll('.sidebar-view').forEach(el => el.classList.remove('active'));
         var targetSidebar = document.getElementById(tabInfo[tabKey].sidebar);
         if (targetSidebar) targetSidebar.classList.add('active');
 
-        // 3) 메인 영역 전환
         document.querySelectorAll('.main-view').forEach(el => el.classList.remove('active'));
         var targetMain = document.getElementById(tabInfo[tabKey].main);
         if (targetMain) targetMain.classList.add('active');
 
-        // 4) 최하단 독 버튼 상태 동기화
         document.querySelectorAll('.dock-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('onclick').includes(tabKey));
         });
 
-        // 5) 지도 탭으로 복귀 시 렌더링 깨짐 방지
         if (tabKey === 'map') {
             setTimeout(function() {
                 map.relayout();
@@ -774,7 +767,7 @@
         alert('다면 평가 채점 결과 및 종합 강평이 클라우드에 성공적으로 저장되었습니다.\n최종 보고서 서식에 자동 반영되었습니다.');
     }
 
-    // ================= 3. 장소 검색 및 맵 타입 설정 (기존 코드 유지) =================
+    // ================= 3. 장소 검색 및 맵 타입 설정 =================
     function searchPlaces() {
         var keyword = document.getElementById('keyword').value;
         if (!keyword.trim()) return alert('검색어를 입력해주세요!');
@@ -858,7 +851,7 @@
         map.relayout();
     }
 
-    // ================= 4. 드로잉 매니저 도구 (기존 코드 유지) =================
+    // ================= 4. 드로잉 매니저 도구 =================
     var manager = new kakao.maps.drawing.DrawingManager({
         map: map,
         drawingMode: [kakao.maps.drawing.OverlayType.POLYLINE, kakao.maps.drawing.OverlayType.POLYGON, kakao.maps.drawing.OverlayType.CIRCLE],
@@ -891,7 +884,7 @@
         kakao.maps.event.addListener(overlay, 'mouseout', function() { hoverTooltip.setMap(null); });
     });
 
-    // ================= 5. 드래그 앤 드롭 객체 배치 및 상호작용 (기존 코드 유지) =================
+    // ================= 5. 드래그 앤 드롭 객체 배치 및 상호작용 =================
     var deployedObjects = [];
     function allowDrop(ev) { ev.preventDefault(); }
     function drag(ev) {
