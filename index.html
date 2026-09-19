@@ -29,7 +29,7 @@
         .sidebar-guide-box strong { color: #DC2626; }
 
         /* 사이드바 스크롤 콘텐츠 구역 */
-        .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-content-wrapper { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
         .sidebar-view { padding: 20px 16px; display: none; flex-direction: column; }
         .sidebar-view.active { display: flex; }
 
@@ -86,7 +86,7 @@
         #mainScenario.main-view.active { display: flex; flex-direction: row; width: 100%; height: 100%; overflow: hidden; }
         .scenario-center-area { flex: 1; height: 100%; overflow-y: auto; padding: 20px 28px 60px 28px; }
         
-        /* 3분할 우측 패널 (좌측 사이드바와 높이 및 규격 1:1 일치) */
+        /* 3분할 우측 패널 (좌측 사이드바와 높이 및 규격 1:1 완벽 통일) */
         .scenario-right-panel { 
             width: 380px; 
             flex-shrink: 0; 
@@ -106,6 +106,15 @@
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
+        }
+        .scenario-right-content {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         .scenario-right-footer {
             height: 62px;
@@ -223,7 +232,7 @@
         .opt-title { font-weight: 800; font-size: 13px; color: #0F172A; display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
         .opt-desc { font-size: 11px; color: #64748B; line-height: 1.35; }
 
-        /* [중앙 패널 직접 편집 서식 툴바] */
+        /* [직접 편집 서식 툴바 (A4 용지 바로 위)] */
         .editor-toolbar-container {
             max-width: 860px;
             margin: 0 auto 12px auto;
@@ -265,9 +274,9 @@
 
         .scenario-actions-bar { max-width: 860px; margin: 16px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
 
-        /* ================= A4 전용 인쇄 및 머리글/바닥글 제거 (@media print) ================= */
+        /* ================= A4 전용 인쇄 및 다중 페이지 대응 (@media print) ================= */
         @media print {
-            @page { size: A4 portrait; margin: 0; }
+            @page { size: A4 portrait; margin: 10mm; }
             html, body { background: #FFF !important; height: auto !important; overflow: visible !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
             .sidebar, .sidebar-bottom-dock, .scenario-right-panel, .scenario-selector-grid, .scenario-actions-bar, .guide-toggle-btn, .edit-hint-box, .editor-toolbar-container { 
                 display: none !important; 
@@ -276,9 +285,10 @@
             .main-view { display: none !important; }
             #mainScenario { display: block !important; }
 
-            .official-scenario-paper { box-shadow: none !important; border: none !important; padding: 12mm 14mm !important; margin: 0 auto !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
-            .official-table { border: 1.5px solid #000 !important; font-size: 9.8pt !important; line-height: 1.45 !important; page-break-inside: avoid !important; }
-            .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 7px !important; color: #000 !important; }
+            .official-scenario-paper { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 auto !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
+            .official-table { border: 1.5px solid #000 !important; font-size: 9.5pt !important; line-height: 1.45 !important; page-break-inside: auto !important; }
+            .official-table tr { page-break-inside: avoid !important; }
+            .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px !important; color: #000 !important; }
             .official-table th, .official-table td.header-col { background: #F1F5F9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .official-doc-radio { color: #1D4ED8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .driver-duty-box { color: #B45309 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -330,12 +340,12 @@
         <!-- 사이드바 스크롤 콘텐츠 구역 -->
         <div class="sidebar-content-wrapper">
             
-            <!-- ① [🤖 AI 시나리오] 좌측 패널 (간격 확장 + 지휘팀장 필드 추가) -->
+            <!-- ① [🤖 AI 시나리오] 좌측 패널 (지휘팀장 입력칸 대폭 확장 및 예시 불러오기 명칭 변경) -->
             <div id="sidebarScenario" class="sidebar-view active">
                 <div class="section-title">
                     <span>훈련 대상처 수기 설정</span>
                     <div class="title-right">
-                        <button class="guide-toggle-btn" style="background:#475569; font-size:11px; padding:4px 8px;" onclick="fillSampleScenario()">📝 사진 예시 불러오기</button>
+                        <button class="guide-toggle-btn" style="background:#475569; font-size:11px; padding:4px 8px;" onclick="fillSampleScenario()">📝 예시 불러오기</button>
                     </div>
                 </div>
                 
@@ -361,17 +371,17 @@
 
                 <div class="form-group">
                     <label>발화 지점 및 가상 상황</label>
-                    <textarea id="inSituation" rows="3" style="resize:none;" placeholder="예: 2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려" oninput="syncSheetFromInputs()"></textarea>
+                    <textarea id="inSituation" rows="3" style="resize:vertical;" placeholder="예: 2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려" oninput="syncSheetFromInputs()"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>공통사항</label>
-                    <textarea id="inCommon" rows="3" style="resize:none;" placeholder="예: ❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인" oninput="syncSheetFromInputs()"></textarea>
+                    <textarea id="inCommon" rows="3" style="resize:vertical;" placeholder="예: ❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인" oninput="syncSheetFromInputs()"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label>지휘팀장 중점 지휘사항</label>
-                    <textarea id="inLeaderDuty" rows="4" style="resize:none;" placeholder="지휘팀장 지휘관 활동 지침을 줄바꿈 단위로 입력하세요." oninput="syncSheetFromInputs()"></textarea>
+                    <textarea id="inLeaderDuty" rows="7" style="resize:vertical; min-height:140px; line-height:1.55;" placeholder="- 지휘차 현장도착 후 현장 상황 파악 및 고정지휘 실시&#10;- 인명검색 및 화점층 진압 지시&#10;- 연기통제 및 배연 실시 지시&#10;- 잔류연기 확인 후 훈련 종료 및 합동 강평" oninput="syncSheetFromInputs()"></textarea>
                 </div>
             </div>
 
@@ -558,7 +568,7 @@
                     <span>✍️</span> <strong>직접 편집 안내:</strong> 아래 서식의 글자를 드래그하여 선택한 후 서식 툴바로 글자체, 크기, 색상을 즉시 변경할 수 있습니다.
                 </div>
 
-                <!-- [신규 서식 편집 툴바 (A4 용지 바로 위)] -->
+                <!-- [서식 편집 툴바 (A4 용지 바로 위)] -->
                 <div class="editor-toolbar-container">
                     <div class="toolbar-group">
                         <select class="toolbar-select" onchange="formatDoc('fontName', this.value); this.selectedIndex=0;" title="글꼴 변경">
@@ -606,11 +616,11 @@
                     </div>
                 </div>
 
-                <!-- [공식 소방훈련 서식 뷰] -->
+                <!-- [공식 소방훈련 서식 뷰 (지휘팀장 초기 플레이스홀더 정리)] -->
                 <div class="official-scenario-paper" id="officialScenarioSheet">
                     <div class="official-doc-header">
                         <div class="official-doc-title">【현장에 강한 제주소방서 현장대응단】</div>
-                        <div class="official-doc-radio" id="docRadio" contenteditable="true">※ 무전: 재난통신-제주소방02(채널 변경 없음)</div>
+                        <div class="official-doc-radio" id="docRadio" contenteditable="true">※ 무전: (무전 채널을 입력하세요)</div>
                     </div>
 
                     <table class="official-table">
@@ -652,11 +662,8 @@
                         </tbody>
                         <tr>
                             <td class="header-col">지휘팀장</td>
-                            <td id="docLeader" contenteditable="true" style="line-height: 1.65;">
-                                - 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시<br>
-                                - 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태를 보고 받음<br>
-                                - 현장 통제라인 구축 및 인명구조·배연 진압 지시<br>
-                                - 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언 및 합동 강평
+                            <td id="docLeader" contenteditable="true" style="line-height: 1.65; color: #64748B;">
+                                (지휘팀장 중점 지휘사항을 입력하세요)
                             </td>
                         </tr>
                     </table>
@@ -669,7 +676,7 @@
                 </div>
             </div>
 
-            <!-- 3분할: 우측 동원 차량 편성 패널 (좌측 사이드바와 높이 및 규격 1:1 통일) -->
+            <!-- 3분할: 우측 동원 차량 편성 패널 (스크롤 최적화 및 좌측 사이드바와 1:1 통일) -->
             <div class="scenario-right-panel">
                 <div class="scenario-right-header">
                     <div class="section-title" style="margin-bottom: 0;">
@@ -677,7 +684,7 @@
                     </div>
                 </div>
 
-                <div style="flex-grow: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 8px;">
+                <div class="scenario-right-content">
                     <!-- 1. 현장대응단 -->
                     <details class="center-group" id="chkgrp-대응단"><summary>현장대응단</summary>
                         <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
@@ -1020,8 +1027,14 @@
         document.getElementById('docRadio').innerText = radio ? `※ 무전: ${radio}` : '※ 무전: (무전 채널을 입력하세요)';
         document.getElementById('docSituation').innerText = situation || '(발화 지점 및 가상 상황을 입력하세요)';
         document.getElementById('docCommon').innerText = common || '(공통 지침을 입력하세요)';
+        
+        var leaderDocEl = document.getElementById('docLeader');
         if (leaderDuty) {
-            document.getElementById('docLeader').innerHTML = leaderDuty.replace(/\n/g, '<br>');
+            leaderDocEl.innerHTML = leaderDuty.replace(/\n/g, '<br>');
+            leaderDocEl.style.color = '#000000';
+        } else {
+            leaderDocEl.innerHTML = '(지휘팀장 중점 지휘사항을 입력하세요)';
+            leaderDocEl.style.color = '#64748B';
         }
     }
 
@@ -1111,7 +1124,7 @@
                 desc = `건물 B방면 부서, 대용량 포소화약제 혼합 방수 라인 구축 및 인접 연소우려 대상 방어 주수`;
             } else if (item.name.includes("지휘")) {
                 label = `(${item.center}지휘차)`;
-                desc = `현장 도착 즉시 지휘권 선언, 무전 채널(제주소방02) 단일화 통제 및 A방면 고정지휘소 설치`;
+                desc = `현장 도착 즉시 지휘권 선언, 무전 채널 통제 및 A방면 고정지휘소 설치`;
                 driver = `현장 출동 대원 안전관리 및 진입 대원 명부 작성 관리`;
             } else {
                 label = `(${item.center}${item.name})`;
@@ -1127,26 +1140,26 @@
             tacticsTbody.appendChild(tr);
         });
 
-        // 2-4. 지휘팀장 임무 SOP 자동 렌더링
-        var leaderDuties = [
-            "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시",
-            "- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태를 보고 받음",
-            hasVictim ? "- 거동불가 환자 다수 → 공격전략 유지, 인명구조 최우선 임무 재지시" : "- 연소 확대 저지선 구축 및 단계별 진압 작전 통제",
-            "- 연기통제: 계단실 방화문 폐쇄·옥상문 개방, 비상탈출로 확보",
-            "- 초진 판단 후 배연 실시",
-            "- 배연 완료 후 2차 정밀 인명검색 실시 지시",
-            "- 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언",
-            "- 소방대 및 자위소방대 합동 강평 실시"
-        ];
-        var leaderHtml = leaderDuties.join('<br>');
-        document.getElementById('docLeader').innerHTML = leaderHtml;
-        document.getElementById('inLeaderDuty').value = leaderDuties.join('\n');
+        // 2-4. 지휘팀장 임무 SOP 자동 생성 (좌측 입력란이 비어있을 때 자동 구성)
+        if (!document.getElementById('inLeaderDuty').value.trim()) {
+            var leaderDuties = [
+                "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시",
+                "- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태를 보고 받음",
+                hasVictim ? "- 거동불가 환자 다수 → 공격전략 유지, 인명구조 최우선 임무 재지시" : "- 연소 확대 저지선 구축 및 단계별 진압 작전 통제",
+                "- 연기통제: 계단실 방화문 폐쇄·옥상문 개방, 비상탈출로 확보",
+                "- 초진 판단 후 배연 실시",
+                "- 배연 완료 후 2차 정밀 인명검색 실시 지시",
+                "- 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언",
+                "- 소방대 및 자위소방대 합동 강평 실시"
+            ];
+            document.getElementById('inLeaderDuty').value = leaderDuties.join('\n');
+        }
 
         syncSheetFromInputs();
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // 사진 속 예시(연동365요양원) 1초 자동 완성 도우미
+    // [📝 예시 불러오기] 버튼 클릭 시에만 완전한 예시 세트 로딩
     function fillSampleScenario() {
         document.getElementById('inTargetName').value = "연동365요양원";
         document.getElementById('inFacilityType').value = "노유자시설";
@@ -1154,6 +1167,7 @@
         document.getElementById('inRadioChannel').value = "재난통신-제주소방02(채널 변경 없음)";
         document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
         document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인";
+        document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시\n- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태 보고 받음\n- 거동불가 환자 다수 → 공격전략 유지, 특수차 연계 옥상 및 상층부 인명구조 최우선 지시\n- 계단실 연기차단 및 옥상 비상구 확보\n- 초진 판단 후 배연 실시 및 2차 정밀검색 지시\n- 안전확보 확인 후 훈련 종료 및 합동 강평";
 
         document.querySelectorAll('.veh-chk').forEach(chk => chk.checked = false);
         setVehiclesChecked([
@@ -1171,26 +1185,34 @@
             if (grp) grp.open = true;
         });
 
+        // 탭 상태 옵션 2 카드로 동기화
+        document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('optCard-2').classList.add('active');
+
         runSOPEngine();
     }
 
-    // 3개 프리셋 옵션 카드 선택 시
+    // 3개 프리셋 옵션 카드 선택 시: [사용자 입력 대상처 보존] + [작전 유형만 전환]
     function applyPresetScenario(presetId) {
         document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
         var activeCard = document.getElementById('optCard-' + presetId);
         if (activeCard) activeCard.classList.add('active');
 
+        // 기존 차량 체크 해제
         document.querySelectorAll('.veh-chk').forEach(chk => chk.checked = false);
 
-        if (presetId === 2) {
-            fillSampleScenario();
-        } else if (presetId === 1) {
+        // 대상처 기본값이 없으면 플레이스홀더 성격으로만 채움
+        if (!document.getElementById('inTargetName').value.trim()) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
             document.getElementById('inRadioChannel').value = "재난통신-제주소방02(채널 변경 없음)";
-            document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 설비 정상 작동 및 수평 연소 확대 중";
-            document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 계단실 연기 차단";
+        }
+
+        if (presetId === 1) { // Option 1: 표준 대응형
+            document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 설비 정상 작동 중이며 복도로 화재 연소 확대 중";
+            document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 옥내소화전 송수구 점령 및 수평 연소확대 저지";
+            document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 즉시 선착대장 지휘권 인수 및 고정지휘소 설치\n- 1선착 펌프대 옥내 진입 지원 및 2선착대 연소 확대 저지선 구축 지시\n- 인접 실 수평 연소 저지 확인 후 주 화점 집중 주수\n- 완진 선언 후 잔화 정리 및 장비 점검";
             setVehiclesChecked([
                 { center: "연동", veh: "펌프" },
                 { center: "연동", veh: "물탱크" },
@@ -1198,14 +1220,31 @@
                 { center: "노형", veh: "펌프" },
                 { center: "자위대", veh: "자위소방대" }
             ]);
-            runSOPEngine();
-        } else if (presetId === 3) {
-            document.getElementById('inTargetName').value = "연동365요양원";
-            document.getElementById('inFacilityType').value = "노유자시설";
-            document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
-            document.getElementById('inRadioChannel').value = "재난통신-제주소방02(채널 변경 없음)";
+            ['연동', '노형', '자위대'].forEach(c => {
+                var grp = document.getElementById('chkgrp-' + c);
+                if (grp) grp.open = true;
+            });
+        } else if (presetId === 2) { // Option 2: 인명구조 집중형
+            document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
+            document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 굴절차 전개 공간 우선 확보 및 중증환자 임시의료소 신속 인계";
+            document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 후 현장 상황 파악, 지휘권 선언\n- 거동불가 환자 다수 확인 → 인명구조 최우선 작전 지시\n- 특수차(굴절) C방면 부서 및 구조대 연계 옥상 요구조자 구조 지시\n- 계단실 방화문 폐쇄 및 비상탈출로 확보, 배연 및 2차 정밀검색 실시\n- 훈련 종료 선언 및 합동 강평";
+            setVehiclesChecked([
+                { center: "연동", veh: "펌프" },
+                { center: "연동", veh: "물탱크" },
+                { center: "연동", veh: "굴절" },
+                { center: "연동", veh: "구급" },
+                { center: "노형", veh: "펌프" },
+                { center: "구조", veh: "구조차" },
+                { center: "자위대", veh: "자위소방대" }
+            ]);
+            ['연동', '노형', '구조', '자위대'].forEach(c => {
+                var grp = document.getElementById('chkgrp-' + c);
+                if (grp) grp.open = true;
+            });
+        } else if (presetId === 3) { // Option 3: 자원제한형
             document.getElementById('inSituation').value = "인근 상수도 배관 파손으로 소화전 단수 판정, 2층 화재가 급격히 확대되는 비상 수리 결핍 상황";
-            document.getElementById('inCommon').value = "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 집중 방수";
+            document.getElementById('inCommon').value = "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 고압 집중 방수";
+            document.getElementById('inLeaderDuty').value = "- 소화전 단수 판정 즉시 비상 급수체계 가동 지시\n- 중요물탱크차-보조물탱크차 순환 릴레이 급수 라인 구축 통제\n- 수조 잔량 실시간 모니터링 및 단계별 방수량 통제\n- 수리 확보 완료 후 전면 진압 작전 전환 및 훈련 종료 강평";
             setVehiclesChecked([
                 { center: "연동", veh: "펌프" },
                 { center: "연동", veh: "물탱크" },
@@ -1213,8 +1252,13 @@
                 { center: "구조", veh: "구조차" },
                 { center: "자위대", veh: "자위소방대" }
             ]);
-            runSOPEngine();
+            ['연동', '노형', '구조', '자위대'].forEach(c => {
+                var grp = document.getElementById('chkgrp-' + c);
+                if (grp) grp.open = true;
+            });
         }
+
+        runSOPEngine();
     }
 
     function setVehiclesChecked(list) {
