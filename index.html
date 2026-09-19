@@ -30,7 +30,7 @@
 
         /* 사이드바 스크롤 콘텐츠 구역 */
         .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
-        .sidebar-view { padding: 20px 15px; display: none; flex-direction: column; gap: 20px; }
+        .sidebar-view { padding: 20px 15px; display: none; flex-direction: column; gap: 18px; }
         .sidebar-view.active { display: flex; }
 
         /* [전술 관제 다크 독] 좌측 최하단 고정 독 네비게이션 */
@@ -100,7 +100,7 @@
         .btn-danger-action { background: #DC2626; color: white; width: 100%; padding: 13px; font-size: 13px; font-weight: 700; border-radius: 8px; transition: background 0.2s; }
         .btn-danger-action:hover { background: #B91C1C; }
 
-        /* [차량 체크박스 선택 그리드 전용 스타일] */
+        /* 차량 체크박스 전용 스타일 */
         .veh-check-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #334155; padding: 4px 6px; border-radius: 6px; cursor: pointer; user-select: none; }
         .veh-check-item:hover { background: #F1F5F9; }
         .veh-check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: #DC2626; cursor: pointer; margin: 0; }
@@ -143,7 +143,7 @@
 
         .center-grid-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         details.center-group { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; height: max-content; }
-        details.center-group summary { padding: 10px 12px; font-weight: 600; cursor: pointer; background: #F8FAFC; font-size: 12px; color: #334155; display: flex; justify-content: space-between; align-items: center; list-style: none; }
+        details.center-group summary { padding: 9px 11px; font-weight: 600; cursor: pointer; background: #F8FAFC; font-size: 12px; color: #334155; display: flex; justify-content: space-between; align-items: center; list-style: none; }
         details.center-group summary::-webkit-details-marker { display: none; }
         details.center-group summary::after { content: '▼'; font-size: 9px; color: #94A3B8; transition: transform 0.3s; }
         details.center-group[open] summary::after { transform: rotate(180deg); }
@@ -175,8 +175,8 @@
         /* 메인 콘텐츠 스크롤 뷰 */
         .workspace-scroll { padding: 24px 32px 60px 32px; width: 100%; height: 100%; overflow-y: auto; }
         
-        /* ① AI 시나리오 상단 3개 옵션 카드 */
-        .scenario-selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+        /* ① AI 시나리오 상단 3개 프리셋 옵션 카드 */
+        .scenario-selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
         .scenario-opt-card { background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .scenario-opt-card:hover { border-color: #CBD5E1; transform: translateY(-2px); }
         .scenario-opt-card.active { border-color: #DC2626; background: #FFF; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12); }
@@ -206,11 +206,11 @@
 
         .scenario-actions-bar { max-width: 920px; margin: 18px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
 
-        /* ================= A4 전용 인쇄 및 브라우저 머리글/바닥글 제거 (@media print) ================= */
+        /* ================= A4 전용 인쇄 및 머리글/바닥글 제거 (@media print) ================= */
         @media print {
             @page { 
                 size: A4 portrait; 
-                margin: 0; /* 브라우저 기본 머리글(제목, 일시) 및 바닥글(URL, 페이지 번호) 강제 제거 */
+                margin: 0; 
             }
             html, body { 
                 background: #FFF !important; 
@@ -220,7 +220,6 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            /* 인쇄 시 불필요한 화면 UI 숨김 */
             .sidebar, .sidebar-bottom-dock, .scenario-selector-grid, .scenario-actions-bar, .guide-toggle-btn, .edit-hint-box { 
                 display: none !important; 
             }
@@ -234,11 +233,10 @@
             .main-view { display: none !important; }
             #mainScenario { display: block !important; padding: 0 !important; }
 
-            /* 종이 실제 여백 부여 및 A4 규격 맞춤 */
             .official-scenario-paper { 
                 box-shadow: none !important; 
                 border: none !important; 
-                padding: 14mm 16mm !important; /* 문서 실제 여백 */
+                padding: 14mm 16mm !important; 
                 margin: 0 auto !important; 
                 width: 100% !important; 
                 max-width: 100% !important; 
@@ -318,7 +316,7 @@
         <!-- 사이드바 스크롤 콘텐츠 구역 -->
         <div class="sidebar-content-wrapper">
             
-            <!-- ① [🤖 AI 시나리오] 사이드바 패널 -->
+            <!-- ① [🤖 AI 시나리오] 사이드바 패널 (수기 입력 + 공통사항 + 관할 전 부서 및 자위소방대 체크박스) -->
             <div id="sidebarScenario" class="sidebar-view">
                 <div>
                     <div class="section-title">훈련 대상처 수기 설정</div>
@@ -336,10 +334,14 @@
                     <input type="text" id="inRadioChannel" value="재난통신-제주소방02(채널 변경 없음)" placeholder="무전 채널 기입" oninput="syncSheetFromInputs()" style="margin-bottom:10px;">
 
                     <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">발화 지점 및 가상 상황</label>
-                    <textarea id="inSituation" rows="3" style="margin-bottom:14px; resize:none;" oninput="syncSheetFromInputs()">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</textarea>
+                    <textarea id="inSituation" rows="3" style="margin-bottom:10px; resize:none;" oninput="syncSheetFromInputs()">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</textarea>
+
+                    <!-- [1번 반영] 가상상황 아래 공통사항 입력 구역 -->
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">공통사항</label>
+                    <textarea id="inCommon" rows="3" style="margin-bottom:14px; resize:none;" oninput="syncSheetFromInputs()">❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인</textarea>
                 </div>
 
-                <!-- 출동 동원 차량 체크박스 아코디언 -->
+                <!-- [2번 반영] 동원 차량 편성: 전술배치도 순서 100% 동일 + 자위소방대 추가 -->
                 <div>
                     <div class="section-title">
                         <span>동원 차량 편성 (체크 선택)</span>
@@ -347,7 +349,35 @@
                     <div style="font-size:11px; color:#64748B; margin-bottom:8px;">체크 시 우측 서식의 동원장비 및 작전 행이 자동 구성됩니다.</div>
                     
                     <div class="center-grid-wrapper" style="max-height: 280px; overflow-y: auto;">
-                        <details class="center-group" open><summary>연동</summary>
+                        <!-- 1. 현장대응단 -->
+                        <details class="center-group" id="chkgrp-대응단" open><summary>현장대응단</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="지휘차" onchange="onVehicleCheckChanged()"> 지휘차</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="조사차" onchange="onVehicleCheckChanged()"> 조사차</label>
+                            </div>
+                        </details>
+                        <!-- 2. 이도 -->
+                        <details class="center-group" id="chkgrp-이도"><summary>이도</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="조연" onchange="onVehicleCheckChanged()"> 조연</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="소형사다리" onchange="onVehicleCheckChanged()"> 소형사다리</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="고가사다리" onchange="onVehicleCheckChanged()"> 고가사다리</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="특별구급" onchange="onVehicleCheckChanged()"> 특별구급</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="음압구급" onchange="onVehicleCheckChanged()"> 음압구급</label>
+                            </div>
+                        </details>
+                        <!-- 3. 삼도 -->
+                        <details class="center-group" id="chkgrp-삼도"><summary>삼도</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="삼도" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="삼도" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="삼도" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 4. 연동 -->
+                        <details class="center-group" id="chkgrp-연동" open><summary>연동</summary>
                             <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="펌프" checked onchange="onVehicleCheckChanged()"> 펌프</label>
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="물탱크" checked onchange="onVehicleCheckChanged()"> 물탱크</label>
@@ -355,36 +385,75 @@
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="구급" checked onchange="onVehicleCheckChanged()"> 구급</label>
                             </div>
                         </details>
-                        <details class="center-group" open><summary>노형</summary>
+                        <!-- 5. 오라 -->
+                        <details class="center-group" id="chkgrp-오라"><summary>오라</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="오라" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="오라" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="오라" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 6. 항만 -->
+                        <details class="center-group" id="chkgrp-항만"><summary>항만</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="항만" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="항만" data-veh="화학" onchange="onVehicleCheckChanged()"> 화학</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="항만" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 7. 추자 -->
+                        <details class="center-group" id="chkgrp-추자"><summary>추자</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="추자" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="추자" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 8. 화북 -->
+                        <details class="center-group" id="chkgrp-화북"><summary>화북</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="굴절" onchange="onVehicleCheckChanged()"> 굴절</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 9. 노형 -->
+                        <details class="center-group" id="chkgrp-노형" open><summary>노형</summary>
                             <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="펌프" checked onchange="onVehicleCheckChanged()"> 펌프</label>
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="굴절" onchange="onVehicleCheckChanged()"> 굴절</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
                             </div>
                         </details>
-                        <details class="center-group" open><summary>구조</summary>
+                        <!-- 10. 외도 -->
+                        <details class="center-group" id="chkgrp-외도"><summary>외도</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="외도" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="외도" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="외도" data-veh="무인파괴" onchange="onVehicleCheckChanged()"> 무인파괴</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="외도" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 11. 아라 -->
+                        <details class="center-group" id="chkgrp-아라"><summary>아라</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="아라" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="아라" data-veh="탱크" onchange="onVehicleCheckChanged()"> 탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="아라" data-veh="구급" onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <!-- 12. 구조 -->
+                        <details class="center-group" id="chkgrp-구조" open><summary>구조</summary>
                             <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="구조" data-veh="구조차" checked onchange="onVehicleCheckChanged()"> 구조차</label>
                                 <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="구조" data-veh="생활안전" onchange="onVehicleCheckChanged()"> 생활안전</label>
                             </div>
                         </details>
-                        <details class="center-group"><summary>현장대응단</summary>
+                        <!-- 13. [추가] 자위소방대 -->
+                        <details class="center-group" id="chkgrp-자위대" open><summary>자위소방대</summary>
                             <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="지휘차" onchange="onVehicleCheckChanged()"> 지휘차</label>
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="조사차" onchange="onVehicleCheckChanged()"> 조사차</label>
-                            </div>
-                        </details>
-                        <details class="center-group"><summary>이도</summary>
-                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="고가사다리" onchange="onVehicleCheckChanged()"> 고가사다리</label>
-                            </div>
-                        </details>
-                        <details class="center-group"><summary>화북</summary>
-                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
-                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="자위대" data-veh="자위소방대" checked onchange="onVehicleCheckChanged()"> 자위소방대</label>
                             </div>
                         </details>
                     </div>
@@ -607,7 +676,7 @@
                                 ❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="rowCivic">
                             <td class="header-col">자위소방대</td>
                             <td id="docCivic" contenteditable="true">
                                 ① 화재신고, 초기소화(가능 범위 내) 실시, ② 병실별 환자 현황 및 거동불가 환자 위치를 소방대에게 제공, ③ 연기 반대방향으로 수평피난 유도 후 필요 시 수직피난, 계단실 방화문 폐쇄
@@ -841,7 +910,7 @@
 </div>
 
 <script>
-    // 차량별 전술 라이브러리
+    // 차량별 기본 전술 라이브러리 (사진 속 표준 양식 기준)
     var vehicleTacticsLibrary = {
         "연동_펌프": {
             label: "(연동펌프)<br>1선 펌프차",
@@ -887,48 +956,89 @@
 
     var currentScenarioPreset = 2;
 
+    // 1. 좌측 텍스트 입력 시 우측 서식 표 실시간 동기화 (공통사항 포함)
     function syncSheetFromInputs() {
         var targetName = document.getElementById('inTargetName').value;
         var facType = document.getElementById('inFacilityType').value;
         var spec = document.getElementById('inBuildingSpec').value;
         var radio = document.getElementById('inRadioChannel').value;
         var situation = document.getElementById('inSituation').value;
+        var common = document.getElementById('inCommon').value;
 
         document.getElementById('docTarget').innerText = `${targetName}(${facType})`;
         document.getElementById('docBuildingSpec').innerText = `※건물현황: ${spec}`;
         document.getElementById('docRadio').innerText = `※ 무전: ${radio}`;
         document.getElementById('docSituation').innerText = situation;
+        document.getElementById('docCommon').innerText = common;
     }
 
+    // 2. 동원 차량 체크박스 변경 시 동원장비 텍스트 및 작전 행 실시간 렌더링
     function onVehicleCheckChanged() {
         var checkedBoxes = document.querySelectorAll('.veh-chk:checked');
         var centerMap = {};
         var selectedList = [];
+        var hasCivic = false;
 
         checkedBoxes.forEach(chk => {
             var c = chk.getAttribute('data-center');
             var v = chk.getAttribute('data-veh');
+            if (c === "자위대") {
+                hasCivic = true;
+                return;
+            }
             selectedList.push({ center: c, name: v });
             if (!centerMap[c]) centerMap[c] = [];
             centerMap[c].push(v);
         });
 
+        // 2-1. [동원장비] 요약 텍스트 자동 조합
         var eqArr = [];
         for (var c in centerMap) {
             eqArr.push(`${c}(${centerMap[c].join(', ')})`);
         }
         document.getElementById('docEquipment').innerText = eqArr.length > 0 ? eqArr.join(', ') : '선택된 출동 장비 없음';
 
+        // 2-2. 자위소방대 행 노출 제어
+        var rowCivic = document.getElementById('rowCivic');
+        if (rowCivic) {
+            rowCivic.style.display = hasCivic ? '' : 'none';
+        }
+
+        // 2-3. 차량별 전술 전개 행 동적 생성
         var tacticsTbody = document.getElementById('docVehicleTactics');
         tacticsTbody.innerHTML = '';
 
         selectedList.forEach(item => {
             var key = `${item.center}_${item.name}`;
-            var defaultTactic = vehicleTacticsLibrary[key] || {
-                label: `(${item.center}${item.name})`,
-                desc: `건물 주변 부서, 현장 상황에 맞춘 임무 수행 및 무전 보고`,
-                driver: ""
-            };
+            var defaultTactic = vehicleTacticsLibrary[key];
+
+            // 등록되지 않은 차량도 안전하게 기본 템플릿 생성
+            if (!defaultTactic) {
+                var label = `(${item.center}${item.name})`;
+                var desc = "건물 방면 부서, 현장 상황에 맞춘 임무 수행 및 무전 보고";
+                var driver = "";
+                if (item.name.includes("펌프")) {
+                    desc = "건물 방면 부서, 소화전 점령 및 40mm 호스 전개 화재진압";
+                    driver = "펌프차 운전은 인근 소화전 점령 중계급수 및 송수압력 유지";
+                } else if (item.name.includes("물탱크") || item.name.includes("탱크")) {
+                    desc = "선착 펌프차 보조 송수 및 연속 중계급수 체계 유지";
+                    driver = "수조 잔량 실시간 확인 및 비상급수 대기";
+                } else if (item.name.includes("굴절") || item.name.includes("사다리")) {
+                    desc = "지반 및 전선 등 장애물 확인 후 붐/사다리 전개, 상층부 인명구조";
+                    driver = "아웃트리거 전개 공간 10m 확보 및 전도 방지 모니터링";
+                } else if (item.name.includes("구급")) {
+                    desc = "안전구역 내 임시응급의료소 설치, 환자 인계 및 응급처치 이송";
+                } else if (item.name.includes("화학")) {
+                    desc = "포소화약제 혼합 방수 라인 구축 및 유류/특수화재 진압";
+                } else if (item.name.includes("무인파괴")) {
+                    desc = "건물 외벽/지붕 관통 방수 및 붕괴 위험구역 원격 방수";
+                } else if (item.name.includes("구조")) {
+                    desc = "인명검색 및 진입로 개척, 요구조자 들것 이송";
+                } else if (item.name.includes("지휘")) {
+                    desc = "현장 도착 지휘권 선언, 무전 채널 일원화 및 안전구역 통제선 지정";
+                }
+                defaultTactic = { label: label, desc: desc, driver: driver };
+            }
 
             var tr = document.createElement('tr');
             var driverHtml = defaultTactic.driver ? `<span class="driver-duty-box">${defaultTactic.driver}</span>` : '';
@@ -940,6 +1050,7 @@
         });
     }
 
+    // 3. 상단 3개 프리셋 옵션 카드 전환
     function applyPresetScenario(presetId) {
         currentScenarioPreset = presetId;
         document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
@@ -953,35 +1064,41 @@
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
             document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
+            document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인";
             setVehiclesChecked([
                 { center: "연동", veh: "펌프" },
                 { center: "연동", veh: "물탱크" },
                 { center: "연동", veh: "굴절" },
                 { center: "연동", veh: "구급" },
                 { center: "노형", veh: "펌프" },
-                { center: "구조", veh: "구조차" }
+                { center: "구조", veh: "구조차" },
+                { center: "자위대", veh: "자위소방대" }
             ]);
         } else if (presetId === 1) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
             document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 정상 작동 중이며 수평 연소 확대 방어선 구축";
+            document.getElementById('inCommon').value = "❶ 출동대 안전운행 및 선착대장 팀단위 전술훈련 매뉴얼 준수, ❷ 계단실 연기 확산 차단 및 소화전 중계구 활용";
             setVehiclesChecked([
                 { center: "연동", veh: "펌프" },
                 { center: "연동", veh: "물탱크" },
                 { center: "연동", veh: "구급" },
-                { center: "노형", veh: "펌프" }
+                { center: "노형", veh: "펌프" },
+                { center: "자위대", veh: "자위소방대" }
             ]);
         } else if (presetId === 3) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
             document.getElementById('inSituation').value = "인근 상수도 배관 파손으로 소화전 단수 판정, 직할 탱크차 릴레이 순환 급수 및 자연수리 점령 비상 작전";
+            document.getElementById('inCommon').value = "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 집중 방수";
             setVehiclesChecked([
                 { center: "연동", veh: "펌프" },
                 { center: "연동", veh: "물탱크" },
                 { center: "노형", veh: "물탱크" },
-                { center: "구조", veh: "구조차" }
+                { center: "구조", veh: "구조차" },
+                { center: "자위대", veh: "자위소방대" }
             ]);
         }
 
@@ -1008,10 +1125,11 @@
         var assignedVehicles = [];
 
         checkedBoxes.forEach(chk => {
-            assignedVehicles.push({
-                center: chk.getAttribute('data-center'),
-                name: chk.getAttribute('data-veh')
-            });
+            var c = chk.getAttribute('data-center');
+            var v = chk.getAttribute('data-veh');
+            if (c !== '자위대') {
+                assignedVehicles.push({ center: c, name: v });
+            }
         });
 
         alert(`[${targetName}]\n시나리오로 훈련을 확정하고 전술 배치도 화면으로 이동합니다.\n지도 위치가 대상처로 이동하며 선택한 ${assignedVehicles.length}대의 차량이 하이라이트됩니다.`);
@@ -1389,7 +1507,7 @@
         hoverTooltip.setMap(null);
     }
 
-    // 초기 로딩 시 프리셋 2 적용
+    // 초기 실행 시 Option 2 프리셋 렌더링
     window.addEventListener('DOMContentLoaded', function() {
         applyPresetScenario(2);
     });
