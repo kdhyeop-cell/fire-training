@@ -195,30 +195,32 @@
         .official-table th { background: #F8FAFC; font-weight: 800; text-align: center; letter-spacing: 1px; }
         .official-table td.header-col { background: #F8FAFC; font-weight: 800; text-align: center; white-space: nowrap; width: 18%; }
         
-        /* contenteditable 직접 타이핑 수정 스타일 */
+        /* 직접 타이핑 수정 스타일 */
         [contenteditable="true"] { outline: none; transition: background 0.15s; border-radius: 3px; }
         [contenteditable="true"]:hover { background: #F8FAFC; }
         [contenteditable="true"]:focus { background: #FEF3C7; box-shadow: inset 0 0 0 1.5px #D97706; }
 
-        /* 펌프차 운전원 노란색 강조 박스 (사진 원본 100% 반영) */
+        /* 펌프차 운전원 노란색 강조 박스 */
         .driver-duty-box { margin-top: 4px; color: #B45309; font-weight: 700; font-size: 11px; display: block; }
         .driver-duty-box::before { content: '※ '; }
 
         .scenario-actions-bar { max-width: 920px; margin: 18px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
 
-        /* ================= A4 전용 인쇄 및 PDF 내보내기 (@media print) ================= */
+        /* ================= A4 전용 인쇄 및 브라우저 머리글/바닥글 제거 (@media print) ================= */
         @media print {
             @page { 
                 size: A4 portrait; 
-                margin: 10mm 12mm 10mm 12mm; 
+                margin: 0; /* 브라우저 기본 머리글(제목, 일시) 및 바닥글(URL, 페이지 번호) 강제 제거 */
             }
             html, body { 
                 background: #FFF !important; 
                 height: auto !important; 
                 overflow: visible !important; 
                 color: #000 !important; 
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            /* 인쇄 시 화면 조작용 UI 전부 숨김 */
+            /* 인쇄 시 불필요한 화면 UI 숨김 */
             .sidebar, .sidebar-bottom-dock, .scenario-selector-grid, .scenario-actions-bar, .guide-toggle-btn, .edit-hint-box { 
                 display: none !important; 
             }
@@ -232,18 +234,19 @@
             .main-view { display: none !important; }
             #mainScenario { display: block !important; padding: 0 !important; }
 
-            /* A4 용지 전체 채우기 */
+            /* 종이 실제 여백 부여 및 A4 규격 맞춤 */
             .official-scenario-paper { 
                 box-shadow: none !important; 
                 border: none !important; 
-                padding: 0 !important; 
+                padding: 14mm 16mm !important; /* 문서 실제 여백 */
                 margin: 0 auto !important; 
                 width: 100% !important; 
                 max-width: 100% !important; 
+                box-sizing: border-box !important;
             }
             .official-table { 
                 border: 1.5px solid #000 !important; 
-                font-size: 10.5pt !important; 
+                font-size: 10pt !important; 
                 line-height: 1.45 !important; 
                 page-break-inside: avoid !important; 
             }
@@ -315,7 +318,7 @@
         <!-- 사이드바 스크롤 콘텐츠 구역 -->
         <div class="sidebar-content-wrapper">
             
-            <!-- ① [🤖 AI 시나리오] 사이드바 패널 (수기 입력 + 차량 체크박스) -->
+            <!-- ① [🤖 AI 시나리오] 사이드바 패널 -->
             <div id="sidebarScenario" class="sidebar-view">
                 <div>
                     <div class="section-title">훈련 대상처 수기 설정</div>
@@ -547,11 +550,11 @@
     <!-- ================= 우측 메인 영역 ================= -->
     <div class="main-container">
         
-        <!-- ① [🤖 AI 시나리오] 메인 화면 (수정 가능한 공식 표준 서식 뷰) -->
+        <!-- ① [🤖 AI 시나리오] 메인 화면 -->
         <div id="mainScenario" class="main-view workspace-scroll">
             <div style="max-width:920px; margin:0 auto; width:100%;">
                 
-                <!-- 상단 3개 시나리오 템플릿 옵션 카드 -->
+                <!-- 상단 3개 프리셋 옵션 카드 -->
                 <div class="scenario-selector-grid">
                     <div class="scenario-opt-card" id="optCard-1" onclick="applyPresetScenario(1)">
                         <div class="opt-title"><span>Option 1</span> 표준 대응형</div>
@@ -571,15 +574,13 @@
                     <span>✍️</span> <strong>직접 편집 안내:</strong> 아래 표의 모든 칸은 마우스로 클릭하여 워드처럼 글자를 바로 수정할 수 있습니다.
                 </div>
 
-                <!-- [공식 소방훈련 서식 뷰 렌더링 컨테이너 (첨부 사진 원형 100% 반영)] -->
+                <!-- [공식 소방훈련 서식 뷰 렌더링 컨테이너] -->
                 <div class="official-scenario-paper" id="officialScenarioSheet">
-                    <!-- 서식 헤더 -->
                     <div class="official-doc-header">
                         <div class="official-doc-title">【현장에 강한 제주소방서 현장대응단】</div>
                         <div class="official-doc-radio" id="docRadio" contenteditable="true">※ 무전: 재난통신-제주소방02(채널 변경 없음)</div>
                     </div>
 
-                    <!-- 서식 메인 표 -->
                     <table class="official-table">
                         <colgroup>
                             <col style="width: 17%;">
@@ -613,7 +614,7 @@
                             </td>
                         </tr>
                         <tbody id="docVehicleTactics">
-                            <!-- 차량별 전술 전개 행 (체크박스 및 시나리오에 의해 동적 생성) -->
+                            <!-- 차량별 전술 전개 행 동적 생성 -->
                         </tbody>
                         <tr>
                             <td class="header-col">지휘팀장</td>
@@ -840,7 +841,7 @@
 </div>
 
 <script>
-    // ================= [차량별 전술 표준 딕셔너리 라이브러리] =================
+    // 차량별 전술 라이브러리
     var vehicleTacticsLibrary = {
         "연동_펌프": {
             label: "(연동펌프)<br>1선 펌프차",
@@ -884,9 +885,8 @@
         }
     };
 
-    var currentScenarioPreset = 2; // 기본: Option 2
+    var currentScenarioPreset = 2;
 
-    // 1. 좌측 텍스트 입력창 타이핑 시 우측 서식 실시간 동기화
     function syncSheetFromInputs() {
         var targetName = document.getElementById('inTargetName').value;
         var facType = document.getElementById('inFacilityType').value;
@@ -900,7 +900,6 @@
         document.getElementById('docSituation').innerText = situation;
     }
 
-    // 2. 체크박스 선택 변경 시 우측 동원장비 텍스트 및 전술 행 실시간 렌더링
     function onVehicleCheckChanged() {
         var checkedBoxes = document.querySelectorAll('.veh-chk:checked');
         var centerMap = {};
@@ -914,14 +913,12 @@
             centerMap[c].push(v);
         });
 
-        // 2-1. [동원장비] 요약 텍스트 자동 조합 생성 (예: 연동(펌프, 물탱크), 노형(펌프))
         var eqArr = [];
         for (var c in centerMap) {
             eqArr.push(`${c}(${centerMap[c].join(', ')})`);
         }
         document.getElementById('docEquipment').innerText = eqArr.length > 0 ? eqArr.join(', ') : '선택된 출동 장비 없음';
 
-        // 2-2. 차량별 전술 전개 행(Row) 동적 생성 (contenteditable 적용)
         var tacticsTbody = document.getElementById('docVehicleTactics');
         tacticsTbody.innerHTML = '';
 
@@ -943,17 +940,15 @@
         });
     }
 
-    // 3. 상단 3개 프리셋 옵션 카드 클릭 시
     function applyPresetScenario(presetId) {
         currentScenarioPreset = presetId;
         document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
         var activeCard = document.getElementById('optCard-' + presetId);
         if (activeCard) activeCard.classList.add('active');
 
-        // 모든 체크박스 해제 후 프리셋에 맞게 체크
         document.querySelectorAll('.veh-chk').forEach(chk => chk.checked = false);
 
-        if (presetId === 2) { // Option 2: 인명구조 집중형
+        if (presetId === 2) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
@@ -966,7 +961,7 @@
                 { center: "노형", veh: "펌프" },
                 { center: "구조", veh: "구조차" }
             ]);
-        } else if (presetId === 1) { // Option 1: 표준 대응형
+        } else if (presetId === 1) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
@@ -977,7 +972,7 @@
                 { center: "연동", veh: "구급" },
                 { center: "노형", veh: "펌프" }
             ]);
-        } else if (presetId === 3) { // Option 3: 자원제한형
+        } else if (presetId === 3) {
             document.getElementById('inTargetName').value = "연동365요양원";
             document.getElementById('inFacilityType').value = "노유자시설";
             document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
@@ -1007,7 +1002,6 @@
         onVehicleCheckChanged();
     }
 
-    // 4. [핵심] 시나리오 확정 및 전술배치도 자동 연동
     function confirmAndDeployScenario() {
         var targetName = document.getElementById('inTargetName').value;
         var checkedBoxes = document.querySelectorAll('.veh-chk:checked');
@@ -1022,19 +1016,15 @@
 
         alert(`[${targetName}]\n시나리오로 훈련을 확정하고 전술 배치도 화면으로 이동합니다.\n지도 위치가 대상처로 이동하며 선택한 ${assignedVehicles.length}대의 차량이 하이라이트됩니다.`);
 
-        // 보고서 및 평가표 기본 정보 연동
         document.getElementById('repTarget').innerText = targetName;
         document.getElementById('evalTargetName').innerText = targetName;
         document.getElementById('repEquipment').innerText = document.getElementById('docEquipment').innerText;
 
-        // 배치도 화면으로 전환
         switchTab('map');
 
-        // 지도 대상처 검색 및 좌표 이동
         document.getElementById('keyword').value = targetName;
         searchPlaces();
 
-        // 차량 하이라이트
         highlightAssignedVehicles(assignedVehicles);
     }
 
@@ -1399,7 +1389,7 @@
         hoverTooltip.setMap(null);
     }
 
-    // 초기 실행 시 Option 2 프리셋 렌더링
+    // 초기 로딩 시 프리셋 2 적용
     window.addEventListener('DOMContentLoaded', function() {
         applyPresetScenario(2);
     });
