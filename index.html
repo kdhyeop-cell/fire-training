@@ -199,20 +199,6 @@
     var map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 });
     var ps = new kakao.maps.services.Places();
 
-    // 지도 로드 후 동적으로 생성되는 저작권 및 로고 영역 숨기기
-    setTimeout(function() {
-        var mapContainer = document.getElementById('map');
-        if (mapContainer) {
-            var divs = mapContainer.getElementsByTagName('div');
-            for (var i = 0; i < divs.length; i++) {
-                var text = divs[i].innerText || '';
-                if (text.includes('©') || text.includes('Kakao') || text.includes('제주특별자치도')) {
-                    divs[i].style.display = 'none';
-                }
-            }
-        }
-    }, 1000);
-
     var roadviewContainer = document.getElementById('roadview');
     var roadview = new kakao.maps.Roadview(roadviewContainer);
     var roadviewClient = new kakao.maps.RoadviewClient();
