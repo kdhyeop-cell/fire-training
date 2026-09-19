@@ -30,7 +30,7 @@
 
         /* 사이드바 스크롤 콘텐츠 구역 */
         .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
-        .sidebar-view { padding: 20px 15px; display: none; flex-direction: column; gap: 24px; }
+        .sidebar-view { padding: 20px 15px; display: none; flex-direction: column; gap: 20px; }
         .sidebar-view.active { display: flex; }
 
         /* [전술 관제 다크 독] 좌측 최하단 고정 독 네비게이션 */
@@ -90,7 +90,7 @@
         .search-box input[type="text"] { flex: 1; min-width: 0; width: auto; }
         .search-box button { flex-shrink: 0; white-space: nowrap; }
 
-        input[type="text"], select, textarea { width: 100%; padding: 10px 12px; font-size: 13px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; color: #1E293B; outline: none; }
+        input[type="text"], select, textarea { width: 100%; padding: 9px 11px; font-size: 12.5px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; color: #1E293B; outline: none; }
         input[type="text"]:focus, select:focus, textarea:focus { border-color: #EF4444; background: #FFF; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
         
         button { padding: 10px 12px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 4px; white-space: nowrap; }
@@ -99,6 +99,11 @@
         .btn-primary:hover { background: #0F172A; }
         .btn-danger-action { background: #DC2626; color: white; width: 100%; padding: 13px; font-size: 13px; font-weight: 700; border-radius: 8px; transition: background 0.2s; }
         .btn-danger-action:hover { background: #B91C1C; }
+
+        /* [차량 체크박스 선택 그리드 전용 스타일] */
+        .veh-check-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #334155; padding: 4px 6px; border-radius: 6px; cursor: pointer; user-select: none; }
+        .veh-check-item:hover { background: #F1F5F9; }
+        .veh-check-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: #DC2626; cursor: pointer; margin: 0; }
 
         /* [전술 배치도] 컨트롤 */
         .map-btns-wrapper { display: flex; gap: 6px; margin-top: 8px; width: 100%; }
@@ -171,31 +176,99 @@
         .workspace-scroll { padding: 24px 32px 60px 32px; width: 100%; height: 100%; overflow-y: auto; }
         
         /* ① AI 시나리오 상단 3개 옵션 카드 */
-        .scenario-selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-        .scenario-opt-card { background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .scenario-selector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+        .scenario-opt-card { background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all 0.2s; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .scenario-opt-card:hover { border-color: #CBD5E1; transform: translateY(-2px); }
         .scenario-opt-card.active { border-color: #DC2626; background: #FFF; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12); }
-        .scenario-opt-card.active::after { content: '선택됨'; position: absolute; top: 12px; right: 12px; background: #DC2626; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
-        .opt-title { font-weight: 800; font-size: 14px; color: #0F172A; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-        .opt-desc { font-size: 12px; color: #64748B; line-height: 1.4; }
+        .scenario-opt-card.active::after { content: '선택됨'; position: absolute; top: 10px; right: 10px; background: #DC2626; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+        .opt-title { font-weight: 800; font-size: 13.5px; color: #0F172A; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .opt-desc { font-size: 11.5px; color: #64748B; line-height: 1.4; }
 
         /* [공식 소방훈련 시나리오 표준 서식 표 (A4 비율 문서 스타일)] */
-        .official-scenario-paper { max-width: 920px; margin: 0 auto; background: white; border: 1px solid #94A3B8; box-shadow: 0 6px 24px rgba(0,0,0,0.08); padding: 36px 40px; border-radius: 4px; }
+        .official-scenario-paper { max-width: 920px; margin: 0 auto; background: white; border: 1.5px solid #334155; box-shadow: 0 6px 24px rgba(0,0,0,0.08); padding: 36px 40px; border-radius: 2px; }
         .official-doc-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; border-bottom: 2px solid #0F172A; padding-bottom: 6px; }
-        .official-doc-title { font-size: 17px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
+        .official-doc-title { font-size: 16.5px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
         .official-doc-radio { font-size: 12px; font-weight: 700; color: #2563EB; }
         
-        .official-table { width: 100%; border-collapse: collapse; border: 1px solid #475569; font-size: 12.5px; line-height: 1.55; color: #000; }
-        .official-table th, .official-table td { border: 1px solid #475569; padding: 7px 10px; vertical-align: middle; }
+        .official-table { width: 100%; border-collapse: collapse; border: 1.5px solid #0F172A; font-size: 12px; line-height: 1.55; color: #000; }
+        .official-table th, .official-table td { border: 1px solid #475569; padding: 6px 10px; vertical-align: middle; }
         .official-table th { background: #F8FAFC; font-weight: 800; text-align: center; letter-spacing: 1px; }
-        .official-table td.center { text-align: center; }
-        .official-table td.header-col { background: #F8FAFC; font-weight: 800; text-align: center; white-space: nowrap; }
+        .official-table td.header-col { background: #F8FAFC; font-weight: 800; text-align: center; white-space: nowrap; width: 18%; }
         
+        /* contenteditable 직접 타이핑 수정 스타일 */
+        [contenteditable="true"] { outline: none; transition: background 0.15s; border-radius: 3px; }
+        [contenteditable="true"]:hover { background: #F8FAFC; }
+        [contenteditable="true"]:focus { background: #FEF3C7; box-shadow: inset 0 0 0 1.5px #D97706; }
+
         /* 펌프차 운전원 노란색 강조 박스 (사진 원본 100% 반영) */
-        .driver-duty-box { margin-top: 5px; color: #B45309; font-weight: 700; font-size: 11.5px; display: block; }
+        .driver-duty-box { margin-top: 4px; color: #B45309; font-weight: 700; font-size: 11px; display: block; }
         .driver-duty-box::before { content: '※ '; }
 
-        .scenario-actions-bar { max-width: 920px; margin: 20px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
+        .scenario-actions-bar { max-width: 920px; margin: 18px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
+
+        /* ================= A4 전용 인쇄 및 PDF 내보내기 (@media print) ================= */
+        @media print {
+            @page { 
+                size: A4 portrait; 
+                margin: 10mm 12mm 10mm 12mm; 
+            }
+            html, body { 
+                background: #FFF !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                color: #000 !important; 
+            }
+            /* 인쇄 시 화면 조작용 UI 전부 숨김 */
+            .sidebar, .sidebar-bottom-dock, .scenario-selector-grid, .scenario-actions-bar, .guide-toggle-btn, .edit-hint-box { 
+                display: none !important; 
+            }
+            .app-container, .main-container, .workspace-scroll { 
+                display: block !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+            }
+            .main-view { display: none !important; }
+            #mainScenario { display: block !important; padding: 0 !important; }
+
+            /* A4 용지 전체 채우기 */
+            .official-scenario-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 0 !important; 
+                margin: 0 auto !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+            }
+            .official-table { 
+                border: 1.5px solid #000 !important; 
+                font-size: 10.5pt !important; 
+                line-height: 1.45 !important; 
+                page-break-inside: avoid !important; 
+            }
+            .official-table th, .official-table td { 
+                border: 1px solid #000 !important; 
+                padding: 5px 8px !important; 
+                color: #000 !important; 
+            }
+            .official-table th, .official-table td.header-col { 
+                background: #F1F5F9 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .official-doc-radio { 
+                color: #1D4ED8 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .driver-duty-box { 
+                color: #B45309 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            [contenteditable="true"]:focus { background: transparent !important; box-shadow: none !important; }
+        }
 
         /* ③ 다면 평가표 */
         .eval-container { max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; }
@@ -242,29 +315,78 @@
         <!-- 사이드바 스크롤 콘텐츠 구역 -->
         <div class="sidebar-content-wrapper">
             
-            <!-- ① [🤖 AI 시나리오] 사이드바 패널 -->
+            <!-- ① [🤖 AI 시나리오] 사이드바 패널 (수기 입력 + 차량 체크박스) -->
             <div id="sidebarScenario" class="sidebar-view">
                 <div>
-                    <div class="section-title">대상처 및 환경 조건</div>
-                    <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">대상처 유형</label>
-                    <select id="scFacilityType" style="margin-bottom:14px;" onchange="onScenarioConditionChange()">
-                        <option value="노유자시설" selected>노유자시설 (요양원, 요양병원)</option>
-                        <option value="고층건축물">고층건축물 (30층 이상 복합건축물)</option>
-                        <option value="물류창고">물류창고 (대형 지하연계/물류센터)</option>
-                        <option value="전통시장">전통시장 및 밀집상가</option>
-                    </select>
+                    <div class="section-title">훈련 대상처 수기 설정</div>
+                    
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">훈련 대상처 명칭</label>
+                    <input type="text" id="inTargetName" value="연동365요양원" placeholder="예: 연동365요양원" oninput="syncSheetFromInputs()" style="margin-bottom:10px;">
 
-                    <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">발화 지점 및 특이사항 입력</label>
-                    <textarea id="scFirePoint" rows="4" style="margin-bottom:14px; resize:none;" placeholder="예: 2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</textarea>
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">시설 구분</label>
+                    <input type="text" id="inFacilityType" value="노유자시설" placeholder="예: 노유자시설, 의료시설" oninput="syncSheetFromInputs()" style="margin-bottom:10px;">
 
-                    <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:6px;">훈련 규모 선택</label>
-                    <select id="scScale" style="margin-bottom:20px;">
-                        <option value="자체훈련">소방서 자체 팀단위 전술훈련</option>
-                        <option value="대응 1단계" selected>대응 1단계 (관할+인근 센터 총출동)</option>
-                        <option value="대응 2단계">대응 2단계 (긴급구조통제단 가동)</option>
-                    </select>
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">건물 현황 및 제원</label>
+                    <input type="text" id="inBuildingSpec" value="지하2층/지상7층, 연면적: 3,537.49㎡" placeholder="예: 지하2층/지상7층, 연면적: 3,537.49㎡" oninput="syncSheetFromInputs()" style="margin-bottom:10px;">
 
-                    <button class="btn-danger-action" onclick="generateAIScenarios()">✨ 맞춤형 AI 시나리오 3개 동시 생성</button>
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">무전 통신망 지정</label>
+                    <input type="text" id="inRadioChannel" value="재난통신-제주소방02(채널 변경 없음)" placeholder="무전 채널 기입" oninput="syncSheetFromInputs()" style="margin-bottom:10px;">
+
+                    <label style="font-size:11.5px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">발화 지점 및 가상 상황</label>
+                    <textarea id="inSituation" rows="3" style="margin-bottom:14px; resize:none;" oninput="syncSheetFromInputs()">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</textarea>
+                </div>
+
+                <!-- 출동 동원 차량 체크박스 아코디언 -->
+                <div>
+                    <div class="section-title">
+                        <span>동원 차량 편성 (체크 선택)</span>
+                    </div>
+                    <div style="font-size:11px; color:#64748B; margin-bottom:8px;">체크 시 우측 서식의 동원장비 및 작전 행이 자동 구성됩니다.</div>
+                    
+                    <div class="center-grid-wrapper" style="max-height: 280px; overflow-y: auto;">
+                        <details class="center-group" open><summary>연동</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="펌프" checked onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="물탱크" checked onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="굴절" checked onchange="onVehicleCheckChanged()"> 굴절</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="연동" data-veh="구급" checked onchange="onVehicleCheckChanged()"> 구급</label>
+                            </div>
+                        </details>
+                        <details class="center-group" open><summary>노형</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="펌프" checked onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="노형" data-veh="굴절" onchange="onVehicleCheckChanged()"> 굴절</label>
+                            </div>
+                        </details>
+                        <details class="center-group" open><summary>구조</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="구조" data-veh="구조차" checked onchange="onVehicleCheckChanged()"> 구조차</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="구조" data-veh="생활안전" onchange="onVehicleCheckChanged()"> 생활안전</label>
+                            </div>
+                        </details>
+                        <details class="center-group"><summary>현장대응단</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="지휘차" onchange="onVehicleCheckChanged()"> 지휘차</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="대응단" data-veh="조사차" onchange="onVehicleCheckChanged()"> 조사차</label>
+                            </div>
+                        </details>
+                        <details class="center-group"><summary>이도</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="이도" data-veh="고가사다리" onchange="onVehicleCheckChanged()"> 고가사다리</label>
+                            </div>
+                        </details>
+                        <details class="center-group"><summary>화북</summary>
+                            <div style="padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="펌프" onchange="onVehicleCheckChanged()"> 펌프</label>
+                                <label class="veh-check-item"><input type="checkbox" class="veh-chk" data-center="화북" data-veh="물탱크" onchange="onVehicleCheckChanged()"> 물탱크</label>
+                            </div>
+                        </details>
+                    </div>
+
+                    <button class="btn-danger-action" style="margin-top:14px;" onclick="generateCustomAIScenario()">✨ 설정 조건으로 시나리오 재구성</button>
                 </div>
             </div>
 
@@ -425,24 +547,28 @@
     <!-- ================= 우측 메인 영역 ================= -->
     <div class="main-container">
         
-        <!-- ① [🤖 AI 시나리오] 메인 화면 (공식 표준 서식 뷰) -->
+        <!-- ① [🤖 AI 시나리오] 메인 화면 (수정 가능한 공식 표준 서식 뷰) -->
         <div id="mainScenario" class="main-view workspace-scroll">
-            <div style="max-width:940px; margin:0 auto; width:100%;">
+            <div style="max-width:920px; margin:0 auto; width:100%;">
                 
-                <!-- 상단 3개 시나리오 빠른 선택 탭 카드 -->
+                <!-- 상단 3개 시나리오 템플릿 옵션 카드 -->
                 <div class="scenario-selector-grid">
-                    <div class="scenario-opt-card" id="optCard-1" onclick="selectScenarioOption(1)">
+                    <div class="scenario-opt-card" id="optCard-1" onclick="applyPresetScenario(1)">
                         <div class="opt-title"><span>Option 1</span> 표준 대응형</div>
                         <div class="opt-desc">선착대 옥내 진입 및 주 화점 포위 방수 중심 표준 작전</div>
                     </div>
-                    <div class="scenario-opt-card active" id="optCard-2" onclick="selectScenarioOption(2)">
+                    <div class="scenario-opt-card active" id="optCard-2" onclick="applyPresetScenario(2)">
                         <div class="opt-title" style="color:#DC2626;"><span>Option 2</span> 인명구조 집중형</div>
                         <div class="opt-desc">특수차(굴절) 연계 거동불가 환자 및 옥상 요구조자 최우선 구조</div>
                     </div>
-                    <div class="scenario-opt-card" id="optCard-3" onclick="selectScenarioOption(3)">
+                    <div class="scenario-opt-card" id="optCard-3" onclick="applyPresetScenario(3)">
                         <div class="opt-title"><span>Option 3</span> 자원제한형</div>
                         <div class="opt-desc">소화전 단수 가상, 원거리 중계급수 및 자연수리 점령 비상 작전</div>
                     </div>
+                </div>
+
+                <div class="edit-hint-box" style="background:#FEF3C7; border:1px solid #FDE68A; border-radius:6px; padding:7px 12px; font-size:11.5px; color:#92400E; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                    <span>✍️</span> <strong>직접 편집 안내:</strong> 아래 표의 모든 칸은 마우스로 클릭하여 워드처럼 글자를 바로 수정할 수 있습니다.
                 </div>
 
                 <!-- [공식 소방훈련 서식 뷰 렌더링 컨테이너 (첨부 사진 원형 100% 반영)] -->
@@ -450,7 +576,7 @@
                     <!-- 서식 헤더 -->
                     <div class="official-doc-header">
                         <div class="official-doc-title">【현장에 강한 제주소방서 현장대응단】</div>
-                        <div class="official-doc-radio" id="docRadio">※ 무전: 재난통신-제주소방02(채널 변경 없음)</div>
+                        <div class="official-doc-radio" id="docRadio" contenteditable="true">※ 무전: 재난통신-제주소방02(채널 변경 없음)</div>
                     </div>
 
                     <!-- 서식 메인 표 -->
@@ -460,39 +586,46 @@
                             <col style="width: 83%;">
                         </colgroup>
                         <tr>
-                            <th class="header-col">훈련대상</th>
-                            <td>
+                            <td class="header-col">훈련대상</td>
+                            <td contenteditable="true">
                                 <strong id="docTarget">연동365요양원(노유자시설)</strong>
                                 <span style="float: right; color: #334155;" id="docBuildingSpec">※건물현황: 지하2층/지상7층, 연면적: 3,537.49㎡</span>
                             </td>
                         </tr>
                         <tr>
-                            <th class="header-col">동원장비</th>
-                            <td id="docEquipment">연동(펌프, 물탱크, 굴절, 구급), 노형(펌프), 구조대(구조)</td>
+                            <td class="header-col">동원장비</td>
+                            <td id="docEquipment" contenteditable="true">연동(펌프, 물탱크, 굴절, 구급), 노형(펌프), 구조대(구조)</td>
                         </tr>
                         <tr>
-                            <th class="header-col">가상상황</th>
-                            <td id="docSituation">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</td>
+                            <td class="header-col">가상상황</td>
+                            <td id="docSituation" contenteditable="true">2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려</td>
                         </tr>
                         <tr>
-                            <th class="header-col">공통사항</th>
-                            <td id="docCommon">
+                            <td class="header-col">공통사항</td>
+                            <td id="docCommon" contenteditable="true">
                                 ❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인
                             </td>
                         </tr>
                         <tr>
-                            <th class="header-col">자위소방대</th>
-                            <td id="docCivic">
+                            <td class="header-col">자위소방대</td>
+                            <td id="docCivic" contenteditable="true">
                                 ① 화재신고, 초기소화(가능 범위 내) 실시, ② 병실별 환자 현황 및 거동불가 환자 위치를 소방대에게 제공, ③ 연기 반대방향으로 수평피난 유도 후 필요 시 수직피난, 계단실 방화문 폐쇄
                             </td>
                         </tr>
                         <tbody id="docVehicleTactics">
-                            <!-- 차량별 전술 전개 행 (JS에서 시나리오별 동적 생성) -->
+                            <!-- 차량별 전술 전개 행 (체크박스 및 시나리오에 의해 동적 생성) -->
                         </tbody>
                         <tr>
-                            <th class="header-col">지휘팀장</th>
-                            <td id="docLeader" style="line-height: 1.7;">
-                                <!-- 지휘팀장 임무 리스트 -->
+                            <td class="header-col">지휘팀장</td>
+                            <td id="docLeader" contenteditable="true" style="line-height: 1.65;">
+                                - 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시<br>
+                                - 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태를 보고 받음<br>
+                                - 거동불가 환자 다수 → 공격전략 유지, 인명구조 최우선 임무 재지시<br>
+                                - 연기통제: 계단실 방화문 폐쇄·옥상문 개방, 비상탈출로 확보<br>
+                                - 초진 판단 후 배연 실시<br>
+                                - 배연 완료 후 2차 인명검색 실시 지시<br>
+                                - 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언<br>
+                                - 소방대 및 자위소방대 합동 강평 실시
                             </td>
                         </tr>
                     </table>
@@ -500,7 +633,7 @@
 
                 <!-- 하단 액션 버튼 바 -->
                 <div class="scenario-actions-bar">
-                    <button class="btn-primary" style="padding: 12px 20px;" onclick="window.print()">🖨️ 시나리오 양식 인쇄</button>
+                    <button class="btn-primary" style="padding: 12px 20px;" onclick="window.print()">🖨️ 시나리오 양식 인쇄 (A4)</button>
                     <button class="btn-danger-action" style="max-width: 420px;" onclick="confirmAndDeployScenario()">👉 이 시나리오로 훈련 확정 및 배치도 연동</button>
                 </div>
 
@@ -591,7 +724,7 @@
                     </tr>
                     <tr>
                         <th>적용 시나리오</th>
-                        <td colspan="3" id="repScenario">Option 2: 인명구조 집중형 (특수차 집중 전개)</td>
+                        <td colspan="3" id="repScenario">Option 2: 인명구조 집중형</td>
                     </tr>
                     <tr>
                         <th>참여 인원/장비</th>
@@ -707,242 +840,206 @@
 </div>
 
 <script>
-    // ================= [AI 시나리오 공식 서식 데이터베이스 (첨부 사진 기반)] =================
-    var scenariosDB = {
-        // Option 2: 첨부해주신 사진과 100% 동일한 연동365요양원 서식
-        2: {
-            title: "Option 2: 인명구조 집중형",
-            targetName: "연동365요양원",
-            facilityType: "노유자시설",
-            buildingSpec: "※건물현황: 지하2층/지상7층, 연면적: 3,537.49㎡",
-            equipmentText: "연동(펌프, 물탱크, 굴절, 구급), 노형(펌프), 구조대(구조)",
-            assignedVehicles: [
-                { center: "연동", name: "펌프" },
-                { center: "연동", name: "물탱크" },
-                { center: "연동", name: "굴절" },
-                { center: "연동", name: "구급" },
-                { center: "노형", name: "펌프" },
-                { center: "구조", name: "구조차" },
-                { center: "대응단", name: "지휘차" }
-            ],
-            situation: "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려",
-            common: "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인",
-            civic: "① 화재신고, 초기소화(가능 범위 내) 실시, ② 병실별 환자 현황 및 거동불가 환자 위치를 소방대에게 제공, ③ 연기 반대방향으로 수평피난 유도 후 필요 시 수직피난, 계단실 방화문 폐쇄",
-            tactics: [
-                {
-                    label: "(연동펌프)<br>1선 펌프차",
-                    desc: "건물 D방면 부서, 옥내소화전 송수구 점령 및 2층 방수기구함 내 방수구 활용 Y커플링 연결 후 40mm호스 1선 전개, 2층 휴게실 화점 진압",
-                    driver: "펌프차 운전은 차량 주변 위험요소 확인, 가스밸브 차단 여부 확인"
-                },
-                {
-                    label: "(연동물탱크)<br>중요물탱크차",
-                    desc: "건물 A방면 부서, 연동펌프에 중계급수, 노형펌프에서 공급되는 용수를 받아 연속(중계)급수 체계유지",
-                    driver: ""
-                },
-                {
-                    label: "(연동굴절)",
-                    desc: "건물 C방면 부서, 지반, 전선, 주차차량 등 장애물 확인 후 붐 전개, 구조대 B조와 연계하여 옥상 요구조자 구조, 구조대상자는 바스켓 하강 후 A방면 임시의료소로 인계",
-                    driver: ""
-                },
-                {
-                    label: "(연동구급)",
-                    desc: "건물 A방면 안전구역에 임시의료소 설치, 통제선과 환자집결지 구분, 구조대, 자위소방대가 이동시킨 환자를 인계받고, 안전하게 수용",
-                    driver: ""
-                },
-                {
-                    label: "(노형펌프)",
-                    desc: "건물 A방면 부서, 호스가방, 열화상카메라를 지참하고 연동펌프 Y커플링 지점에서 40mm호스 1선 추가 전개하여 화재진압 및 직상층 연소확대 저지",
-                    driver: "펌프차 운전은 인근 소화전을 점령, 연동물탱크차에 중계급수 및 연속급수 체계 유지"
-                },
-                {
-                    label: "(구조대)",
-                    desc: "<strong>A조:</strong> 2층 화점층 인명검색(거동불가 환자 우선), 화점실→인근실→직상층 순<br><strong>B조:</strong> 연동굴절차로 이동, 옥상 요구조자 구조",
-                    driver: ""
-                }
-            ],
-            leaderDuties: [
-                "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시",
-                "- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태를 보고 받음",
-                "- 거동불가 환자 다수 → 공격전략 유지, 인명구조 최우선 임무 재지시",
-                "- 연기통제: 계단실 방화문 폐쇄·옥상문 개방, 비상탈출로 확보",
-                "- 초진 판단 후 배연 실시",
-                "- 배연 완료 후 2차 인명검색 실시 지시",
-                "- 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언",
-                "- 소방대 및 자위소방대 합동 강평 실시"
-            ]
+    // ================= [차량별 전술 표준 딕셔너리 라이브러리] =================
+    var vehicleTacticsLibrary = {
+        "연동_펌프": {
+            label: "(연동펌프)<br>1선 펌프차",
+            desc: "건물 D방면 부서, 옥내소화전 송수구 점령 및 2층 방수기구함 내 방수구 활용 Y커플링 연결 후 40mm호스 1선 전개, 2층 휴게실 화점 진압",
+            driver: "펌프차 운전은 차량 주변 위험요소 확인, 가스밸브 차단 여부 확인"
         },
-
-        // Option 1: 표준 대응형
-        1: {
-            title: "Option 1: 표준 대응형",
-            targetName: "연동365요양원",
-            facilityType: "노유자시설",
-            buildingSpec: "※건물현황: 지하2층/지상7층, 연면적: 3,537.49㎡",
-            equipmentText: "연동(펌프, 물탱크, 구급), 노형(펌프, 탱크), 대응단(지휘)",
-            assignedVehicles: [
-                { center: "연동", name: "펌프" },
-                { center: "연동", name: "물탱크" },
-                { center: "연동", name: "구급" },
-                { center: "노형", name: "펌프" },
-                { center: "노형", name: "물탱크" },
-                { center: "대응단", name: "지휘차" }
-            ],
-            situation: "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 설비 정상 작동 및 초기 수평 연소 확대 중",
-            common: "❶ 선착대 신속한 수관 전개 및 포위 방수, ❷ 계단실 연기 확산 차단, ❸ 안전통제선 설치",
-            civic: "① 비상경보 발령 및 119 신고, ② 옥내소화전 1선 전개 방수 시도, ③ 자력 대피 가능 환자 유도",
-            tactics: [
-                {
-                    label: "(연동펌프)<br>1선 펌프차",
-                    desc: "건물 A방면 주출입구 부서, 송수구 연결 및 2층 내부 40mm 수관 2선 전개 화점 직접 주수",
-                    driver: "펌프차 운전은 메인 급수압력 0.6MPa 일정 유지, 주변 잔류 차량 통제"
-                },
-                {
-                    label: "(연동물탱크)",
-                    desc: "건물 A방면 부서, 연동펌프 직결 송수 라인 구축 및 연속 방수 지원",
-                    driver: ""
-                },
-                {
-                    label: "(노형펌프)",
-                    desc: "건물 D방면 후면부 부서, 비상계단 진입로 확보 및 상층부 연소확대 저지선 구축",
-                    driver: "인근 지상식 소화전(연동 14-2호) 점령 후 중계 송수"
-                },
-                {
-                    label: "(연동구급)",
-                    desc: "건물 서측 도로변 임시 응급처치소 설치 및 대피 환자 활력징후 체크",
-                    driver: ""
-                }
-            ],
-            leaderDuties: [
-                "- 지휘차 도착 즉시 1선착대장 브리핑 청취 및 무전 채널(제주소방02) 단일화 통제",
-                "- 화점층 완전 진화 확인 후 상층부 배연 장비 가동 지시",
-                "- 인명피해 유무 최종 점검 및 상황 종료"
-            ]
+        "연동_물탱크": {
+            label: "(연동물탱크)<br>중요물탱크차",
+            desc: "건물 A방면 부서, 연동펌프에 중계급수, 노형펌프에서 공급되는 용수를 받아 연속(중계)급수 체계유지",
+            driver: ""
         },
-
-        // Option 3: 자원제한형
-        3: {
-            title: "Option 3: 자원제한형",
-            targetName: "연동365요양원",
-            facilityType: "노유자시설",
-            buildingSpec: "※건물현황: 지하2층/지상7층, 연면적: 3,537.49㎡",
-            equipmentText: "연동(펌프, 물탱크), 노형(물탱크), 화북(화학), 구조대(구조)",
-            assignedVehicles: [
-                { center: "연동", name: "펌프" },
-                { center: "연동", name: "물탱크" },
-                { center: "노형", name: "물탱크" },
-                { center: "화북", name: "물탱크" },
-                { center: "구조", name: "구조차" },
-                { center: "대응단", name: "지휘차" }
-            ],
-            situation: "인근 상수도 배관 파손으로 소화전 단수 판정, 2층 화재가 급격히 확대되는 비상 수리 결핍 상황",
-            common: "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 집중 방수",
-            civic: "① 방화구획 방화문 전면 폐쇄, ② 소화기 집중 방출로 초기 연소 지연 유도",
-            tactics: [
-                {
-                    label: "(연동펌프)",
-                    desc: "건물 D방면 부서, 보유 수량 소진 전 40mm 피스톨 노즐로 화점 국소 주수",
-                    driver: "수조 잔량 30% 도달 시 지휘팀 즉시 통보 및 릴레이 급수 대기"
-                },
-                {
-                    label: "(연동·노형탱크)",
-                    desc: "100m 간격 탱크차 순환 중계 라인 가동, 직할 급수 지원",
-                    driver: "중계 송수 압력차 감시 및 호스 파손 주의"
-                },
-                {
-                    label: "(구조대)",
-                    desc: "수관 연장 전 연기 차단커튼 설치 및 잔류 요구조자 비상 탈출용 바스켓 결착",
-                    driver: ""
-                }
-            ],
-            leaderDuties: [
-                "- 상수도사업소 비상 급수차 지원 요청 및 관서 보유 전 물탱크차 추가 비상소집",
-                "- 방수 인원 최소화 및 폼 혼합 시스템 활용 연소 질식 유도",
-                "- 수리 확보 완료 시점까지 방어적 소화 전략 유지"
-            ]
+        "연동_굴절": {
+            label: "(연동굴절)",
+            desc: "건물 C방면 부서, 지반, 전선, 주차차량 등 장애물 확인 후 붐 전개, 구조대 B조와 연계하여 옥상 요구조자 구조, 구조대상자는 바스켓 하강 후 A방면 임시의료소로 인계",
+            driver: ""
+        },
+        "연동_구급": {
+            label: "(연동구급)",
+            desc: "건물 A방면 안전구역에 임시의료소 설치, 통제선과 환자집결지 구분, 구조대, 자위소방대가 이동시킨 환자를 인계받고, 안전하게 수용",
+            driver: ""
+        },
+        "노형_펌프": {
+            label: "(노형펌프)",
+            desc: "건물 A방면 부서, 호스가방, 열화상카메라를 지참하고 연동펌프 Y커플링 지점에서 40mm호스 1선 추가 전개하여 화재진압 및 직상층 연소확대 저지",
+            driver: "펌프차 운전은 인근 소화전을 점령, 연동물탱크차에 중계급수 및 연속급수 체계 유지"
+        },
+        "노형_물탱크": {
+            label: "(노형물탱크)",
+            desc: "건물 후면 D방면 부서, 2차 급수선 전개 및 연동 물탱크차 보조 송수 라인 연결",
+            driver: "수리 잔량 상시 체크 및 릴레이 급수 대기"
+        },
+        "구조_구조차": {
+            label: "(구조대)",
+            desc: "<strong>A조:</strong> 2층 화점층 인명검색(거동불가 환자 우선), 화점실→인근실→직상층 순<br><strong>B조:</strong> 연동굴절차로 이동, 옥상 요구조자 구조",
+            driver: ""
+        },
+        "대응단_지휘차": {
+            label: "(대응단지휘)",
+            desc: "현장 도착 즉시 지휘권 선언, 무전 채널 일원화 및 A방면 안전구역 통제선 지정",
+            driver: "통신망 모니터링 및 진입 대원 명부 관리"
         }
     };
 
-    var currentScenarioId = 2; // 기본값: Option 2 (사진 속 서식)
+    var currentScenarioPreset = 2; // 기본: Option 2
 
-    // 시나리오 선택 탭 전환 및 서식 재렌더링 함수
-    function selectScenarioOption(optId) {
-        currentScenarioId = optId;
-        
-        // 상단 카드 선택 UI 동기화
-        document.querySelectorAll('.scenario-opt-card').forEach(card => card.classList.remove('active'));
-        var activeCard = document.getElementById('optCard-' + optId);
-        if (activeCard) activeCard.classList.add('active');
+    // 1. 좌측 텍스트 입력창 타이핑 시 우측 서식 실시간 동기화
+    function syncSheetFromInputs() {
+        var targetName = document.getElementById('inTargetName').value;
+        var facType = document.getElementById('inFacilityType').value;
+        var spec = document.getElementById('inBuildingSpec').value;
+        var radio = document.getElementById('inRadioChannel').value;
+        var situation = document.getElementById('inSituation').value;
 
-        var data = scenariosDB[optId];
-        if (!data) return;
+        document.getElementById('docTarget').innerText = `${targetName}(${facType})`;
+        document.getElementById('docBuildingSpec').innerText = `※건물현황: ${spec}`;
+        document.getElementById('docRadio').innerText = `※ 무전: ${radio}`;
+        document.getElementById('docSituation').innerText = situation;
+    }
 
-        // 서식 헤더 및 기본정보 바인딩
-        document.getElementById('docTarget').innerText = `${data.targetName}(${data.facilityType})`;
-        document.getElementById('docBuildingSpec').innerText = data.buildingSpec;
-        document.getElementById('docEquipment').innerText = data.equipmentText;
-        document.getElementById('docSituation').innerText = data.situation;
-        document.getElementById('docCommon').innerText = data.common;
-        document.getElementById('docCivic').innerText = data.civic;
+    // 2. 체크박스 선택 변경 시 우측 동원장비 텍스트 및 전술 행 실시간 렌더링
+    function onVehicleCheckChanged() {
+        var checkedBoxes = document.querySelectorAll('.veh-chk:checked');
+        var centerMap = {};
+        var selectedList = [];
 
-        // 차량별 전술 전개 행 동적 바인딩
+        checkedBoxes.forEach(chk => {
+            var c = chk.getAttribute('data-center');
+            var v = chk.getAttribute('data-veh');
+            selectedList.push({ center: c, name: v });
+            if (!centerMap[c]) centerMap[c] = [];
+            centerMap[c].push(v);
+        });
+
+        // 2-1. [동원장비] 요약 텍스트 자동 조합 생성 (예: 연동(펌프, 물탱크), 노형(펌프))
+        var eqArr = [];
+        for (var c in centerMap) {
+            eqArr.push(`${c}(${centerMap[c].join(', ')})`);
+        }
+        document.getElementById('docEquipment').innerText = eqArr.length > 0 ? eqArr.join(', ') : '선택된 출동 장비 없음';
+
+        // 2-2. 차량별 전술 전개 행(Row) 동적 생성 (contenteditable 적용)
         var tacticsTbody = document.getElementById('docVehicleTactics');
         tacticsTbody.innerHTML = '';
-        data.tactics.forEach(t => {
+
+        selectedList.forEach(item => {
+            var key = `${item.center}_${item.name}`;
+            var defaultTactic = vehicleTacticsLibrary[key] || {
+                label: `(${item.center}${item.name})`,
+                desc: `건물 주변 부서, 현장 상황에 맞춘 임무 수행 및 무전 보고`,
+                driver: ""
+            };
+
             var tr = document.createElement('tr');
-            var driverHtml = t.driver ? `<span class="driver-duty-box">${t.driver}</span>` : '';
+            var driverHtml = defaultTactic.driver ? `<span class="driver-duty-box">${defaultTactic.driver}</span>` : '';
             tr.innerHTML = `
-                <th class="header-col">${t.label}</th>
-                <td>${t.desc} ${driverHtml}</td>
+                <td class="header-col" contenteditable="true">${defaultTactic.label}</td>
+                <td contenteditable="true">${defaultTactic.desc} ${driverHtml}</td>
             `;
             tacticsTbody.appendChild(tr);
         });
-
-        // 지휘팀장 임무 바인딩
-        document.getElementById('docLeader').innerHTML = data.leaderDuties.join('<br>');
     }
 
-    // 좌측 설정 변경 시 시나리오 서식 실시간 동기화
-    function onScenarioConditionChange() {
-        var facType = document.getElementById('scFacilityType').value;
-        var firePoint = document.getElementById('scFirePoint').value;
-        if (scenariosDB[currentScenarioId]) {
-            scenariosDB[currentScenarioId].facilityType = facType;
-            scenariosDB[currentScenarioId].situation = firePoint;
-            selectScenarioOption(currentScenarioId);
+    // 3. 상단 3개 프리셋 옵션 카드 클릭 시
+    function applyPresetScenario(presetId) {
+        currentScenarioPreset = presetId;
+        document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
+        var activeCard = document.getElementById('optCard-' + presetId);
+        if (activeCard) activeCard.classList.add('active');
+
+        // 모든 체크박스 해제 후 프리셋에 맞게 체크
+        document.querySelectorAll('.veh-chk').forEach(chk => chk.checked = false);
+
+        if (presetId === 2) { // Option 2: 인명구조 집중형
+            document.getElementById('inTargetName').value = "연동365요양원";
+            document.getElementById('inFacilityType').value = "노유자시설";
+            document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
+            document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
+            setVehiclesChecked([
+                { center: "연동", veh: "펌프" },
+                { center: "연동", veh: "물탱크" },
+                { center: "연동", veh: "굴절" },
+                { center: "연동", veh: "구급" },
+                { center: "노형", veh: "펌프" },
+                { center: "구조", veh: "구조차" }
+            ]);
+        } else if (presetId === 1) { // Option 1: 표준 대응형
+            document.getElementById('inTargetName').value = "연동365요양원";
+            document.getElementById('inFacilityType').value = "노유자시설";
+            document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
+            document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 정상 작동 중이며 수평 연소 확대 방어선 구축";
+            setVehiclesChecked([
+                { center: "연동", veh: "펌프" },
+                { center: "연동", veh: "물탱크" },
+                { center: "연동", veh: "구급" },
+                { center: "노형", veh: "펌프" }
+            ]);
+        } else if (presetId === 3) { // Option 3: 자원제한형
+            document.getElementById('inTargetName').value = "연동365요양원";
+            document.getElementById('inFacilityType').value = "노유자시설";
+            document.getElementById('inBuildingSpec').value = "지하2층/지상7층, 연면적: 3,537.49㎡";
+            document.getElementById('inSituation').value = "인근 상수도 배관 파손으로 소화전 단수 판정, 직할 탱크차 릴레이 순환 급수 및 자연수리 점령 비상 작전";
+            setVehiclesChecked([
+                { center: "연동", veh: "펌프" },
+                { center: "연동", veh: "물탱크" },
+                { center: "노형", veh: "물탱크" },
+                { center: "구조", veh: "구조차" }
+            ]);
         }
+
+        syncSheetFromInputs();
+        onVehicleCheckChanged();
     }
 
-    // [핵심] 시나리오 확정 및 전술배치도 자동 연동 함수
+    function setVehiclesChecked(list) {
+        list.forEach(item => {
+            var chk = document.querySelector(`.veh-chk[data-center="${item.center}"][data-veh="${item.veh}"]`);
+            if (chk) chk.checked = true;
+        });
+    }
+
+    function generateCustomAIScenario() {
+        alert("좌측 수기 설정과 편성 차량 목록에 맞춰 AI 시나리오 서식이 재구성되었습니다.\n우측 표에서 세부 내용을 클릭하여 직접 수정할 수 있습니다.");
+        syncSheetFromInputs();
+        onVehicleCheckChanged();
+    }
+
+    // 4. [핵심] 시나리오 확정 및 전술배치도 자동 연동
     function confirmAndDeployScenario() {
-        var data = scenariosDB[currentScenarioId];
-        if (!data) return;
+        var targetName = document.getElementById('inTargetName').value;
+        var checkedBoxes = document.querySelectorAll('.veh-chk:checked');
+        var assignedVehicles = [];
 
-        // 1) 알림 표시
-        alert(`[${data.title}]\n'${data.targetName}' 시나리오로 훈련이 확정되었습니다.\n\n전술 배치도 화면으로 이동하여 지도를 해당 위치로 맞추고, 동원 차량을 하이라이트합니다.`);
+        checkedBoxes.forEach(chk => {
+            assignedVehicles.push({
+                center: chk.getAttribute('data-center'),
+                name: chk.getAttribute('data-veh')
+            });
+        });
 
-        // 2) 보고서 및 평가표 기본 정보 동기화
-        document.getElementById('repTarget').innerText = data.targetName;
-        document.getElementById('repScenario').innerText = data.title;
-        document.getElementById('repEquipment').innerText = data.equipmentText;
-        document.getElementById('evalTargetName').innerText = data.targetName;
+        alert(`[${targetName}]\n시나리오로 훈련을 확정하고 전술 배치도 화면으로 이동합니다.\n지도 위치가 대상처로 이동하며 선택한 ${assignedVehicles.length}대의 차량이 하이라이트됩니다.`);
 
-        // 3) 전술배치도 탭으로 전환
+        // 보고서 및 평가표 기본 정보 연동
+        document.getElementById('repTarget').innerText = targetName;
+        document.getElementById('evalTargetName').innerText = targetName;
+        document.getElementById('repEquipment').innerText = document.getElementById('docEquipment').innerText;
+
+        // 배치도 화면으로 전환
         switchTab('map');
 
-        // 4) 지도 대상처 검색 및 위치 이동
-        document.getElementById('keyword').value = data.targetName;
+        // 지도 대상처 검색 및 좌표 이동
+        document.getElementById('keyword').value = targetName;
         searchPlaces();
 
-        // 5) 출동 지정된 센터 아코디언 자동 열기 및 차량 하이라이트
-        highlightAssignedVehicles(data.assignedVehicles);
+        // 차량 하이라이트
+        highlightAssignedVehicles(assignedVehicles);
     }
 
-    // 배치도 차량 하이라이트 함수
     function highlightAssignedVehicles(assignedList) {
-        // 기존 하이라이트 초기화
         document.querySelectorAll('.vehicle').forEach(v => v.classList.remove('highlight-assigned'));
-
-        // 센터 아코디언 열기 및 대상 차량 강조
         assignedList.forEach(item => {
             var grp = document.getElementById('grp-' + item.center);
             if (grp) grp.open = true;
@@ -955,13 +1052,6 @@
         });
     }
 
-    function generateAIScenarios() {
-        var facility = document.getElementById('scFacilityType').value;
-        var scale = document.getElementById('scScale').value;
-        alert(`[${facility} / ${scale}] 조건을 반영하여 공식 소방훈련 표준 서식 3개 유형이 실시간으로 재구성되었습니다.`);
-        selectScenarioOption(2);
-    }
-
     // ================= 1. 지도 및 로드뷰 초기화 =================
     var map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 });
     var ps = new kakao.maps.services.Places();
@@ -971,13 +1061,12 @@
     var roadviewClient = new kakao.maps.RoadviewClient();
     var isRoadviewActive = false;
 
-    // 조작 가이드 토글 함수
     function toggleGuide() {
         var box = document.getElementById('sidebarGuide');
         box.style.display = box.style.display === 'block' ? 'none' : 'block';
     }
 
-    // ================= 2. 5개 탭 전환 및 상단 타이틀 동기화 엔진 =================
+    // ================= 2. 5개 탭 전환 엔진 =================
     var tabInfo = {
         'scenario': { title: '제주소방서 AI 시나리오', sidebar: 'sidebarScenario', main: 'mainScenario' },
         'map':      { title: '제주소방서 전술 배치도', sidebar: 'sidebarMap',      main: 'mainMap' },
@@ -1029,13 +1118,11 @@
         ps.keywordSearch(keyword.includes('제주') ? keyword : '제주 ' + keyword, function(data, status) {
             if (status === kakao.maps.services.Status.OK) {
                 displayPlaces(data);
-                // 첫 번째 검색 결과로 지도 즉시 센터 이동
                 if (data.length > 0) {
                     map.setCenter(new kakao.maps.LatLng(data[0].y, data[0].x));
                     map.setLevel(3);
                 }
             } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                // 검색 결과가 없을 경우 제주시 연동 중심좌표로 기본 이동
                 map.setCenter(new kakao.maps.LatLng(33.4885, 126.4985));
                 map.setLevel(3);
             }
@@ -1312,9 +1399,9 @@
         hoverTooltip.setMap(null);
     }
 
-    // 페이지 초기화 시 Option 2 공식 서식 렌더링
+    // 초기 실행 시 Option 2 프리셋 렌더링
     window.addEventListener('DOMContentLoaded', function() {
-        selectScenarioOption(2);
+        applyPresetScenario(2);
     });
 </script>
 </body>
