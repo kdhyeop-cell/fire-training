@@ -92,6 +92,20 @@
         .map-area { flex-grow: 1; position: relative; display: flex; }
         #map { width: 100%; height: 100%; }
         
+        /* 카카오 지도 로고 및 하단 저작권/출처 표시 숨기기 */
+        #map img[alt*="Kakao"], 
+        #map img[alt*="daum"], 
+        .dacots, 
+        .logo, 
+        .kakaomap-copyright,
+        div[style*="z-index: 2;"] img {
+            /* 필요에 따라 카카오 SDK 로고/출처 요소를 타겟팅 */
+        }
+        /* 카카오맵 하단 로고 및 저작권 링크 영역 제어 */
+        #map > div:nth-child(1) > div:nth-child(3) {
+            display: none !important;
+        }
+
         .roadview-panel { position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: #000; z-index: 20; display: none; border-left: 2px solid #E2E8F0; box-shadow: -4px 0 24px rgba(0,0,0,0.15); }
         #roadview { width: 100%; height: 100%; }
         .close-roadview-btn { position: absolute; top: 16px; right: 16px; z-index: 25; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; }
@@ -120,7 +134,7 @@
         <!-- 접이식 가이드 박스 -->
         <div id="sidebarGuide" class="sidebar-guide-box">
             <div>📍 <strong>배치:</strong> 아이콘 드래그 (삭제: <strong>더블클릭</strong>)</div>
-            <div>🔄 <strong>회전(Shift+휠):</strong> 5도 단위 정밀 조절</div>
+            <div>🔄 <strong>회전(Shift+휠):</strong> 1도 단위 정밀 조절</div>
             <div>↕️ <strong>크기변경:</strong> Ctrl/Alt + 휠</div>
             <div>📱 <strong>태블릿:</strong> 터치 드래그 지원</div>
         </div>
@@ -357,7 +371,7 @@
         } else {
             content.className = 'deployed-vehicle';
             content.innerText = fullName;
-            content.style.backgroundColor = color; // 도구 색상 선택기의 색상 적용
+            content.style.backgroundColor = color;
         }
 
         var overlay = new kakao.maps.CustomOverlay({ position: latlng, content: content, xAnchor: 0.5, yAnchor: 0.5, clickable: true });
@@ -445,7 +459,8 @@
         element.addEventListener('wheel', function(e) {
             e.preventDefault(); e.stopPropagation();
             if (e.shiftKey) {
-                rotation += (e.deltaY < 0 ? 5 : -5);
+                // 회전 각도 1도 단위로 변경
+                rotation += (e.deltaY < 0 ? 1 : -1);
             } else if (e.ctrlKey) {
                 scaleX = Math.max(0.3, scaleX + (e.deltaY < 0 ? 0.1 : -0.1));
             } else if (e.altKey) {
