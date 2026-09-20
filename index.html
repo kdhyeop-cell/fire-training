@@ -253,45 +253,84 @@
         .toolbar-btn:hover { background: #E2E8F0; color: #0F172A; }
         .toolbar-color-btn { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); cursor: pointer; }
 
-        /* [공식 소방훈련 시나리오 표준 서식 표 (A4 비율)] */
+        /* [공식 소방훈련 시나리오 표준 서식 표 (A4 비율) - 기본 11pt(14.5px)] */
         .official-scenario-paper { max-width: 860px; margin: 0 auto; background: white; border: 1.5px solid #334155; box-shadow: 0 6px 24px rgba(0,0,0,0.08); padding: 32px 36px; border-radius: 2px; }
         .official-doc-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px; border-bottom: 2px solid #0F172A; padding-bottom: 6px; }
-        .official-doc-title { font-size: 16px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
-        .official-doc-radio { font-size: 11.5px; font-weight: 700; color: #2563EB; }
+        .official-doc-title { font-size: 17px; font-weight: 900; color: #000; letter-spacing: -0.5px; }
+        .official-doc-radio { font-size: 13.5px; font-weight: 700; color: #2563EB; }
         
-        .official-table { width: 100%; border-collapse: collapse; border: 1.5px solid #0F172A; font-size: 11.5px; line-height: 1.5; color: #000; }
-        .official-table th, .official-table td { border: 1px solid #475569; padding: 6px 9px; vertical-align: middle; }
+        .official-table { width: 100%; border-collapse: collapse; border: 1.5px solid #0F172A; font-size: 14.5px; line-height: 1.55; color: #000; }
+        .official-table th, .official-table td { border: 1px solid #475569; padding: 8px 10px; vertical-align: middle; }
         .official-table th { background: #F8FAFC; font-weight: 800; text-align: center; letter-spacing: 1px; }
-        .official-table td.header-col { background: #F8FAFC; font-weight: 800; text-align: center; white-space: nowrap; width: 18%; }
+        .official-table td.header-col { background: #F8FAFC; font-weight: 800; text-align: center; white-space: nowrap; width: 18%; font-size: 14px; }
         
         /* 직접 타이핑 수정 스타일 */
         [contenteditable="true"] { outline: none; transition: background 0.15s; border-radius: 3px; }
         [contenteditable="true"]:hover { background: #F8FAFC; }
         [contenteditable="true"]:focus { background: #FEF3C7; box-shadow: inset 0 0 0 1.5px #D97706; }
 
-        .driver-duty-box { margin-top: 4px; color: #B45309; font-weight: 700; font-size: 10.5px; display: block; }
+        .driver-duty-box { margin-top: 5px; color: #B45309; font-weight: 700; font-size: 13px; display: block; }
         .driver-duty-box::before { content: '※ '; }
 
         .scenario-actions-bar { max-width: 860px; margin: 16px auto 0 auto; display: flex; justify-content: space-between; gap: 12px; }
 
-        /* ================= A4 전용 인쇄 및 다중 페이지 대응 (@media print) ================= */
+        /* ================= A4 전용 인쇄 (@page margin: 0 으로 브라우저 머리글/바닥글 제거 완벽 복구) ================= */
         @media print {
-            @page { size: A4 portrait; margin: 10mm; }
-            html, body { background: #FFF !important; height: auto !important; overflow: visible !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+            @page { 
+                size: A4 portrait; 
+                margin: 0; /* 브라우저 자동 머리글(날짜, 제목) 및 바닥글(URL, 페이지) 강제 제거 */
+            }
+            html, body { 
+                background: #FFF !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                color: #000 !important; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+            }
             .sidebar, .sidebar-bottom-dock, .scenario-right-panel, .scenario-selector-grid, .scenario-actions-bar, .guide-toggle-btn, .edit-hint-box, .editor-toolbar-container { 
                 display: none !important; 
             }
-            .app-container, .main-container, .scenario-center-area { display: block !important; height: auto !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; }
+            .app-container, .main-container, .scenario-center-area { 
+                display: block !important; 
+                height: auto !important; 
+                overflow: visible !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+            }
             .main-view { display: none !important; }
             #mainScenario { display: block !important; }
 
-            .official-scenario-paper { box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 auto !important; width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
-            .official-table { border: 1.5px solid #000 !important; font-size: 9.5pt !important; line-height: 1.45 !important; page-break-inside: auto !important; }
+            .official-scenario-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 12mm 14mm !important; /* 종이 내부 안전 여백 설정 */
+                margin: 0 auto !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                box-sizing: border-box !important; 
+            }
+            .official-table { 
+                border: 1.5px solid #000 !important; 
+                font-size: 11pt !important; 
+                line-height: 1.5 !important; 
+                page-break-inside: auto !important; 
+            }
             .official-table tr { page-break-inside: avoid !important; }
-            .official-table th, .official-table td { border: 1px solid #000 !important; padding: 4px 6px !important; color: #000 !important; }
-            .official-table th, .official-table td.header-col { background: #F1F5F9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .official-doc-radio { color: #1D4ED8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .driver-duty-box { color: #B45309 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .official-table th, .official-table td { 
+                border: 1px solid #000 !important; 
+                padding: 5px 8px !important; 
+                color: #000 !important; 
+            }
+            .official-table th, .official-table td.header-col { 
+                background: #F1F5F9 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                font-size: 10.5pt !important; 
+            }
+            .official-doc-title { font-size: 13pt !important; }
+            .official-doc-radio { color: #1D4ED8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 10.5pt !important; }
+            .driver-duty-box { color: #B45309 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 9.5pt !important; }
             [contenteditable="true"]:focus { background: transparent !important; box-shadow: none !important; }
         }
 
@@ -323,7 +362,7 @@
 <div class="app-container">
     <!-- ================= 1분할: 좌측 사이드바 (380px) ================= -->
     <div class="sidebar">
-        <!-- 브랜드 타이틀 (전술배치도에서만 조작 가이드 버튼 노출) -->
+        <!-- 브랜드 타이틀 -->
         <div class="brand">
             <span id="brandTitle">제주소방서 AI 시나리오</span>
             <button id="guideToggleBtn" class="guide-toggle-btn" onclick="toggleGuide()" style="display:none;">📖 조작 가이드</button>
@@ -583,8 +622,8 @@
                         <select class="toolbar-select" onchange="applyCustomFontSize(this.value); this.selectedIndex=0;" title="글자 크기">
                             <option value="" disabled selected>크기</option>
                             <option value="9pt">9 pt (세부항목)</option>
-                            <option value="10pt">10 pt (본문표준)</option>
-                            <option value="11pt">11 pt (강조본문)</option>
+                            <option value="10pt">10 pt (작은본문)</option>
+                            <option value="11pt">11 pt (본문표준)</option>
                             <option value="12pt">12 pt (소제목)</option>
                             <option value="14pt">14 pt (큰제목)</option>
                         </select>
@@ -655,7 +694,7 @@
                         </tr>
                         <tbody id="docVehicleTactics">
                             <tr>
-                                <td colspan="2" style="text-align:center; padding:24px; color:#94A3B8;">
+                                <td colspan="2" style="text-align:center; padding:28px; color:#94A3B8;">
                                     좌측에서 대상처를 입력하고 우측에서 차량을 선택한 후 <strong>[✨ 소방 SOP 시나리오 자동 생성]</strong>을 클릭하세요.
                                 </td>
                             </tr>
@@ -1179,7 +1218,7 @@
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // [📝 예시 불러오기] - 좌측 기록란에만 예시 작성 (차량 선택/편성은 절대 건들지 않음)
+    // [📝 예시 불러오기] - 좌측 기록란에만 예시 작성
     function fillSampleScenario() {
         document.getElementById('inTargetName').value = "연동365요양원";
         document.getElementById('inFacilityType').value = "노유자시설";
@@ -1192,7 +1231,7 @@
         syncSheetFromInputs();
     }
 
-    // 3개 프리셋 옵션 카드 선택 시 - 차량 자동 편성 로직 완전 제거 (상황/지침 텍스트만 전환)
+    // 3개 프리셋 옵션 카드 선택 시
     function applyPresetScenario(presetId) {
         document.querySelectorAll('.scenario-opt-card').forEach(c => c.classList.remove('active'));
         var activeCard = document.getElementById('optCard-' + presetId);
@@ -1288,7 +1327,6 @@
     function switchTab(tabKey) {
         document.getElementById('brandTitle').innerText = tabInfo[tabKey].title;
 
-        // [조작 가이드 버튼 탭별 분리] - 전술배치도(map)에서만 노출
         var guideBtn = document.getElementById('guideToggleBtn');
         if (guideBtn) {
             guideBtn.style.display = (tabKey === 'map') ? 'inline-block' : 'none';
