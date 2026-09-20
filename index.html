@@ -17,7 +17,7 @@
         /* 좌측 사이드바 구조 (380px 고정) */
         .sidebar { width: 380px; background: #FFFFFF; display: flex; flex-direction: column; z-index: 10; border-right: 1px solid #E2E8F0; flex-shrink: 0; height: 100vh; }
         
-        /* 브랜드 타이틀 박스 (symbol.png 정렬 지원) */
+        /* 브랜드 타이틀 박스 */
         .brand { height: 54px; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); color: white; padding: 0 16px; font-size: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .brand-title-wrap { display: flex; align-items: center; gap: 8px; }
         .brand-symbol-img { height: 24px; width: auto; object-fit: contain; display: inline-block; vertical-align: middle; }
@@ -372,7 +372,7 @@
 <div class="app-container">
     <!-- ================= 1분할: 좌측 사이드바 (380px) ================= -->
     <div class="sidebar">
-        <!-- 브랜드 타이틀 (symbol.png 심볼 및 AI 시나리오 생성 변경 반영) -->
+        <!-- 브랜드 타이틀 -->
         <div class="brand">
             <div class="brand-title-wrap">
                 <img id="brandSymbol" class="brand-symbol-img" src="symbol.png" alt="심볼" onerror="this.style.display='none'">
@@ -1187,7 +1187,6 @@
             }
         });
 
-        // 3. 수기 수정하지 않은 경우에만 자동 조합
         if (!isEquipmentManuallyEdited) {
             var eqArr = [];
             for (var c in centerMap) {
@@ -1212,11 +1211,11 @@
 
             if (item.name.includes("펌프")) {
                 pumpCount++;
-                if (pumpCount === 1) { // 1선착 펌프차
+                if (pumpCount === 1) {
                     label = `(${item.center}펌프)<br>1선 펌프차`;
                     desc = `건물 D방면 부서, 옥내소화전 송수구 점령 및 2층 방수기구함 내 방수구 활용 Y커플링 연결 후 40mm호스 1선 전개, 화점 집중 진압`;
                     driver = `펌프차 운전은 차량 주변 위험요소 확인, 가스밸브 차단 여부 확인`;
-                } else { // 2선착 이후 펌프차
+                } else {
                     label = `(${item.center}펌프)<br>${pumpCount}선 펌프차`;
                     desc = `건물 A방면 부서, 호스가방 지참 후 선착 펌프 Y커플링 지점에서 40mm호스 1선 추가 전개하여 직상층 연소확대 저지`;
                     driver = `인근 소화전 점령, 중요 물탱크차에 중계급수 및 연속급수 체계 유지`;
@@ -1279,7 +1278,7 @@
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진]
+    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진 (gemini-3.5-flash-lite 적용)]
     function manageGeminiApiKey() {
         var currentKey = localStorage.getItem('gemini_fire_api_key') || '';
         var newKey = prompt("Google Gemini API Key를 입력하세요:\n(브라우저 로컬 저장소에 안전하게 저장됩니다)", currentKey);
@@ -1323,7 +1322,6 @@
         btn.disabled = true;
         btn.innerText = "⏳ AI 분석·생성 중...";
 
-        // 4. 공문서 서식 및 단계별 구조화 프롬프트 고도화
         var systemPrompt = "당신은 제주소방서 현장대응단 수석 전술훈련 설계관입니다. 소방 표준작전절차(SOP)와 대상처 고유 건축 특성을 반영하여 공문서 표준에 부합하는 실전형 화재진압·인명구조 시나리오를 작성하십시오. 응답은 반드시 지정된 JSON 규격으로만 출력하십시오.";
 
         var userPrompt = `
@@ -1357,7 +1355,8 @@
 `;
 
         try {
-            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
+            // 구글 서버가 요구하는 최신 gemini-3.5-flash-lite 엔드포인트 적용
+            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -1385,7 +1384,6 @@
             if (data.common) document.getElementById('inCommon').value = data.common;
             if (data.leaderDuty) document.getElementById('inLeaderDuty').value = data.leaderDuty;
 
-            // 3. 수기 수정하지 않은 경우에만 자동 생성된 동원장비 텍스트 대입
             if (!isEquipmentManuallyEdited) {
                 var centerMap = {};
                 assignedVehicles.forEach(item => {
@@ -1455,15 +1453,15 @@
             document.getElementById('inRadioChannel').value = "재난통신-제주소방02(채널 변경 없음)";
         }
 
-        if (presetId === 1) { // Option 1: 표준 대응형
+        if (presetId === 1) {
             document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 설비 정상 작동 중이며 복도로 화재 연소 확대 중";
             document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 옥내소화전 송수구 점령 및 수평 연소확대 저지";
             document.getElementById('inLeaderDuty').value = "[1단계: 상황파악 및 지휘권 인수]\n- 지휘차 현장도착 즉시 선착대장 지휘권 인수 및 A방면 고정지휘소 설치\n[2단계: 진압 작전 통제]\n- 1선착 펌프대 옥내 진입 지원 및 2선착대 연소 확대 저지선 구축 지시\n- 인접 실 수평 연소 저지 확인 후 주 화점 집중 주수\n[3단계: 잔화 정리 및 장비 점검]\n- 완진 선언 후 잔화 정리 및 대원 안전 확인";
-        } else if (presetId === 2) { // Option 2: 인명구조 집중형
+        } else if (presetId === 2) {
             document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
             document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 굴절차 전개 공간 우선 확보 및 중증환자 임시의료소 신속 인계";
             document.getElementById('inLeaderDuty').value = "[1단계: 상황파악 및 지휘권 선언]\n- 지휘차 현장도착 후 현장 상황 파악, 지휘권 선언\n[2단계: 인명구조 최우선 지휘]\n- 거동불가 환자 다수 확인 → 인명구조 최우선 작전 지시\n- 특수차(굴절) C방면 부서 및 구조대 연계 옥상 요구조자 구조 지시\n- 계단실 방화문 폐쇄 및 비상탈출로 확보\n[3단계: 배연 및 2차 검색]\n- 초진 판단 후 배연 실시 및 2차 정밀검색 실시\n[4단계: 강평]\n- 훈련 종료 선언 및 합동 강평";
-        } else if (presetId === 3) { // Option 3: 자원제한형
+        } else if (presetId === 3) {
             document.getElementById('inSituation').value = "인근 상수도 배관 파손으로 소화전 단수 판정, 2층 화재가 급격히 확대되는 비상 수리 결핍 상황";
             document.getElementById('inCommon').value = "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 고압 집중 방수";
             document.getElementById('inLeaderDuty').value = "[1단계: 비상 체계 가동]\n- 소화전 단수 판정 즉시 비상 급수체계 가동 지시\n[2단계: 릴레이 급수 통제]\n- 중요물탱크차-보조물탱크차 순환 릴레이 급수 라인 구축 통제\n- 수조 잔량 실시간 모니터링 및 단계별 방수량 통제\n[3단계: 수리 확보 및 전면 진압]\n- 수리 확보 완료 후 전면 진압 작전 전환\n[4단계: 강평]\n- 훈련 종료 강평";
@@ -1538,7 +1536,6 @@
     function switchTab(tabKey) {
         document.getElementById('brandTitle').innerText = tabInfo[tabKey].title;
 
-        // 심볼 이미지는 AI 시나리오 탭 및 전술배치도 등 전체 브랜드 영역에 자연스럽게 표시
         var symbolEl = document.getElementById('brandSymbol');
         if (symbolEl) symbolEl.style.display = 'inline-block';
 
