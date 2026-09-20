@@ -723,7 +723,7 @@
                 </div>
             </div>
 
-            <!-- 3분할: 우측 동원 차량 편성 패널 (듀얼 생성 버튼 탑재) -->
+            <!-- 3분할: 우측 동원 차량 편성 패널 (연동 open 속성 제거 완료) -->
             <div class="scenario-right-panel">
                 <div class="scenario-right-header">
                     <div class="section-title" style="margin-bottom: 0;">
@@ -764,8 +764,8 @@
                                 <div class="vehicle scen-vehicle" onclick="toggleVehicleSelection(this)" data-center="삼도" data-veh="구급">구급</div>
                             </div>
                         </details>
-                        <!-- 연동 -->
-                        <details class="center-group" id="scen-grp-연동" open>
+                        <!-- 연동 (open 속성 제거) -->
+                        <details class="center-group" id="scen-grp-연동">
                             <summary>연동</summary>
                             <div class="vehicle-grid">
                                 <div class="vehicle scen-vehicle" onclick="toggleVehicleSelection(this)" data-center="연동" data-veh="펌프">펌프</div>
@@ -1228,7 +1228,7 @@
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진 (최신 gemini-3.6-flash 적용)]
+    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진 (gemini-2.5-flash-lite 적용)]
     function manageGeminiApiKey() {
         var currentKey = localStorage.getItem('gemini_fire_api_key') || '';
         var newKey = prompt("Google Gemini API Key를 입력하세요:\n(브라우저 로컬 저장소에 안전하게 저장됩니다)", currentKey);
@@ -1305,8 +1305,8 @@
 `;
 
         try {
-            // gemini-3.6-flash 최신 모델 적용
-            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            // gemini-2.5-flash-lite 경량 모델 적용
+            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
