@@ -1228,7 +1228,7 @@
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // [🤖 구글 Gemini API 연동 시나리오 생성 엔진]
+    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진 (최신 gemini-3.6-flash 적용)]
     function manageGeminiApiKey() {
         var currentKey = localStorage.getItem('gemini_fire_api_key') || '';
         var newKey = prompt("Google Gemini API Key를 입력하세요:\n(브라우저 로컬 저장소에 안전하게 저장됩니다)", currentKey);
@@ -1305,7 +1305,8 @@
 `;
 
         try {
-            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            // gemini-3.6-flash 최신 모델 적용
+            var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -1329,12 +1330,10 @@
 
             var data = JSON.parse(aiText);
 
-            // 1. 좌측 패널 폼 업데이트 및 동기화
             if (data.situation) document.getElementById('inSituation').value = data.situation;
             if (data.common) document.getElementById('inCommon').value = data.common;
             if (data.leaderDuty) document.getElementById('inLeaderDuty').value = data.leaderDuty;
 
-            // 2. 우측 A4 서식 동원장비 요약
             var centerMap = {};
             assignedVehicles.forEach(item => {
                 var match = item.match(/\[(.*?)\] (.*)/);
@@ -1350,7 +1349,6 @@
             document.getElementById('docEquipment').innerText = eqArr.join(', ');
             document.getElementById('rowCivic').style.display = hasCivic ? '' : 'none';
 
-            // 3. 우측 A4 서식 차량별 전술 테이블 렌더링
             var tacticsTbody = document.getElementById('docVehicleTactics');
             tacticsTbody.innerHTML = '';
             if (Array.isArray(data.tactics)) {
