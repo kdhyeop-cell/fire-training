@@ -99,7 +99,7 @@
         }
         .scenario-right-header {
             height: 54px;
-            padding: 0 16px;
+            padding: 0 14px;
             border-bottom: 1px solid #E2E8F0;
             background: #FFFFFF;
             display: flex;
@@ -663,11 +663,11 @@
                     </div>
                 </div>
 
-                <!-- [공식 소방훈련 서식 뷰] -->
+                <!-- [공식 소방훈련 서식 뷰 (1. 양방향 역동기화 이벤트 장착)] -->
                 <div class="official-scenario-paper" id="officialScenarioSheet">
                     <div class="official-doc-header">
                         <div class="official-doc-title">【현장에 강한 제주소방서 현장대응단】</div>
-                        <div class="official-doc-radio" id="docRadio" contenteditable="true">※ 무전: (무전 채널을 입력하세요)</div>
+                        <div class="official-doc-radio" id="docRadio" contenteditable="true" oninput="syncInputsFromSheet('radio')">※ 무전: (무전 채널을 입력하세요)</div>
                     </div>
 
                     <table class="official-table">
@@ -677,22 +677,22 @@
                         </colgroup>
                         <tr>
                             <td class="header-col">훈련대상</td>
-                            <td contenteditable="true">
-                                <strong id="docTarget">(대상처를 입력하세요)</strong>
-                                <span style="float: right; color: #334155;" id="docBuildingSpec">※건물현황: (제원을 입력하세요)</span>
+                            <td>
+                                <span id="docTarget" contenteditable="true" oninput="syncInputsFromSheet('target')" style="font-weight: 800;">(대상처를 입력하세요)</span>
+                                <span style="float: right; color: #334155;" id="docBuildingSpec" contenteditable="true" oninput="syncInputsFromSheet('spec')">※건물현황: (제원을 입력하세요)</span>
                             </td>
                         </tr>
                         <tr>
                             <td class="header-col">동원장비</td>
-                            <td id="docEquipment" contenteditable="true">(우측 패널에서 출동 차량을 클릭하세요)</td>
+                            <td id="docEquipment" contenteditable="true" oninput="markEquipmentManualEdited()">(우측 패널에서 출동 차량을 클릭하세요)</td>
                         </tr>
                         <tr>
                             <td class="header-col">가상상황</td>
-                            <td id="docSituation" contenteditable="true">(발화 지점 및 가상 상황을 입력하세요)</td>
+                            <td id="docSituation" contenteditable="true" oninput="syncInputsFromSheet('situation')">(발화 지점 및 가상 상황을 입력하세요)</td>
                         </tr>
                         <tr>
                             <td class="header-col">공통사항</td>
-                            <td id="docCommon" contenteditable="true">(공통 지침을 입력하세요)</td>
+                            <td id="docCommon" contenteditable="true" oninput="syncInputsFromSheet('common')">(공통 지침을 입력하세요)</td>
                         </tr>
                         <tr id="rowCivic" style="display:none;">
                             <td class="header-col">자위소방대</td>
@@ -709,7 +709,7 @@
                         </tbody>
                         <tr>
                             <td class="header-col">지휘팀장</td>
-                            <td id="docLeader" contenteditable="true" style="line-height: 1.65; color: #64748B;">
+                            <td id="docLeader" contenteditable="true" oninput="syncInputsFromSheet('leader')" style="line-height: 1.65; color: #64748B;">
                                 (지휘팀장 중점 지휘사항을 입력하세요)
                             </td>
                         </tr>
@@ -723,13 +723,16 @@
                 </div>
             </div>
 
-            <!-- 3분할: 우측 동원 차량 편성 패널 (연동 open 속성 제거 완료) -->
+            <!-- 3분할: 우측 동원 차량 편성 패널 (2. 전체 해제 버튼 신설) -->
             <div class="scenario-right-panel">
                 <div class="scenario-right-header">
                     <div class="section-title" style="margin-bottom: 0;">
-                        <span>동원 차량 편성 (클릭 선택)</span>
+                        <span>동원 차량 편성 (클릭)</span>
                     </div>
-                    <button class="guide-toggle-btn" style="background:#475569; font-size:10px; padding:3px 6px;" onclick="manageGeminiApiKey()" title="구글 Gemini API Key 설정">🔑 API Key</button>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <button class="guide-toggle-btn" style="background:#EF4444; font-size:10.5px; padding:3px 7px;" onclick="clearAllVehicleSelections()" title="모든 차량 선택 해제">✕ 전체 해제</button>
+                        <button class="guide-toggle-btn" style="background:#475569; font-size:10.5px; padding:3px 7px;" onclick="manageGeminiApiKey()" title="구글 Gemini API Key 설정">🔑 API Key</button>
+                    </div>
                 </div>
 
                 <div class="scenario-right-content">
@@ -764,7 +767,7 @@
                                 <div class="vehicle scen-vehicle" onclick="toggleVehicleSelection(this)" data-center="삼도" data-veh="구급">구급</div>
                             </div>
                         </details>
-                        <!-- 연동 (open 속성 제거) -->
+                        <!-- 연동 -->
                         <details class="center-group" id="scen-grp-연동">
                             <summary>연동</summary>
                             <div class="vehicle-grid">
@@ -1076,12 +1079,27 @@
         range.insertNode(span);
     }
 
+    // 3. 동원장비 수기 수정 내용 보존 플래그
+    var isEquipmentManuallyEdited = false;
+    function markEquipmentManualEdited() {
+        isEquipmentManuallyEdited = true;
+    }
+
     // [시나리오 탭 전용 차량 버튼 클릭 토글]
     function toggleVehicleSelection(element) {
         element.classList.toggle('selected');
+        // 차량을 사용자가 새로 클릭했을 때는 자동 조합을 허용
+        isEquipmentManuallyEdited = false;
     }
 
-    // 1. 좌측 텍스트 입력창 타이핑 시 우측 서식 실시간 동기화
+    // 2. 우측 동원차량 편성 전체 해제 기능
+    function clearAllVehicleSelections() {
+        document.querySelectorAll('.scen-vehicle').forEach(el => el.classList.remove('selected'));
+        isEquipmentManuallyEdited = false;
+        document.getElementById('docEquipment').innerText = '(우측 패널에서 출동 차량을 클릭하세요)';
+    }
+
+    // 1. 좌측 폼 -> A4 공식 서식 동기화
     function syncSheetFromInputs() {
         var targetName = document.getElementById('inTargetName').value.trim();
         var facType = document.getElementById('inFacilityType').value.trim();
@@ -1104,6 +1122,36 @@
         } else {
             leaderDocEl.innerHTML = '(지휘팀장 중점 지휘사항을 입력하세요)';
             leaderDocEl.style.color = '#64748B';
+        }
+    }
+
+    // 1. A4 공식 서식 -> 좌측 폼 역방향 양방향 동기화
+    function syncInputsFromSheet(field) {
+        if (field === 'target') {
+            var raw = document.getElementById('docTarget').innerText.replace('(대상처를 입력하세요)', '').trim();
+            var m = raw.match(/^(.*?)\((.*?)\)$/);
+            if (m) {
+                document.getElementById('inTargetName').value = m[1].trim();
+                document.getElementById('inFacilityType').value = m[2].trim();
+            } else {
+                document.getElementById('inTargetName').value = raw;
+            }
+        } else if (field === 'spec') {
+            var rawSpec = document.getElementById('docBuildingSpec').innerText.replace('※건물현황:', '').replace('(제원을 입력하세요)', '').trim();
+            document.getElementById('inBuildingSpec').value = rawSpec;
+        } else if (field === 'radio') {
+            var rawRadio = document.getElementById('docRadio').innerText.replace('※ 무전:', '').replace('(무전 채널을 입력하세요)', '').trim();
+            document.getElementById('inRadioChannel').value = rawRadio;
+        } else if (field === 'situation') {
+            var rawSit = document.getElementById('docSituation').innerText.replace('(발화 지점 및 가상 상황을 입력하세요)', '').trim();
+            document.getElementById('inSituation').value = rawSit;
+        } else if (field === 'common') {
+            var rawCom = document.getElementById('docCommon').innerText.replace('(공통 지침을 입력하세요)', '').trim();
+            document.getElementById('inCommon').value = rawCom;
+        } else if (field === 'leader') {
+            var rawLeader = document.getElementById('docLeader').innerText.replace('(지휘팀장 중점 지휘사항을 입력하세요)', '').trim();
+            document.getElementById('inLeaderDuty').value = rawLeader;
+            document.getElementById('docLeader').style.color = rawLeader ? '#000000' : '#64748B';
         }
     }
 
@@ -1135,18 +1183,18 @@
             }
         });
 
-        // 2-1. [동원장비] 요약 텍스트 자동 조합
-        var eqArr = [];
-        for (var c in centerMap) {
-            eqArr.push(`${c}(${centerMap[c].join(', ')})`);
+        // 3. 사용자가 직접 편집하지 않은 경우에만 자동 조합
+        if (!isEquipmentManuallyEdited) {
+            var eqArr = [];
+            for (var c in centerMap) {
+                eqArr.push(`${c}(${centerMap[c].join(', ')})`);
+            }
+            if (hasCivic) eqArr.push("자위소방대");
+            document.getElementById('docEquipment').innerText = eqArr.join(', ');
         }
-        if (hasCivic) eqArr.push("자위소방대");
-        document.getElementById('docEquipment').innerText = eqArr.join(', ');
 
-        // 2-2. 자위소방대 행 노출 제어
         document.getElementById('rowCivic').style.display = hasCivic ? '' : 'none';
 
-        // 2-3. 차량별 전술 전개 행 동적 연산
         var tacticsTbody = document.getElementById('docVehicleTactics');
         tacticsTbody.innerHTML = '';
 
@@ -1209,7 +1257,6 @@
             tacticsTbody.appendChild(tr);
         });
 
-        // 2-4. 지휘팀장 임무 SOP 자동 생성
         if (!document.getElementById('inLeaderDuty').value.trim()) {
             var leaderDuties = [
                 "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시",
@@ -1228,7 +1275,7 @@
         alert("소방 표준작전절차(SOP) 규칙에 따라 맞춤형 전술 시나리오가 표에 완성되었습니다.\n서식 상단의 서식 툴바나 표 내부를 클릭하여 자유롭게 다듬을 수 있습니다.");
     }
 
-    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진 (gemini-2.5-flash-lite 적용)]
+    // [🤖 구글 Gemini AI API 연동 시나리오 생성 엔진]
     function manageGeminiApiKey() {
         var currentKey = localStorage.getItem('gemini_fire_api_key') || '';
         var newKey = prompt("Google Gemini API Key를 입력하세요:\n(브라우저 로컬 저장소에 안전하게 저장됩니다)", currentKey);
@@ -1272,7 +1319,8 @@
         btn.disabled = true;
         btn.innerText = "⏳ AI 분석·생성 중...";
 
-        var systemPrompt = "당신은 제주소방서 현장대응단 수석 전술훈련 설계관입니다. 소방 표준작전절차(SOP)와 대상처 고유 건축 특성을 반영하여 가장 전문적이고 실전적인 화재진압 및 인명구조 시나리오를 작성하십시오. 응답은 반드시 지정된 JSON 형식으로만 출력하십시오.";
+        // 4. 공문서 서식 및 단계별 구조화 프롬프트 고도화
+        var systemPrompt = "당신은 제주소방서 현장대응단 수석 전술훈련 설계관입니다. 소방 표준작전절차(SOP)와 대상처 고유 건축 특성을 반영하여 공문서 표준에 부합하는 실전형 화재진압·인명구조 시나리오를 작성하십시오. 응답은 반드시 지정된 JSON 규격으로만 출력하십시오.";
 
         var userPrompt = `
 다음 훈련 조건에 맞춰 공식 소방훈련 시나리오 데이터를 JSON으로 생성하십시오:
@@ -1285,9 +1333,9 @@
 
 [작성 지침]
 - situation: 대상처의 층수, 용도, 농연 확산 경로, 요구조자 위기 상황을 구체화한 전문 가상상황 (150자 내외)
-- common: 안전 관리 및 급수/통신 핵심 지침 (번호 매김)
-- tactics: 편성된 각 차량별로 건물 방면 부서(A/B/C/D), 주수기구, Y커플링/중계급수/인명구조 등 전문 용어가 포함된 객체 배열. 차량명은 레이블에 정확히 명시.
-- leaderDuty: 현장지휘팀장의 상황판단, 지휘권 선언, 안전통제, 단계별 무전 명령, 배연, 훈련 강평을 불릿 기호(-)와 줄바꿈(\\n)으로 작성.
+- common: 안전 관리 및 급수/통신 핵심 지침 (❶, ❷, ❸ 번호 매김)
+- tactics: 편성된 각 차량별로 건물 방면 부서(A/B/C/D), 주수기구, 수관 연장, 인명구조 등 전문 용어가 포함된 객체 배열. 차량명은 레이블에 정확히 명시.
+- leaderDuty: 현장지휘팀장의 지휘 활동을 [1단계: 상황파악 및 지휘권 선언], [2단계: 인명구조 및 연소확대 저지], [3단계: 배연 및 잔화정리], [4단계: 훈련 종료 및 합동강평] 4단계로 나누어 명확한 줄바꿈(\\n)과 하이픈(-) 기호로 체계화하여 작성.
 
 [반드시 준수할 JSON 스키마]
 {
@@ -1300,12 +1348,11 @@
       "driver": "운전원 급수 및 안전 관리 중점사항"
     }
   ],
-  "leaderDuty": "- 지휘차 도착 후...\\n- 지휘권 선언 및...\\n- 인명구조 최우선..."
+  "leaderDuty": "[1단계: 상황파악 및 지휘권 선언]\\n- 지휘차 도착 후...\\n[2단계: 인명구조 및 화점 진압]\\n- ...\\n[3단계: 배연 및 2차 검색]\\n- ...\\n[4단계: 훈련 종료 및 강평]\\n- ..."
 }
 `;
 
         try {
-            // gemini-2.5-flash-lite 경량 모델 적용
             var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -1334,19 +1381,22 @@
             if (data.common) document.getElementById('inCommon').value = data.common;
             if (data.leaderDuty) document.getElementById('inLeaderDuty').value = data.leaderDuty;
 
-            var centerMap = {};
-            assignedVehicles.forEach(item => {
-                var match = item.match(/\[(.*?)\] (.*)/);
-                if (match) {
-                    var c = match[1], v = match[2];
-                    if (!centerMap[c]) centerMap[c] = [];
-                    centerMap[c].push(v);
-                }
-            });
-            var eqArr = [];
-            for (var c in centerMap) eqArr.push(`${c}(${centerMap[c].join(', ')})`);
-            if (hasCivic) eqArr.push("자위소방대");
-            document.getElementById('docEquipment').innerText = eqArr.join(', ');
+            // 3. 수기 수정하지 않은 경우에만 자동 생성된 동원장비 텍스트 대입
+            if (!isEquipmentManuallyEdited) {
+                var centerMap = {};
+                assignedVehicles.forEach(item => {
+                    var match = item.match(/\[(.*?)\] (.*)/);
+                    if (match) {
+                        var c = match[1], v = match[2];
+                        if (!centerMap[c]) centerMap[c] = [];
+                        centerMap[c].push(v);
+                    }
+                });
+                var eqArr = [];
+                for (var c in centerMap) eqArr.push(`${c}(${centerMap[c].join(', ')})`);
+                if (hasCivic) eqArr.push("자위소방대");
+                document.getElementById('docEquipment').innerText = eqArr.join(', ');
+            }
             document.getElementById('rowCivic').style.display = hasCivic ? '' : 'none';
 
             var tacticsTbody = document.getElementById('docVehicleTactics');
@@ -1383,7 +1433,7 @@
         document.getElementById('inRadioChannel').value = "재난통신-제주소방02(채널 변경 없음)";
         document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연이 확산되고, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
         document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 소화전 점령 시 중계구 활용 및 AVL 단말기 활용 블록별 소화전 위치 확인";
-        document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시\n- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태 보고 받음\n- 거동불가 환자 다수 → 공격전략 유지, 특수차 연계 옥상 및 상층부 인명구조 최우선 지시\n- 계단실 연기차단 및 옥상 비상구 확보\n- 초진 판단 후 배연 실시 및 2차 정밀검색 지시\n- 안전확보 확인 후 훈련 종료 및 합동 강평";
+        document.getElementById('inLeaderDuty').value = "[1단계: 상황파악 및 지휘권 선언]\n- 지휘차 현장도착 후 현장 상황 파악, 선착대장으로부터 지휘권 이양 후 A 방면 안전구역에서 고정지휘 실시\n- 선착대장으로부터 화점 위치, 진압상황 및 용수 확보 상태 보고 받음\n[2단계: 인명구조 및 화점 진압]\n- 거동불가 환자 다수 확인 → 인명구조 최우선 작전 지시\n- 특수차(굴절) C방면 부서 및 구조대 연계 옥상 요구조자 구조 지시\n- 계단실 방화문 폐쇄 및 비상탈출로 확보\n[3단계: 배연 및 2차 검색]\n- 초진 판단 후 배연 실시 및 2차 정밀검색 지시\n[4단계: 훈련 종료 및 강평]\n- 잔류 연기 제거 및 안전확보 확인 후 훈련 종료 선언 및 합동 강평";
 
         syncSheetFromInputs();
     }
@@ -1404,15 +1454,15 @@
         if (presetId === 1) { // Option 1: 표준 대응형
             document.getElementById('inSituation').value = "2층 휴게실 내부 콘센트 단락 화재 발생, 옥내소화전 설비 정상 작동 중이며 복도로 화재 연소 확대 중";
             document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 옥내소화전 송수구 점령 및 수평 연소확대 저지";
-            document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 즉시 선착대장 지휘권 인수 및 고정지휘소 설치\n- 1선착 펌프대 옥내 진입 지원 및 2선착대 연소 확대 저지선 구축 지시\n- 인접 실 수평 연소 저지 확인 후 주 화점 집중 주수\n- 완진 선언 후 잔화 정리 및 장비 점검";
+            document.getElementById('inLeaderDuty').value = "[1단계: 상황파악 및 지휘권 인수]\n- 지휘차 현장도착 즉시 선착대장 지휘권 인수 및 A방면 고정지휘소 설치\n[2단계: 진압 작전 통제]\n- 1선착 펌프대 옥내 진입 지원 및 2선착대 연소 확대 저지선 구축 지시\n- 인접 실 수평 연소 저지 확인 후 주 화점 집중 주수\n[3단계: 잔화 정리 및 장비 점검]\n- 완진 선언 후 잔화 정리 및 대원 안전 확인";
         } else if (presetId === 2) { // Option 2: 인명구조 집중형
             document.getElementById('inSituation').value = "2층 휴게실에서 원인미상의 화재 발생, 2층 복도 및 인근실로 농연 확산, 거동불가 환자 다수 및 옥상 요구조자 발생 우려";
             document.getElementById('inCommon').value = "❶ 출동대 안전운행, ❷ 선착대장은 팀단위 전술훈련 매뉴얼 준수, ❸ 굴절차 전개 공간 우선 확보 및 중증환자 임시의료소 신속 인계";
-            document.getElementById('inLeaderDuty').value = "- 지휘차 현장도착 후 현장 상황 파악, 지휘권 선언\n- 거동불가 환자 다수 확인 → 인명구조 최우선 작전 지시\n- 특수차(굴절) C방면 부서 및 구조대 연계 옥상 요구조자 구조 지시\n- 계단실 방화문 폐쇄 및 비상탈출로 확보, 배연 및 2차 정밀검색 실시\n- 훈련 종료 선언 및 합동 강평";
+            document.getElementById('inLeaderDuty').value = "[1단계: 상황파악 및 지휘권 선언]\n- 지휘차 현장도착 후 현장 상황 파악, 지휘권 선언\n[2단계: 인명구조 최우선 지휘]\n- 거동불가 환자 다수 확인 → 인명구조 최우선 작전 지시\n- 특수차(굴절) C방면 부서 및 구조대 연계 옥상 요구조자 구조 지시\n- 계단실 방화문 폐쇄 및 비상탈출로 확보\n[3단계: 배연 및 2차 검색]\n- 초진 판단 후 배연 실시 및 2차 정밀검색 실시\n[4단계: 강평]\n- 훈련 종료 선언 및 합동 강평";
         } else if (presetId === 3) { // Option 3: 자원제한형
             document.getElementById('inSituation').value = "인근 상수도 배관 파손으로 소화전 단수 판정, 2층 화재가 급격히 확대되는 비상 수리 결핍 상황";
             document.getElementById('inCommon').value = "❶ 물탱크차 릴레이 순환 급수 체계 가동, ❷ 원거리 자연수리 흡수관 세팅, ❸ 제한된 수량에 따른 고압 집중 방수";
-            document.getElementById('inLeaderDuty').value = "- 소화전 단수 판정 즉시 비상 급수체계 가동 지시\n- 중요물탱크차-보조물탱크차 순환 릴레이 급수 라인 구축 통제\n- 수조 잔량 실시간 모니터링 및 단계별 방수량 통제\n- 수리 확보 완료 후 전면 진압 작전 전환 및 훈련 종료 강평";
+            document.getElementById('inLeaderDuty').value = "[1단계: 비상 체계 가동]\n- 소화전 단수 판정 즉시 비상 급수체계 가동 지시\n[2단계: 릴레이 급수 통제]\n- 중요물탱크차-보조물탱크차 순환 릴레이 급수 라인 구축 통제\n- 수조 잔량 실시간 모니터링 및 단계별 방수량 통제\n[3단계: 수리 확보 및 전면 진압]\n- 수리 확보 완료 후 전면 진압 작전 전환\n[4단계: 강평]\n- 훈련 종료 강평";
         }
 
         syncSheetFromInputs();
@@ -1459,7 +1509,7 @@
         });
     }
 
-    // ================= 지도, 로드뷰, 탭 및 도구 엔진 =================
+    // ================= 지도, 로드뷰, 탭 및 도구 엔진 (원형 100% 보존) =================
     var map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(33.4893, 126.5209), level: 3 });
     var ps = new kakao.maps.services.Places();
 
