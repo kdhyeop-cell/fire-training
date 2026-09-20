@@ -17,8 +17,10 @@
         /* 좌측 사이드바 구조 (380px 고정) */
         .sidebar { width: 380px; background: #FFFFFF; display: flex; flex-direction: column; z-index: 10; border-right: 1px solid #E2E8F0; flex-shrink: 0; height: 100vh; }
         
-        /* 브랜드 타이틀 박스 */
+        /* 브랜드 타이틀 박스 (symbol.png 정렬 지원) */
         .brand { height: 54px; background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); color: white; padding: 0 16px; font-size: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .brand-title-wrap { display: flex; align-items: center; gap: 8px; }
+        .brand-symbol-img { height: 24px; width: auto; object-fit: contain; display: inline-block; vertical-align: middle; }
         .guide-toggle-btn { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .guide-toggle-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
@@ -370,9 +372,12 @@
 <div class="app-container">
     <!-- ================= 1분할: 좌측 사이드바 (380px) ================= -->
     <div class="sidebar">
-        <!-- 브랜드 타이틀 -->
+        <!-- 브랜드 타이틀 (symbol.png 심볼 및 AI 시나리오 생성 변경 반영) -->
         <div class="brand">
-            <span id="brandTitle">제주소방서 AI 시나리오</span>
+            <div class="brand-title-wrap">
+                <img id="brandSymbol" class="brand-symbol-img" src="symbol.png" alt="심볼" onerror="this.style.display='none'">
+                <span id="brandTitle">AI 시나리오 생성</span>
+            </div>
             <button id="guideToggleBtn" class="guide-toggle-btn" onclick="toggleGuide()" style="display:none;">📖 조작 가이드</button>
         </div>
 
@@ -663,7 +668,7 @@
                     </div>
                 </div>
 
-                <!-- [공식 소방훈련 서식 뷰 (1. 양방향 역동기화 이벤트 장착)] -->
+                <!-- [공식 소방훈련 서식 뷰] -->
                 <div class="official-scenario-paper" id="officialScenarioSheet">
                     <div class="official-doc-header">
                         <div class="official-doc-title">【현장에 강한 제주소방서 현장대응단】</div>
@@ -723,7 +728,7 @@
                 </div>
             </div>
 
-            <!-- 3분할: 우측 동원 차량 편성 패널 (2. 전체 해제 버튼 신설) -->
+            <!-- 3분할: 우측 동원 차량 편성 패널 -->
             <div class="scenario-right-panel">
                 <div class="scenario-right-header">
                     <div class="section-title" style="margin-bottom: 0;">
@@ -1088,7 +1093,6 @@
     // [시나리오 탭 전용 차량 버튼 클릭 토글]
     function toggleVehicleSelection(element) {
         element.classList.toggle('selected');
-        // 차량을 사용자가 새로 클릭했을 때는 자동 조합을 허용
         isEquipmentManuallyEdited = false;
     }
 
@@ -1183,7 +1187,7 @@
             }
         });
 
-        // 3. 사용자가 직접 편집하지 않은 경우에만 자동 조합
+        // 3. 수기 수정하지 않은 경우에만 자동 조합
         if (!isEquipmentManuallyEdited) {
             var eqArr = [];
             for (var c in centerMap) {
@@ -1335,7 +1339,7 @@
 - situation: 대상처의 층수, 용도, 농연 확산 경로, 요구조자 위기 상황을 구체화한 전문 가상상황 (150자 내외)
 - common: 안전 관리 및 급수/통신 핵심 지침 (❶, ❷, ❸ 번호 매김)
 - tactics: 편성된 각 차량별로 건물 방면 부서(A/B/C/D), 주수기구, 수관 연장, 인명구조 등 전문 용어가 포함된 객체 배열. 차량명은 레이블에 정확히 명시.
-- leaderDuty: 현장지휘팀장의 지휘 활동을 [1단계: 상황파악 및 지휘권 선언], [2단계: 인명구조 및 연소확대 저지], [3단계: 배연 및 잔화정리], [4단계: 훈련 종료 및 합동강평] 4단계로 나누어 명확한 줄바꿈(\\n)과 하이픈(-) 기호로 체계화하여 작성.
+- leaderDuty: 현장지휘팀장의 지휘 활동을 [1단계: 상황파악 및 지휘권 선언], [2단계: 인명구조 및 화점 진압], [3단계: 배연 및 2차 검색], [4단계: 훈련 종료 및 강평] 4단계로 나누어 명확한 줄바꿈(\\n)과 하이픈(-) 기호로 체계화하여 작성.
 
 [반드시 준수할 JSON 스키마]
 {
@@ -1524,7 +1528,7 @@
     }
 
     var tabInfo = {
-        'scenario': { title: '제주소방서 AI 시나리오', sidebar: 'sidebarScenario', main: 'mainScenario' },
+        'scenario': { title: 'AI 시나리오 생성', sidebar: 'sidebarScenario', main: 'mainScenario' },
         'map':      { title: '제주소방서 전술 배치도', sidebar: 'sidebarMap',      main: 'mainMap' },
         'eval':     { title: '제주소방서 다면 평가표', sidebar: 'sidebarEval',     main: 'mainEval' },
         'report':   { title: '제주소방서 최종 보고서', sidebar: 'sidebarReport',   main: 'mainReport' },
@@ -1533,6 +1537,10 @@
 
     function switchTab(tabKey) {
         document.getElementById('brandTitle').innerText = tabInfo[tabKey].title;
+
+        // 심볼 이미지는 AI 시나리오 탭 및 전술배치도 등 전체 브랜드 영역에 자연스럽게 표시
+        var symbolEl = document.getElementById('brandSymbol');
+        if (symbolEl) symbolEl.style.display = 'inline-block';
 
         var guideBtn = document.getElementById('guideToggleBtn');
         if (guideBtn) {
